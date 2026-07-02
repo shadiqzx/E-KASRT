@@ -10,12 +10,16 @@ class Users extends CI_Controller
 		$username = $this->session->userdata('username');
 		$user = $this->db->get_where('users', ['username' => $username])->row_array();
 
+		if ($user['role_id'] == 4) {
+			redirect('users/warga');
+		}
+
 		$data['menu'] = 'Akses';
 		$data['judul'] = 'RT Panel';
 		$data['user'] = $user;
 		$data['masuk'] = $this->m_kas->TotalMasuk();
 		$data['keluar'] = $this->m_kas->TotalKeluar();
-		$this->load->view('include/header_1', $data);
+		$this->load->view('include/header', $data);
 		$this->load->view('index', $data);
 		$this->load->view('include/footer');
 	}
@@ -25,12 +29,16 @@ class Users extends CI_Controller
 		$username = $this->session->userdata('username');
 		$user = $this->db->get_where('users', ['username' => $username])->row_array();
 
+		if ($user['role_id'] == 4) {
+			redirect('users/warga');
+		}
+
 		$data['menu'] = 'Akses';
 		$data['judul'] = 'Bendahara Panel';
 		$data['user'] = $user;
 		$data['masuk'] = $this->m_kas->TotalMasuk();
 		$data['keluar'] = $this->m_kas->TotalKeluar();
-		$this->load->view('include/header_1', $data);
+		$this->load->view('include/header', $data);
 		$this->load->view('index', $data);
 		$this->load->view('include/footer');
 	}
