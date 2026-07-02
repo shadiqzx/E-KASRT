@@ -27,7 +27,36 @@
     <link href="<?= base_url(); ?>assets/vendor/select2/select2.min.css" rel="stylesheet" media="all">
     <link href="<?= base_url(); ?>assets/vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
     <!-- Main CSS-->
-    <link href="<?= base_url(); ?>assets/css/theme.css" rel="stylesheet" media="all">
+    <!-- Custom Style for Dashboard elements -->
+    <style>
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn-quick {
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+            text-decoration: none !important;
+        }
+        .btn-quick i { font-size: 18px; width: 24px; text-align: center; }
+        .btn-quick:hover { transform: translateX(3px); }
+        .btn-q-green { background: #E8F5E9; color: #4CAF50; }
+        .btn-q-red { background: #FFEBEE; color: #F44336; }
+        .btn-q-blue { background: #E3F2FD; color: #2196F3; }
+        .btn-q-yellow { background: #FFF8E1; color: #FF9800; }
+        .btn-q-purple { background: #F3E5F5; color: #9C27B0; }
+    </style>
 </head>
 
 <body class="animsition">
@@ -58,6 +87,31 @@
                                 <a href="<?= base_url('kasRT/laporan'); ?>">
                                     <i class="fas fa-bar-chart-o"></i>
                                     <span class="bot-line"></span>Laporan</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/sampah'); ?>">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span class="bot-line"></span>Uang Sampah</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/surat'); ?>">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span class="bot-line"></span>Surat</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/kegiatan'); ?>">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <span class="bot-line"></span>Kegiatan</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/aspirasi'); ?>">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <span class="bot-line"></span>Aspirasi</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/umkm'); ?>">
+                                    <i class="fas fa-store"></i>
+                                    <span class="bot-line"></span>UMKM</a>
                             </li>
                         </ul>
                     </div>
