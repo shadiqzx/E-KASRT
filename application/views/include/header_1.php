@@ -70,6 +70,46 @@
                                     <i class="fas fa-bar-chart-o"></i>
                                     <span class="bot-line"></span>Laporan</a>
                             </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/sampah');?>">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span class="bot-line"></span>Sampah</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/surat');?>">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span class="bot-line"></span>Surat</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/kegiatan');?>">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <span class="bot-line"></span>Kegiatan</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/ronda');?>">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span class="bot-line"></span>Ronda</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/koperasi');?>">
+                                    <i class="fas fa-piggy-bank"></i>
+                                    <span class="bot-line"></span>Koperasi</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/umkm');?>">
+                                    <i class="fas fa-store"></i>
+                                    <span class="bot-line"></span>UMKM</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/aset');?>">
+                                    <i class="fas fa-boxes"></i>
+                                    <span class="bot-line"></span>Aset</a>
+                            </li>
+                            <li>
+                                <a href="<?= base_url('smartrt/aspirasi');?>">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <span class="bot-line"></span>Aspirasi</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="header__tool">
