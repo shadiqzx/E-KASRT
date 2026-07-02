@@ -265,7 +265,7 @@
                                             <i class="fas fa-file-alt"></i>
                                             Laporan Keuangan
                                         </a>
-                                        <a href="#" class="btn-quick btn-q-purple">
+                                        <a href="<?= base_url('smartrt/backup'); ?>" class="btn-quick btn-q-purple">
                                             <i class="fas fa-cloud-download-alt"></i>
                                             Backup Data
                                         </a>
