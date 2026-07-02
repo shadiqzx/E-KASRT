@@ -242,32 +242,32 @@
         }
 
         .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         .btn-quick {
             border-radius: 10px;
-            padding: 15px;
-            text-align: center;
+            padding: 12px 18px;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
             border: none;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            justify-content: flex-start;
+            gap: 15px;
+            text-decoration: none !important;
         }
-        .btn-quick i { font-size: 24px; }
-        .btn-quick:hover { transform: translateY(-3px); }
+        .btn-quick i { font-size: 18px; width: 24px; text-align: center; }
+        .btn-quick:hover { transform: translateX(3px); }
         .btn-q-green { background: #E8F5E9; color: #4CAF50; }
         .btn-q-red { background: #FFEBEE; color: #F44336; }
         .btn-q-blue { background: #E3F2FD; color: #2196F3; }
         .btn-q-yellow { background: #FFF8E1; color: #FF9800; }
-        .btn-q-purple { background: #F3E5F5; color: #9C27B0; grid-column: span 2; }
+        .btn-q-purple { background: #F3E5F5; color: #9C27B0; }
 
         .list-item {
             display: flex;
@@ -352,36 +352,70 @@
                                 <i class="fas fa-home"></i>Data RT</a>
                         </li>
 
+                        <div class="menu-category">LAYANAN WARGA</div>
+                        <li class="<?= (isset($menu) && $menu == 'sampah') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/sampah'); ?>">
+                                <i class="fas fa-trash-alt"></i>Uang Sampah</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'surat') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/surat'); ?>">
+                                <i class="fas fa-envelope-open-text"></i>Surat Menyurat</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'aspirasi') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/aspirasi'); ?>">
+                                <i class="fas fa-bullhorn"></i>Aspirasi</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'posyandu') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/posyandu'); ?>">
+                                <i class="fas fa-baby"></i>Posyandu</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'rukem') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/rukem'); ?>">
+                                <i class="fas fa-pray"></i>Rukem (Kematian)</a>
+                        </li>
+
+                        <div class="menu-category">EKONOMI</div>
+                        <li class="<?= (isset($menu) && $menu == 'koperasi') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/koperasi'); ?>">
+                                <i class="fas fa-piggy-bank"></i>Koperasi</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'banksampah') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/banksampah'); ?>">
+                                <i class="fas fa-recycle"></i>Bank Sampah</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'umkm') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/umkm'); ?>">
+                                <i class="fas fa-store"></i>UMKM</a>
+                        </li>
+
+                        <div class="menu-category">KEGIATAN & KEAMANAN</div>
+                        <li class="<?= (isset($menu) && $menu == 'kegiatan') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/kegiatan'); ?>">
+                                <i class="fas fa-calendar-check"></i>Agenda Kegiatan</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'ronda') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/ronda'); ?>">
+                                <i class="fas fa-shield-alt"></i>Jadwal Ronda</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'aset') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/aset'); ?>">
+                                <i class="fas fa-boxes"></i>Aset RT</a>
+                        </li>
+
                         <div class="menu-category">LAPORAN</div>
                         <li class="<?= ($judul == 'Laporan' || isset($menu) && $menu == 'laporan') ? 'active' : ''; ?>">
                             <a href="<?= base_url('kasRT/laporan');?>">
                                 <i class="fas fa-chart-bar"></i>Laporan Keuangan</a>
                         </li>
-                        <li>
-                            <a href="#">
-                                <i class="fas fa-file-alt"></i>Laporan Iuran</a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fas fa-dollar-sign"></i>Laporan Kas</a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fas fa-file-export"></i>Export Laporan</a>
-                        </li>
 
                         <div class="menu-category">PENGATURAN</div>
-                        <li>
-                            <a href="#">
-                                <i class="fas fa-cog"></i>Pengaturan</a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fas fa-cloud-download-alt"></i>Backup Data</a>
-                        </li>
                         <li class="<?= ($judul == 'Hak Akses' || isset($menu) && $menu == 'akses') ? 'active' : ''; ?>">
                             <a href="<?= base_url('admin/user');?>">
                                 <i class="fas fa-user-shield"></i>Pengguna</a>
+                        </li>
+                        <li class="<?= (isset($menu) && $menu == 'backup') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/backup'); ?>">
+                                <i class="fas fa-cloud-download-alt"></i>Backup Data</a>
                         </li>
                         
                         <li style="margin-top: 30px;">
@@ -420,7 +454,11 @@
                                         </div>
                                         <div class="content" style="padding-left: 10px;">
                                             <a class="js-acc-btn" href="#" style="color: #333; font-weight: bold;"><?= $user['username'];?></a>
-                                            <span style="display: block; font-size: 12px; color: #888; margin-top: -5px;">Ketua RT</span>
+                                            <?php 
+                                            $role_data = $this->db->get_where('user_role', ['id' => $user['role_id']])->row_array();
+                                            $role_name = $role_data ? $role_data['role'] : 'Ketua RT';
+                                            ?>
+                                            <span style="display: block; font-size: 12px; color: #888; margin-top: -5px;"><?= $role_name; ?></span>
                                         </div>
                                         <div class="account-dropdown js-dropdown">
                                             <div class="account-dropdown__body">
