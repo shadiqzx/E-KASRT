@@ -1,0 +1,10 @@
+# Protect this directory from web access
+Options -Indexes
+<Files ".gh_token">
+    Order Allow,Deny
+    Deny from all
+</Files>
+<Files "*.sql">
+    Order Allow,Deny
+    Deny from all
+</Files>
