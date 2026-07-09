@@ -175,19 +175,36 @@ class RtController extends CI_Controller
         }
 
         $rt_info = $this->db->get('data_rt')->row_array();
+
+        $config['upload_path']   = './frontend/assets/profil/';
+        $config['allowed_types'] = 'gif|jpg|png|jpeg';
+        $config['max_size']      = 2048;
+        $this->load->library('upload', $config);
+
+        $qris_image = $rt_info ? $rt_info['qris_image'] : 'qris_default.png';
+        if (isset($_FILES['qris_image']['name']) && $_FILES['qris_image']['name'] != '') {
+            if ($this->upload->do_upload('qris_image')) {
+                $qris_image = $this->upload->data('file_name');
+            }
+        }
+
         $data = [
-            'rt_number'    => $this->input->post('rt_number'),
-            'rw_number'    => $this->input->post('rw_number'),
-            'kelurahan'    => $this->input->post('kelurahan'),
-            'kecamatan'    => $this->input->post('kecamatan'),
-            'kota'         => $this->input->post('kota'),
-            'provinsi'     => $this->input->post('provinsi'),
-            'kode_pos'     => $this->input->post('kode_pos'),
-            'luas_wilayah' => $this->input->post('luas_wilayah'),
-            'jumlah_kk'    => $this->input->post('jumlah_kk'),
-            'visi'         => $this->input->post('visi'),
-            'misi'         => $this->input->post('misi'),
-            'sejarah'      => $this->input->post('sejarah'),
+            'rt_number'     => $this->input->post('rt_number'),
+            'rw_number'     => $this->input->post('rw_number'),
+            'kelurahan'     => $this->input->post('kelurahan'),
+            'kecamatan'     => $this->input->post('kecamatan'),
+            'kota'          => $this->input->post('kota'),
+            'provinsi'      => $this->input->post('provinsi'),
+            'kode_pos'      => $this->input->post('kode_pos'),
+            'luas_wilayah'  => $this->input->post('luas_wilayah'),
+            'jumlah_kk'     => $this->input->post('jumlah_kk'),
+            'visi'          => $this->input->post('visi'),
+            'misi'          => $this->input->post('misi'),
+            'sejarah'       => $this->input->post('sejarah'),
+            'jam_kerja_rt'  => $this->input->post('jam_kerja_rt'),
+            'norek_bca'     => $this->input->post('norek_bca'),
+            'norek_mandiri' => $this->input->post('norek_mandiri'),
+            'qris_image'    => $qris_image
         ];
 
         if ($rt_info) {
