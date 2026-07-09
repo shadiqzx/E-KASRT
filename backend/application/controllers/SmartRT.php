@@ -826,6 +826,7 @@ class SmartRT extends CI_Controller
 			}
 			$data['warga'] = $warga;
 			$data['payments'] = $this->db->order_by('id', 'DESC')->get_where('iuran_payment', ['warga_id' => $warga['idWarga']])->result();
+			$data['rt_info'] = $this->db->get('data_rt')->row_array();
 			$this->_loadView('iuran', $data);
 		} else {
 			$this->db->select('iuran_payment.*, data_warga.nama as nama_warga');
@@ -907,5 +908,116 @@ class SmartRT extends CI_Controller
 
 		$this->session->set_flashdata('message', '<div class="alert alert-success">Status pembayaran iuran diperbarui!</div>');
 		redirect('smartrt/iuran');
+	}
+
+	// ===== FITUR TRANSFER WARGA =====
+	public function transfer()
+	{
+		$user = $this->_getUser();
+		$data['judul'] = 'Transfer Warga';
+		$data['menu'] = 'transfer';
+
+		// Load RT info (QRIS, schedule, bank) for all views
+		$data['rt_info'] = $this->db->get('data_rt')->row_array();
+
+		if ($user['role_id'] == 4) {
+			$warga = $this->db->get_where('data_warga', ['nama' => $user['user']])->row_array();
+			if (!$warga) {
+				$warga = $this->db->get('data_warga')->row_array();
+			}
+			$data['warga'] = $warga;
+			$data['transfers'] = $this->db->order_by('id', 'DESC')->get_where('transaksi_transfer', ['warga_id' => $warga['idWarga']])->result();
+			$this->_loadView('transfer', $data);
+		} else {
+			$this->db->select('transaksi_transfer.*, data_warga.nama as nama_warga');
+			$this->db->from('transaksi_transfer');
+			$this->db->join('data_warga', 'data_warga.idWarga = transaksi_transfer.warga_id');
+			$this->db->order_by('transaksi_transfer.id', 'DESC');
+			$data['transfers'] = $this->db->get()->result();
+			$data['warga_list'] = $this->db->get('data_warga')->result();
+			$this->_loadView('transfer_kelola', $data);
+		}
+	}
+
+	public function transfer_proses()
+	{
+		$user = $this->_getUser();
+		$warga_id = $this->input->post('warga_id');
+		if ($user['role_id'] == 4) {
+			$warga = $this->db->get_where('data_warga', ['nama' => $user['user']])->row_array();
+			if ($warga) {
+				$warga_id = $warga['idWarga'];
+			}
+		}
+		$jenis = $this->input->post('jenis'); // Masuk / Keluar
+		$jumlah = $this->input->post('jumlah');
+		$keterangan = $this->input->post('keterangan');
+		$metode = $this->input->post('metode'); // QR / Tunai / Transfer Bank
+		$rekening_info = $this->input->post('rekening_info');
+
+		$config['upload_path'] = './frontend/assets/profil/';
+		$config['allowed_types'] = 'gif|jpg|png|jpeg';
+		$config['max_size'] = 2048;
+		$this->load->library('upload', $config);
+
+		$bukti = null;
+		if (($metode == 'QR' || $metode == 'Transfer Bank') && $this->upload->do_upload('bukti_bayar')) {
+			$bukti = $this->upload->data('file_name');
+		}
+
+		$insert_data = [
+			'warga_id' => $warga_id,
+			'jenis' => $jenis,
+			'jumlah' => $jumlah,
+			'keterangan' => $keterangan,
+			'metode' => $metode,
+			'bukti_bayar' => $bukti,
+			'rekening_info' => $rekening_info,
+			'status' => 'Pending'
+		];
+
+		$this->db->insert('transaksi_transfer', $insert_data);
+		
+		// Add activity log
+		$w = $this->db->get_where('data_warga', ['idWarga' => $warga_id])->row_array();
+		$this->m_log->addLog('Pengajuan Transfer ' . $jenis, 'Kas', 'Warga: ' . ($w ? $w['nama'] : 'Unknown') . ' | Jumlah: Rp ' . number_format($jumlah, 0, ',', '.') . ' | Metode: ' . $metode);
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Transfer berhasil diajukan! Menunggu verifikasi RT.</div>');
+		redirect('smartrt/transfer');
+	}
+
+	public function transfer_update_status($id, $status)
+	{
+		$this->_restrictRole([1, 2, 3]);
+		$this->db->where('id', $id)->update('transaksi_transfer', ['status' => $status]);
+		
+		$transfer = $this->db->get_where('transaksi_transfer', ['id' => $id])->row_array();
+		$warga = $this->db->get_where('data_warga', ['idWarga' => $transfer['warga_id']])->row_array();
+		
+		// Add activity log
+		$this->m_log->addLog('Update Status Transfer', 'Kas', 'Warga: ' . ($warga ? $warga['nama'] : 'Unknown') . ' | Status: ' . $status . ' | Jenis: ' . $transfer['jenis'] . ' | Jumlah: Rp ' . number_format($transfer['jumlah'], 0, ',', '.'));
+
+		// Connect to data_kas if approved
+		if ($status == 'Disetujui') {
+			$prefix = '';
+			if ($transfer['metode'] == 'QR') {
+				$prefix = 'Transfer QRIS - ';
+			} else if ($transfer['metode'] == 'Transfer Bank') {
+				$prefix = 'Transfer Bank - ';
+			} else {
+				$prefix = 'Bayar Tunai di Rumah RT - ';
+			}
+
+			$kas_data = [
+				'keterangan' => $prefix . $transfer['keterangan'] . ' - ' . $warga['nama'],
+				'tanggal' => date('Y-m-d'),
+				'jumlah' => $transfer['jumlah'],
+				'jenis' => strtolower($transfer['jenis']) // 'masuk' or 'keluar'
+			];
+			$this->db->insert('data_kas', $kas_data);
+		}
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Status pengajuan transfer diperbarui!</div>');
+		redirect('smartrt/transfer');
 	}
 }
