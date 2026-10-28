@@ -88,7 +88,12 @@
                                     <i class="fas fa-bar-chart-o"></i>
                                     <span class="bot-line"></span>Laporan</a>
                             </li>
-                            <li>
+                            <li class="<?= (isset($menu) && $menu == 'iuran') ? 'active' : ''; ?>">
+                                <a href="<?= base_url('smartrt/iuran'); ?>">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span class="bot-line"></span>Iuran Warga</a>
+                            </li>
+                            <li class="<?= (isset($menu) && $menu == 'sampah') ? 'active' : ''; ?>">
                                 <a href="<?= base_url('smartrt/sampah'); ?>">
                                     <i class="fas fa-trash-alt"></i>
                                     <span class="bot-line"></span>Uang Sampah</a>
