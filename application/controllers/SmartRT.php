@@ -6,8 +6,12 @@ class SmartRT extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		if (!$this->session->userdata('username')) {
-			redirect('auth');
+		// API endpoint untuk IoT / ESP32, live stream radar, cetak KMS, dan cetak Kwitansi
+		$method = $this->router->fetch_method();
+		if ($method !== 'posyandu_rfid_tap' && $method !== 'posyandu_live_stream' && $method !== 'posyandu_cetak_kms' && $method !== 'iuran_cetak_kwitansi') {
+			if (!$this->session->userdata('username')) {
+				redirect('auth');
+			}
 		}
 	}
 
@@ -21,7 +25,7 @@ class SmartRT extends CI_Controller
 	{
 		$user = $this->_getUser();
 		$data['user'] = $user;
-		
+
 		if ($user['role_id'] == 1 || $user['role_id'] == 2 || $user['role_id'] == 3) {
 			$this->load->view('include/header', $data);
 		} else {
@@ -95,12 +99,12 @@ class SmartRT extends CI_Controller
 	public function sampah_update_status($id, $status)
 	{
 		$this->db->where('id', $id)->update('sampah_payment', ['status' => $status]);
-		
+
 		// If approved, we can automatically record it to data_kas
 		if ($status == 'Disetujui') {
 			$payment = $this->db->get_where('sampah_payment', ['id' => $id])->row_array();
 			$warga = $this->db->get_where('data_warga', ['idWarga' => $payment['warga_id']])->row_array();
-			
+
 			$kas_data = [
 				'keterangan' => 'Uang Sampah ' . $payment['bulan'] . ' ' . $payment['tahun'] . ' - ' . $warga['nama'],
 				'tanggal' => date('Y-m-d'),
@@ -112,6 +116,275 @@ class SmartRT extends CI_Controller
 
 		$this->session->set_flashdata('message', '<div class="alert alert-success">Status pembayaran diperbarui!</div>');
 		redirect('smartrt/sampah');
+	}
+
+	// 1.5. IURAN KAS WARGA (Bulanan RT)
+	public function iuran()
+	{
+		$user = $this->_getUser();
+		$data['judul'] = 'Iuran Warga';
+		$data['menu']  = 'iuran';
+
+		$tahun = $this->input->get('tahun') ?: date('Y');
+		$data['tahun'] = $tahun;
+
+		// Daftar 12 Bulan
+		$bulan_list = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+		$data['bulan_list'] = $bulan_list;
+
+		// Bulan saat ini (1-indexed)
+		$cur_month_idx = (int)date('n');
+		$data['cur_month_idx'] = $cur_month_idx;
+
+		if ($user['role_id'] == 4) {
+			// Warga View
+			$warga = $this->db->get_where('data_warga', ['nama' => $user['user']])->row_array();
+			if (!$warga) {
+				$warga = $this->db->get('data_warga')->row_array(); // Fallback
+			}
+			$data['warga'] = $warga;
+
+			// Ambil semua pembayaran warga di tahun ini
+			$payments = $this->db->order_by('id', 'DESC')->get_where('iuran_payment', [
+				'warga_id' => $warga['idWarga'],
+				'tahun'    => $tahun
+			])->result();
+			$data['payments'] = $payments;
+
+			// Petakan status per bulan
+			$status_bulan = [];
+			foreach ($bulan_list as $idx => $b) {
+				$status_bulan[$b] = [
+					'status'  => 'Belum',
+					'payment' => null
+				];
+			}
+			foreach ($payments as $p) {
+				if (isset($status_bulan[$p->bulan])) {
+					$status_bulan[$p->bulan] = [
+						'status'  => $p->status,
+						'payment' => $p
+					];
+				}
+			}
+			$data['status_bulan'] = $status_bulan;
+
+			// Ringkasan nominal
+			$total_lunas = 0;
+			$total_tunggakan = 0;
+			foreach ($bulan_list as $idx => $b) {
+				$month_num = $idx + 1;
+				if ($status_bulan[$b]['status'] == 'Disetujui') {
+					$total_lunas += 50000;
+				} else if ($month_num <= $cur_month_idx && $status_bulan[$b]['status'] != 'Pending') {
+					$total_tunggakan += 50000;
+				}
+			}
+			$data['total_lunas']     = $total_lunas;
+			$data['total_tunggakan'] = $total_tunggakan;
+
+			$this->_loadView('iuran', $data);
+		} else {
+			// Pengurus / Admin / Bendahara View
+			// 1. Ambil seluruh data warga
+			$warga_list = $this->db->order_by('no_rumah', 'ASC')->order_by('nama', 'ASC')->get('data_warga')->result();
+			$data['warga_list'] = $warga_list;
+
+			// 2. Ambil seluruh pembayaran di tahun ini
+			$all_payments = $this->db->get_where('iuran_payment', ['tahun' => $tahun])->result();
+
+			// 3. Susun matriks [warga_id][bulan]
+			$matrix = [];
+			$total_kas_tahun = 0;
+			$total_lunas_bulan_ini = 0;
+			$bulan_ini_nama = $bulan_list[$cur_month_idx - 1];
+
+			foreach ($all_payments as $p) {
+				$matrix[$p->warga_id][$p->bulan] = $p;
+				if ($p->status == 'Disetujui') {
+					$total_kas_tahun += $p->jumlah;
+					if ($p->bulan == $bulan_ini_nama) {
+						$total_lunas_bulan_ini++;
+					}
+				}
+			}
+			$data['matrix']                = $matrix;
+			$data['total_kas_tahun']       = $total_kas_tahun;
+			$data['total_lunas_bulan_ini'] = $total_lunas_bulan_ini;
+			$data['bulan_ini_nama']        = $bulan_ini_nama;
+
+			// 4. Pembayaran Pending yang butuh verifikasi bendahara
+			$this->db->select('iuran_payment.*, data_warga.nama as nama_warga, data_warga.no_rumah, data_warga.nik');
+			$this->db->from('iuran_payment');
+			$this->db->join('data_warga', 'data_warga.idWarga = iuran_payment.warga_id');
+			$this->db->where('iuran_payment.status', 'Pending');
+			$this->db->order_by('iuran_payment.id', 'DESC');
+			$data['pending_list'] = $this->db->get()->result();
+
+			// 5. Riwayat transaksi terbaru
+			$this->db->select('iuran_payment.*, data_warga.nama as nama_warga, data_warga.no_rumah');
+			$this->db->from('iuran_payment');
+			$this->db->join('data_warga', 'data_warga.idWarga = iuran_payment.warga_id');
+			$this->db->order_by('iuran_payment.id', 'DESC');
+			$this->db->limit(60);
+			$data['recent_payments'] = $this->db->get()->result();
+
+			$this->_loadView('iuran_kelola', $data);
+		}
+	}
+
+	public function iuran_bayar()
+	{
+		$warga_id         = $this->input->post('warga_id');
+		$bulan_post       = $this->input->post('bulan');
+		$tahun            = $this->input->post('tahun') ?: date('Y');
+		$jumlah_per_bulan = $this->input->post('jumlah') ?: 50000;
+		$metode           = $this->input->post('metode');
+
+		if (!is_array($bulan_post)) {
+			$bulan_arr = [$bulan_post];
+		} else {
+			$bulan_arr = $bulan_post;
+		}
+
+		$config['upload_path']   = './assets/profil/';
+		$config['allowed_types'] = 'gif|jpg|png|jpeg';
+		$config['max_size']      = 3072;
+		$this->load->library('upload', $config);
+
+		$bukti = null;
+		if ($metode == 'QR' && $this->upload->do_upload('bukti_bayar')) {
+			$bukti = $this->upload->data('file_name');
+		}
+
+		$inserted = 0;
+		foreach ($bulan_arr as $b) {
+			if (empty($b)) continue;
+
+			$exists = $this->db->get_where('iuran_payment', [
+				'warga_id' => $warga_id,
+				'bulan'    => $b,
+				'tahun'    => $tahun
+			])->row();
+
+			if ($exists) {
+				$this->db->where('id', $exists->id)->update('iuran_payment', [
+					'jumlah'        => $jumlah_per_bulan,
+					'metode'        => $metode,
+					'bukti_bayar'   => $bukti ?: $exists->bukti_bayar,
+					'status'        => 'Pending',
+					'tanggal_bayar' => date('Y-m-d H:i:s')
+				]);
+			} else {
+				$this->db->insert('iuran_payment', [
+					'warga_id'      => $warga_id,
+					'bulan'         => $b,
+					'tahun'         => $tahun,
+					'jumlah'        => $jumlah_per_bulan,
+					'metode'        => $metode,
+					'bukti_bayar'   => $bukti,
+					'status'        => 'Pending',
+					'tanggal_bayar' => date('Y-m-d H:i:s')
+				]);
+			}
+			$inserted++;
+		}
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Pembayaran iuran (' . $inserted . ' bulan) berhasil diajukan! Menunggu konfirmasi bendahara.</div>');
+		redirect('smartrt/iuran');
+	}
+
+	public function iuran_update_status($id, $status)
+	{
+		$this->db->where('id', $id)->update('iuran_payment', ['status' => $status]);
+
+		if ($status == 'Disetujui') {
+			$payment = $this->db->get_where('iuran_payment', ['id' => $id])->row_array();
+			$warga   = $this->db->get_where('data_warga', ['idWarga' => $payment['warga_id']])->row_array();
+
+			$kas_data = [
+				'keterangan' => 'Iuran Warga ' . $payment['bulan'] . ' ' . $payment['tahun'] . ' - ' . ($warga ? $warga['nama'] . ' (' . $warga['no_rumah'] . ')' : 'Warga'),
+				'tanggal'    => date('Y-m-d'),
+				'jumlah'     => $payment['jumlah'],
+				'jenis'      => 'masuk'
+			];
+			$this->db->insert('data_kas', $kas_data);
+		}
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Status iuran berhasil diubah menjadi: <strong>' . $status . '</strong>!</div>');
+		redirect('smartrt/iuran');
+	}
+
+	public function iuran_quick_pay()
+	{
+		$warga_id   = $this->input->post('warga_id');
+		$bulan_post = $this->input->post('bulan');
+		$tahun      = $this->input->post('tahun') ?: date('Y');
+		$jumlah     = $this->input->post('jumlah') ?: 50000;
+
+		if (!is_array($bulan_post)) {
+			$bulan_arr = [$bulan_post];
+		} else {
+			$bulan_arr = $bulan_post;
+		}
+
+		$warga = $this->db->get_where('data_warga', ['idWarga' => $warga_id])->row_array();
+		$warga_nama = $warga ? $warga['nama'] : 'Warga';
+
+		foreach ($bulan_arr as $b) {
+			if (empty($b)) continue;
+
+			$exists = $this->db->get_where('iuran_payment', [
+				'warga_id' => $warga_id,
+				'bulan'    => $b,
+				'tahun'    => $tahun
+			])->row();
+
+			if ($exists) {
+				$this->db->where('id', $exists->id)->update('iuran_payment', [
+					'jumlah'        => $jumlah,
+					'metode'        => 'Tunai',
+					'status'        => 'Disetujui',
+					'tanggal_bayar' => date('Y-m-d H:i:s')
+				]);
+			} else {
+				$this->db->insert('iuran_payment', [
+					'warga_id'      => $warga_id,
+					'bulan'         => $b,
+					'tahun'         => $tahun,
+					'jumlah'        => $jumlah,
+					'metode'        => 'Tunai',
+					'status'        => 'Disetujui',
+					'tanggal_bayar' => date('Y-m-d H:i:s')
+				]);
+			}
+
+			// Masuk buku kas
+			$this->db->insert('data_kas', [
+				'keterangan' => 'Iuran Warga ' . $b . ' ' . $tahun . ' - ' . $warga_nama . ' (Tunai)',
+				'tanggal'    => date('Y-m-d'),
+				'jumlah'     => $jumlah,
+				'jenis'      => 'masuk'
+			]);
+		}
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Pembayaran tunai <strong>' . htmlspecialchars($warga_nama) . '</strong> berhasil dicatat lunas & masuk kas RT!</div>');
+		redirect('smartrt/iuran');
+	}
+
+	public function iuran_cetak_kwitansi($id)
+	{
+		$this->db->select('iuran_payment.*, data_warga.nama as nama_warga, data_warga.no_rumah, data_warga.nik, data_warga.alamat');
+		$this->db->from('iuran_payment');
+		$this->db->join('data_warga', 'data_warga.idWarga = iuran_payment.warga_id');
+		$this->db->where('iuran_payment.id', $id);
+		$data['kwitansi'] = $this->db->get()->row();
+
+		if (!$data['kwitansi']) {
+			redirect('smartrt/iuran');
+		}
+
+		$this->load->view('smartrt/iuran_kwitansi_print', $data);
 	}
 
 	// 2. KOPERASI
@@ -175,7 +448,7 @@ class SmartRT extends CI_Controller
 			}
 			$data['warga'] = $warga;
 			$data['setoran'] = $this->db->order_by('id', 'DESC')->get_where('bank_sampah', ['warga_id' => $warga['idWarga']])->result();
-			
+
 			// Total poin
 			$this->db->select_sum('poin');
 			$this->db->where('warga_id', $warga['idWarga']);
@@ -197,7 +470,7 @@ class SmartRT extends CI_Controller
 	{
 		$berat = $this->input->post('berat');
 		$jenis = $this->input->post('jenis_sampah');
-		
+
 		// 1 kg = 1000 poin
 		$poin = intval($berat * 1000);
 
@@ -319,14 +592,63 @@ class SmartRT extends CI_Controller
 		redirect('smartrt/surat');
 	}
 
-	// 6. POSYANDU
+	// 6. POSYANDU — Modern e-KTP Ibu + RFID RC522 & NodeMCU ESP32 Integration
 	public function posyandu()
 	{
 		$user = $this->_getUser();
-		$data['judul'] = 'Posyandu';
-		$data['menu'] = 'posyandu';
+		$data['judul'] = 'Posyandu Digital';
+		$data['menu']  = 'posyandu';
 
-		$data['riwayat'] = $this->db->order_by('tanggal_periksa', 'DESC')->get('posyandu')->result();
+		// Semua sesi
+		$data['sesi_list'] = $this->db
+			->order_by('tanggal', 'DESC')
+			->order_by('id', 'DESC')
+			->get('posyandu_sesi')
+			->result();
+
+		// Sesi aktif saat ini
+		$data['sesi_aktif'] = $this->db
+			->get_where('posyandu_sesi', ['status' => 'Aktif'])
+			->row();
+
+		// Daftar balita terdaftar beserta info Ibu (data_warga)
+		$this->db->select('posyandu_balita.*, data_warga.nama AS nama_ortu, data_warga.nik AS nik_ortu, data_warga.rfid_ktp AS rfid_ktp_ibu, data_warga.alamat, data_warga.no_rumah');
+		$this->db->from('posyandu_balita');
+		$this->db->join('data_warga', 'data_warga.idWarga = posyandu_balita.warga_id', 'left');
+		$this->db->order_by('posyandu_balita.nama_anak', 'ASC');
+		$data['balita_list'] = $this->db->get()->result();
+
+		// Kehadiran sesi aktif
+		$data['kehadiran_hari_ini'] = [];
+		if ($data['sesi_aktif']) {
+			$this->db->select('posyandu_kehadiran.*, posyandu_balita.nama_anak, posyandu_balita.tanggal_lahir, posyandu_balita.jenis_kelamin, data_warga.nama AS nama_ortu, data_warga.rfid_ktp AS rfid_ktp_ibu');
+			$this->db->from('posyandu_kehadiran');
+			$this->db->join('posyandu_balita', 'posyandu_balita.id = posyandu_kehadiran.balita_id');
+			$this->db->join('data_warga', 'data_warga.idWarga = posyandu_balita.warga_id', 'left');
+			$this->db->where('posyandu_kehadiran.sesi_id', $data['sesi_aktif']->id);
+			$this->db->order_by('posyandu_kehadiran.jam_datang', 'DESC');
+			$data['kehadiran_hari_ini'] = $this->db->get()->result();
+		}
+
+		// Daftar warga lengkap untuk opsi Ibu Balita & Pairing KTP
+		$data['warga_list'] = $this->db
+			->order_by('nama', 'ASC')
+			->get('data_warga')
+			->result();
+
+		// Log tap RFID terbaru (10 tap terakhir untuk live radar)
+		$data['recent_taps'] = $this->db
+			->order_by('id', 'DESC')
+			->limit(10)
+			->get('posyandu_tap_log')
+			->result();
+
+		// Statistik ringkasan
+		$data['total_balita']   = $this->db->count_all('posyandu_balita');
+		$data['total_ktp_ibu']  = $this->db->where('rfid_ktp IS NOT NULL AND rfid_ktp != ""', null, false)->count_all_results('data_warga');
+		$data['total_hadir']    = $data['sesi_aktif']
+			? $this->db->where('sesi_id', $data['sesi_aktif']->id)->count_all_results('posyandu_kehadiran')
+			: 0;
 
 		if ($user['role_id'] == 4) {
 			$this->_loadView('posyandu', $data);
@@ -335,20 +657,416 @@ class SmartRT extends CI_Controller
 		}
 	}
 
+	// ── Endpoint AJAX: Live Stream Tap Radar ─────────────────
+	public function posyandu_live_stream()
+	{
+		header('Content-Type: application/json');
+		$sesi_aktif = $this->db->get_where('posyandu_sesi', ['status' => 'Aktif'])->row();
+
+		$recent = $this->db
+			->order_by('id', 'DESC')
+			->limit(5)
+			->get('posyandu_tap_log')
+			->result();
+
+		$total_hadir = $sesi_aktif
+			? $this->db->where('sesi_id', $sesi_aktif->id)->count_all_results('posyandu_kehadiran')
+			: 0;
+
+		// Kehadiran terbaru
+		$latest_hadir = null;
+		if ($sesi_aktif) {
+			$this->db->select('posyandu_kehadiran.*, posyandu_balita.nama_anak, data_warga.nama AS nama_ortu');
+			$this->db->from('posyandu_kehadiran');
+			$this->db->join('posyandu_balita', 'posyandu_balita.id = posyandu_kehadiran.balita_id');
+			$this->db->join('data_warga', 'data_warga.idWarga = posyandu_balita.warga_id', 'left');
+			$this->db->where('posyandu_kehadiran.sesi_id', $sesi_aktif->id);
+			$this->db->order_by('posyandu_kehadiran.jam_datang', 'DESC');
+			$latest_hadir = $this->db->limit(1)->get()->row();
+		}
+
+		echo json_encode([
+			'has_session'  => !empty($sesi_aktif),
+			'sesi_nama'    => $sesi_aktif ? $sesi_aktif->nama_sesi : null,
+			'total_hadir'  => $total_hadir,
+			'latest_hadir' => $latest_hadir,
+			'logs'         => $recent
+		]);
+		exit;
+	}
+
+	// ── Quick Pairing: Hubungkan UID KTP ke Ibu Warga ────────
+	public function posyandu_pair_ktp()
+	{
+		$user = $this->_getUser();
+		if ($user['role_id'] == 4) redirect('users/warga');
+
+		$warga_id = $this->input->post('warga_id');
+		$uid      = strtoupper(trim($this->input->post('rfid_uid')));
+
+		if (empty($warga_id) || empty($uid)) {
+			$this->session->set_flashdata('message', '<div class="alert alert-danger">Pilih warga dan masukkan UID KTP!</div>');
+			redirect('smartrt/posyandu');
+		}
+
+		// Update di data_warga
+		$this->db->where('idWarga', $warga_id)->update('data_warga', ['rfid_ktp' => $uid]);
+
+		// Update status tap log jika ada
+		$this->db->where('uid', $uid)->update('posyandu_tap_log', [
+			'status'   => 'SUCCESS',
+			'warga_id' => $warga_id,
+			'keterangan' => 'KTP berhasil dihubungkan ke warga'
+		]);
+
+		$warga = $this->db->get_where('data_warga', ['idWarga' => $warga_id])->row();
+		$nama_warga = $warga ? $warga->nama : 'Warga';
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success"><strong>Berhasil!</strong> e-KTP (' . $uid . ') berhasil dihubungkan dengan <strong>' . htmlspecialchars($nama_warga) . '</strong>.</div>');
+		redirect('smartrt/posyandu');
+	}
+
+	// ── Manajemen Balita ─────────────────────────────────────
+
+	public function posyandu_balita_tambah()
+	{
+		$user = $this->_getUser();
+		if ($user['role_id'] == 4) redirect('users/warga');
+
+		$insert_data = [
+			'warga_id'      => $this->input->post('warga_id'),
+			'nama_anak'     => $this->input->post('nama_anak'),
+			'tanggal_lahir' => $this->input->post('tanggal_lahir'),
+			'jenis_kelamin' => $this->input->post('jenis_kelamin'),
+			'rfid_uid'      => $this->input->post('rfid_uid') ?: null,
+		];
+		$this->db->insert('posyandu_balita', $insert_data);
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Balita <strong>' . htmlspecialchars($insert_data['nama_anak']) . '</strong> berhasil didaftarkan!</div>');
+		redirect('smartrt/posyandu');
+	}
+
+	public function posyandu_balita_bind_rfid($id)
+	{
+		$user = $this->_getUser();
+		if ($user['role_id'] == 4) redirect('users/warga');
+
+		$uid = strtoupper(trim($this->input->post('rfid_uid')));
+		$bind_to_ibu = $this->input->post('bind_to_ibu'); // jika checkbox 'Hubungkan juga sebagai KTP Ibu' dicentang
+
+		$balita = $this->db->get_where('posyandu_balita', ['id' => $id])->row();
+		if (!$balita) {
+			redirect('smartrt/posyandu');
+		}
+
+		if (!empty($uid)) {
+			$this->db->where('id', $id)->update('posyandu_balita', ['rfid_uid' => $uid]);
+			if ($bind_to_ibu && $balita->warga_id) {
+				$this->db->where('idWarga', $balita->warga_id)->update('data_warga', ['rfid_ktp' => $uid]);
+			}
+		} else {
+			$this->db->where('id', $id)->update('posyandu_balita', ['rfid_uid' => null]);
+		}
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success">RFID Balita / KTP Ibu berhasil diperbarui!</div>');
+		redirect('smartrt/posyandu');
+	}
+
+	public function posyandu_balita_hapus($id)
+	{
+		$user = $this->_getUser();
+		if ($user['role_id'] == 4) redirect('users/warga');
+
+		$this->db->delete('posyandu_kehadiran', ['balita_id' => $id]);
+		$this->db->delete('posyandu_balita', ['id' => $id]);
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Data balita & riwayat pemeriksaan berhasil dihapus.</div>');
+		redirect('smartrt/posyandu');
+	}
+
+	// ── Manajemen Sesi ───────────────────────────────────────
+
+	public function posyandu_sesi_tambah()
+	{
+		$user = $this->_getUser();
+		if ($user['role_id'] == 4) redirect('users/warga');
+
+		$insert_data = [
+			'nama_sesi'     => $this->input->post('nama_sesi'),
+			'tanggal'       => $this->input->post('tanggal'),
+			'waktu_mulai'   => $this->input->post('waktu_mulai'),
+			'lokasi'        => $this->input->post('lokasi') ?: 'Balai RT',
+			'petugas'       => $this->input->post('petugas'),
+			'status'        => 'Dijadwalkan',
+			'catatan'       => $this->input->post('catatan'),
+		];
+		$this->db->insert('posyandu_sesi', $insert_data);
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Sesi Posyandu berhasil dibuat!</div>');
+		redirect('smartrt/posyandu');
+	}
+
+	public function posyandu_sesi_status($id, $status)
+	{
+		$user = $this->_getUser();
+		if ($user['role_id'] == 4) redirect('users/warga');
+
+		if ($status === 'Aktif') {
+			$this->db->where('status', 'Aktif')->update('posyandu_sesi', ['status' => 'Dijadwalkan']);
+		}
+		$update = ['status' => $status];
+		if ($status === 'Selesai') {
+			$update['waktu_selesai'] = date('H:i:s');
+		}
+		$this->db->where('id', $id)->update('posyandu_sesi', $update);
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Status sesi berhasil diubah menjadi: <strong>' . $status . '</strong>!</div>');
+		redirect('smartrt/posyandu');
+	}
+
+	// ── Kehadiran & Pemeriksaan ──────────────────────────────
+
+	public function posyandu_hadir_manual()
+	{
+		$user = $this->_getUser();
+		if ($user['role_id'] == 4) redirect('users/warga');
+
+		$sesi_id   = $this->input->post('sesi_id');
+		$balita_id = $this->input->post('balita_id');
+
+		$sudah = $this->db->get_where('posyandu_kehadiran', [
+			'sesi_id'   => $sesi_id,
+			'balita_id' => $balita_id,
+		])->row();
+
+		if ($sudah) {
+			$this->session->set_flashdata('message', '<div class="alert alert-warning">Balita ini sudah tercatat hadir di sesi ini.</div>');
+			redirect('smartrt/posyandu');
+		}
+
+		$insert_data = [
+			'sesi_id'        => $sesi_id,
+			'balita_id'      => $balita_id,
+			'jam_datang'     => date('Y-m-d H:i:s'),
+			'berat_badan'    => $this->input->post('berat_badan') ?: null,
+			'tinggi_badan'   => $this->input->post('tinggi_badan') ?: null,
+			'lingkar_kepala' => $this->input->post('lingkar_kepala') ?: null,
+			'lila'           => $this->input->post('lila') ?: null,
+			'imunisasi'      => $this->input->post('imunisasi'),
+			'vitamin_a'      => $this->input->post('vitamin_a') ?: 'Tidak',
+			'obat_cacing'    => $this->input->post('obat_cacing') ?: 'Tidak',
+			'status_gizi'    => $this->input->post('status_gizi'),
+			'catatan'        => $this->input->post('catatan'),
+			'metode_absen'   => 'Manual',
+		];
+		$this->db->insert('posyandu_kehadiran', $insert_data);
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Kehadiran & pemeriksaan berhasil dicatat!</div>');
+		redirect('smartrt/posyandu');
+	}
+
+	public function posyandu_update_pemeriksaan($id)
+	{
+		$user = $this->_getUser();
+		if ($user['role_id'] == 4) redirect('users/warga');
+
+		$update_data = [
+			'berat_badan'    => $this->input->post('berat_badan') ?: null,
+			'tinggi_badan'   => $this->input->post('tinggi_badan') ?: null,
+			'lingkar_kepala' => $this->input->post('lingkar_kepala') ?: null,
+			'lila'           => $this->input->post('lila') ?: null,
+			'imunisasi'      => $this->input->post('imunisasi'),
+			'vitamin_a'      => $this->input->post('vitamin_a') ?: 'Tidak',
+			'obat_cacing'    => $this->input->post('obat_cacing') ?: 'Tidak',
+			'status_gizi'    => $this->input->post('status_gizi'),
+			'catatan'        => $this->input->post('catatan'),
+		];
+		$this->db->where('id', $id)->update('posyandu_kehadiran', $update_data);
+		$this->session->set_flashdata('message', '<div class="alert alert-success">Data pemeriksaan tumbuh kembang berhasil disimpan!</div>');
+		redirect('smartrt/posyandu');
+	}
+
+	// ── Cetak KMS Digital Balita ─────────────────────────────
+	public function posyandu_cetak_kms($balita_id)
+	{
+		$this->db->select('posyandu_balita.*, data_warga.nama AS nama_ortu, data_warga.nik AS nik_ortu, data_warga.alamat, data_warga.no_rumah');
+		$this->db->from('posyandu_balita');
+		$this->db->join('data_warga', 'data_warga.idWarga = posyandu_balita.warga_id', 'left');
+		$this->db->where('posyandu_balita.id', $balita_id);
+		$data['balita'] = $this->db->get()->row();
+
+		if (!$data['balita']) {
+			redirect('smartrt/posyandu');
+		}
+
+		$this->db->select('posyandu_kehadiran.*, posyandu_sesi.nama_sesi, posyandu_sesi.tanggal, posyandu_sesi.petugas');
+		$this->db->from('posyandu_kehadiran');
+		$this->db->join('posyandu_sesi', 'posyandu_sesi.id = posyandu_kehadiran.sesi_id');
+		$this->db->where('posyandu_kehadiran.balita_id', $balita_id);
+		$this->db->order_by('posyandu_sesi.tanggal', 'ASC');
+		$data['riwayat'] = $this->db->get()->result();
+
+		$this->load->view('smartrt/posyandu_kms_print', $data);
+	}
+
+	// ── RFID / e-KTP API Endpoint untuk NodeMCU ESP32 + RC522 ─
+	// Mendukung method GET & POST
+	// URL: http://IP_SERVER/kasrt/smartrt/posyandu_rfid_tap?api_key=kasrt2025&uid=A1B2C3D4
+	public function posyandu_rfid_tap()
+	{
+		header('Content-Type: application/json');
+
+		$api_key = $this->input->post('api_key') ?: $this->input->get('api_key');
+		if ($api_key !== 'kasrt2025') {
+			http_response_code(403);
+			echo json_encode(['status' => 'error', 'message' => 'API key tidak valid']);
+			exit;
+		}
+
+		$uid = strtoupper(trim($this->input->post('uid') ?: $this->input->get('uid')));
+		if (empty($uid)) {
+			http_response_code(400);
+			echo json_encode(['status' => 'error', 'message' => 'UID KTP tidak boleh kosong']);
+			exit;
+		}
+
+		// 1. Cek sesi posyandu yang sedang aktif
+		$sesi = $this->db->get_where('posyandu_sesi', ['status' => 'Aktif'])->row();
+		if (!$sesi) {
+			$this->db->insert('posyandu_tap_log', [
+				'uid'        => $uid,
+				'status'     => 'NO_ACTIVE_SESSION',
+				'keterangan' => 'Tap saat tidak ada sesi posyandu yang aktif'
+			]);
+
+			http_response_code(409);
+			echo json_encode([
+				'status'  => 'no_session',
+				'message' => 'Tidak ada sesi posyandu yang sedang aktif.',
+				'uid'     => $uid
+			]);
+			exit;
+		}
+
+		// 2. Pencarian Kartu KTP:
+		// Prioritas A: Cocokkan ke KTP Ibu Warga (data_warga.rfid_ktp = UID atau NIK = UID)
+		$ibu = $this->db->where('rfid_ktp', $uid)->or_where('nik', $uid)->get('data_warga')->row();
+
+		// Prioritas B: Cocokkan ke kartu RFID langsung di posyandu_balita
+		$balita_direct = null;
+		if (!$ibu) {
+			$balita_direct = $this->db->get_where('posyandu_balita', ['rfid_uid' => $uid])->row();
+			if ($balita_direct) {
+				$ibu = $this->db->get_where('data_warga', ['idWarga' => $balita_direct->warga_id])->row();
+			}
+		}
+
+		// 3. Jika KTP Belum Terdaftar Sama Sekali
+		if (!$ibu && !$balita_direct) {
+			$this->db->insert('posyandu_tap_log', [
+				'uid'        => $uid,
+				'status'     => 'UNREGISTERED',
+				'keterangan' => 'KTP belum terhubung ke data warga'
+			]);
+
+			http_response_code(404);
+			echo json_encode([
+				'status'  => 'unregistered',
+				'message' => 'KTP belum terdaftar. Silakan hubungkan kartu di dashboard posyandu.',
+				'uid'     => $uid
+			]);
+			exit;
+		}
+
+		// 4. Dapatkan daftar balita yang terhubung dengan Ibu ini
+		$balita_list = [];
+		if ($balita_direct) {
+			$balita_list = [$balita_direct];
+		} else {
+			$balita_list = $this->db->get_where('posyandu_balita', ['warga_id' => $ibu->idWarga])->result();
+		}
+
+		// Jika ibu belum punya balita terdaftar di Posyandu
+		if (empty($balita_list)) {
+			$this->db->insert('posyandu_tap_log', [
+				'uid'        => $uid,
+				'status'     => 'UNREGISTERED',
+				'warga_id'   => $ibu ? $ibu->idWarga : null,
+				'keterangan' => 'KTP Ibu ' . ($ibu ? $ibu->nama : '') . ' terdeteksi, tapi belum ada balita terdaftar'
+			]);
+
+			echo json_encode([
+				'status'   => 'no_child',
+				'message'  => 'KTP Ibu ' . ($ibu ? $ibu->nama : '') . ' terdeteksi, namun balita belum didaftarkan di Posyandu.',
+				'nama_ibu' => $ibu ? $ibu->nama : '-',
+				'uid'      => $uid
+			]);
+			exit;
+		}
+
+		// 5. Proses Absensi Semua Balita Milik Ibu
+		$checked_names = [];
+		$already_names = [];
+		$now = date('Y-m-d H:i:s');
+
+		foreach ($balita_list as $b) {
+			$sudah = $this->db->get_where('posyandu_kehadiran', [
+				'sesi_id'   => $sesi->id,
+				'balita_id' => $b->id,
+			])->row();
+
+			if ($sudah) {
+				$already_names[] = $b->nama_anak;
+			} else {
+				$this->db->insert('posyandu_kehadiran', [
+					'sesi_id'      => $sesi->id,
+					'balita_id'    => $b->id,
+					'jam_datang'   => $now,
+					'metode_absen' => 'RFID',
+					'rfid_uid'     => $uid,
+				]);
+				$checked_names[] = $b->nama_anak;
+			}
+		}
+
+		$nama_ibu = $ibu ? $ibu->nama : 'Orang Tua';
+
+		// Jika semua sudah hadir sebelumnya
+		if (empty($checked_names)) {
+			$this->db->insert('posyandu_tap_log', [
+				'uid'        => $uid,
+				'status'     => 'ALREADY_CHECKED',
+				'warga_id'   => $ibu ? $ibu->idWarga : null,
+				'keterangan' => 'Ibu ' . $nama_ibu . ' (' . implode(', ', $already_names) . ') sudah absen sebelumnya'
+			]);
+
+			echo json_encode([
+				'status'     => 'already_checked',
+				'message'    => 'Ibu ' . $nama_ibu . ' dan balita (' . implode(', ', $already_names) . ') sudah tercatat hadir.',
+				'nama_ibu'   => $nama_ibu,
+				'balita'     => implode(', ', $already_names),
+				'sesi'       => $sesi->nama_sesi
+			]);
+			exit;
+		}
+
+		// Berhasil hadir baru
+		$this->db->insert('posyandu_tap_log', [
+			'uid'        => $uid,
+			'status'     => 'SUCCESS',
+			'warga_id'   => $ibu ? $ibu->idWarga : null,
+			'keterangan' => 'Ibu ' . $nama_ibu . ' tap KTP -> Balita: ' . implode(', ', $checked_names) . ' hadir'
+		]);
+
+		echo json_encode([
+			'status'     => 'success',
+			'message'    => 'Selamat datang Ibu ' . $nama_ibu . '! Kehadiran balita: ' . implode(', ', $checked_names) . ' berhasil dicatat.',
+			'nama_ibu'   => $nama_ibu,
+			'balita'     => implode(', ', $checked_names),
+			'jam_datang' => date('H:i', strtotime($now)),
+			'sesi'       => $sesi->nama_sesi
+		]);
+		exit;
+	}
+
+	// Legacy fallback
 	public function posyandu_tambah()
 	{
-		$insert_data = [
-			'nama_anak' => $this->input->post('nama_anak'),
-			'ibu_nama' => $this->input->post('ibu_nama'),
-			'umur_bulan' => $this->input->post('umur_bulan'),
-			'berat_badan' => $this->input->post('berat_badan'),
-			'tinggi_badan' => $this->input->post('tinggi_badan'),
-			'imunisasi' => $this->input->post('imunisasi'),
-			'tanggal_periksa' => $this->input->post('tanggal_periksa'),
-			'catatan' => $this->input->post('catatan')
-		];
-		$this->db->insert('posyandu', $insert_data);
-		$this->session->set_flashdata('message', '<div class="alert alert-success">Data pemeriksaan Posyandu berhasil ditambahkan!</div>');
 		redirect('smartrt/posyandu');
 	}
 
@@ -487,7 +1205,7 @@ class SmartRT extends CI_Controller
 	{
 		$anonim = $this->input->post('anonim');
 		$user = $this->_getUser();
-		
+
 		$insert_data = [
 			'nama_pengirim' => ($anonim == '1') ? 'Anonim' : $user['user'],
 			'kategori' => $this->input->post('kategori'),
@@ -542,14 +1260,14 @@ class SmartRT extends CI_Controller
 			redirect('users/warga');
 		}
 
-		$data['menu']   = 'backup';
-		$data['judul']  = 'Backup & Sinkronisasi Data';
-		$data['user']   = $user;
+		$data['menu'] = 'backup';
+		$data['judul'] = 'Backup & Sinkronisasi Data';
+		$data['user'] = $user;
 
 		// Read saved token from config file
 		$token_file = FCPATH . 'database/.gh_token';
 		$github_token = file_exists($token_file) ? trim(file_get_contents($token_file)) : '';
-		$data['github_token']      = $github_token;
+		$data['github_token'] = $github_token;
 		$data['github_configured'] = !empty($github_token);
 
 		$this->_loadView('backup', $data);
@@ -558,12 +1276,14 @@ class SmartRT extends CI_Controller
 	public function backup_save_token()
 	{
 		$user = $this->_getUser();
-		if ($user['role_id'] == 4) redirect('users/warga');
+		if ($user['role_id'] == 4)
+			redirect('users/warga');
 
 		$token = trim($this->input->post('github_token'));
 		if (!empty($token)) {
 			$token_dir = FCPATH . 'database/';
-			if (!is_dir($token_dir)) mkdir($token_dir, 0777, true);
+			if (!is_dir($token_dir))
+				mkdir($token_dir, 0777, true);
 			file_put_contents($token_dir . '.gh_token', $token);
 			$this->session->set_flashdata('message', '<div class="alert alert-success">Token GitHub berhasil disimpan!</div>');
 		} else {
@@ -575,10 +1295,12 @@ class SmartRT extends CI_Controller
 	public function backup_db()
 	{
 		$user = $this->_getUser();
-		if ($user['role_id'] == 4) redirect('users/warga');
+		if ($user['role_id'] == 4)
+			redirect('users/warga');
 
-		$backup_dir  = FCPATH . 'database/';
-		if (!is_dir($backup_dir)) mkdir($backup_dir, 0777, true);
+		$backup_dir = FCPATH . 'database/';
+		if (!is_dir($backup_dir))
+			mkdir($backup_dir, 0777, true);
 		$backup_file = $backup_dir . 'kasrt_backup.sql';
 
 		$mysqldump = 'D:\\data app\\mysql\\bin\\mysqldump.exe';
@@ -597,7 +1319,8 @@ class SmartRT extends CI_Controller
 	public function backup_download()
 	{
 		$user = $this->_getUser();
-		if ($user['role_id'] == 4) redirect('users/warga');
+		if ($user['role_id'] == 4)
+			redirect('users/warga');
 
 		$file = FCPATH . 'database/kasrt_backup.sql';
 		if (!file_exists($file)) {
@@ -615,7 +1338,8 @@ class SmartRT extends CI_Controller
 	public function backup_github()
 	{
 		$user = $this->_getUser();
-		if ($user['role_id'] == 4) redirect('users/warga');
+		if ($user['role_id'] == 4)
+			redirect('users/warga');
 
 		$token_file = FCPATH . 'database/.gh_token';
 		if (!file_exists($token_file)) {
@@ -629,7 +1353,7 @@ class SmartRT extends CI_Controller
 		}
 
 		$owner = 'shadiqzx';
-		$repo  = 'E-KASRT';
+		$repo = 'E-KASRT';
 		$branch = 'main';
 		$api_base = "https://api.github.com/repos/$owner/$repo";
 
@@ -660,10 +1384,11 @@ class SmartRT extends CI_Controller
 	{
 		$items = scandir($dir);
 		foreach ($items as $item) {
-			if ($item === '.' || $item === '..') continue;
+			if ($item === '.' || $item === '..')
+				continue;
 			$full_path = $dir . DIRECTORY_SEPARATOR . $item;
-			$relative  = str_replace([$root, '\\'], ['', '/'], $full_path);
-			$relative  = ltrim($relative, '/');
+			$relative = str_replace([$root, '\\'], ['', '/'], $full_path);
+			$relative = ltrim($relative, '/');
 
 			if (is_dir($full_path)) {
 				if (!in_array($item, $exclude_dirs)) {
