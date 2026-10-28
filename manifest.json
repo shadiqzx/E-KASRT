@@ -1,0 +1,19 @@
+{
+  "name": "E-KASRT Lingkungan RT",
+  "short_name": "E-KASRT",
+  "description": "Sistem Informasi Manajemen RT dan Keuangan Warga",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7C3AED",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
