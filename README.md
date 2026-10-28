@@ -256,6 +256,38 @@ $db['default'] = [
 
 ---
 
+## 📱 Panduan Akses Mobile (Android & iPhone) & Aplikasi APK
+
+E-KASRT telah mendukung penuh penggunaan di perangkat smartphone (Android & iPhone) baik sebagai **Web Mobile / PWA** maupun sebagai **Aplikasi Android Native (.APK)**.
+
+### 1. Akses Web Mobile via Wi-Fi Lokal
+Pastikan smartphone terhubung ke jaringan Wi-Fi yang sama dengan laptop/server:
+- **Alamat URL:** `http://[IP-KOMPUTER]/kasrt/` (contoh: `http://192.168.1.7/kasrt/`)
+- Konfigurasi `base_url` di `application/config/config.php` telah dibuat dinamis otomatis mengikuti IP atau domain pengakses.
+
+### 2. Pasang sebagai PWA (Progressive Web App - Tanpa Install File)
+- **iPhone (iOS Safari):** Buka URL web &rarr; Ketuk tombol **Share / Bagikan** &rarr; Pilih **"Tambahkan ke Layar Utama" (Add to Home Screen)**. Aplikasi akan terpasang di layar utama iPhone secara standalone.
+- **Android (Chrome):** Buka URL web &rarr; Ketuk ikon titik tiga di pojok kanan atas &rarr; Pilih **"Instal Aplikasi" / "Tambahkan ke Layar Utama"**.
+
+### 3. Proyek Aplikasi Android (.APK)
+Tersedia proyek Android Studio lengkap di folder:
+📁 `android_apk_ekasrt/`
+
+**Fitur Aplikasi Android:**
+- Tampilan fullscreen modern tanpa bilah navigasi browser.
+- Pull-to-refresh (tarik ke bawah untuk memuat ulang data).
+- File Chooser untuk upload foto bukti bayar sampah dan KTP dari galeri/kamera HP.
+- Integrasi WhatsApp (kontak RT langsung membuka aplikasi WhatsApp).
+- Layar Offline & tombol **"Ganti Alamat Server IP"** langsung di aplikasi jika IP server berubah tanpa perlu compile ulang kode.
+
+**Cara Build APK dengan Android Studio:**
+1. Buka **Android Studio** &rarr; Pilih **File > Open** &rarr; Pilih folder `android_apk_ekasrt`.
+2. Tunggu proses sync Gradle selesai.
+3. Klik menu **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+4. Klik notifikasi **locate** pada popup di pojok kanan bawah untuk mengambil file `.apk` yang siap di-install di smartphone Android warga.
+
+---
+
 ## ☁️ Sinkronisasi ke GitHub
 
 Fitur backup otomatis mendukung push ke repository **`shadiqzx/E-KASRT`** via GitHub REST API (tidak memerlukan Git CLI).
