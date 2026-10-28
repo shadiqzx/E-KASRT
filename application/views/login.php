@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAS-RT | Login</title>
     <link rel="shortcut icon" type="image/png" href="<?= base_url();?>assets/favicon.png">
+    <link rel="manifest" href="<?= base_url();?>manifest.json">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="E-KASRT">
+    <link rel="apple-touch-icon" href="<?= base_url();?>assets/icon.png">
     
     <!-- Link CSS buat Icon dan Bootstrap -->
     <link href="<?= base_url();?>assets/vendor/bootstrap-4.1/bootstrap.min.css" rel="stylesheet">
@@ -210,7 +216,12 @@
     audio.ontimeupdate = function() {
         localStorage.setItem("musicTime", audio.currentTime);
     };
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('<?= base_url();?>sw.js').catch(function(err) {});
+        });
+    }
 </script>
-    </script>
 </body>
 </html>
