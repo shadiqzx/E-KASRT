@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Required meta tags-->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="au theme template">
     <meta name="author" content="Hau Nguyen">
     <meta name="keywords" content="au theme template">
@@ -29,284 +29,36 @@
     <link href="<?= base_url();?>assets/vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
     <!-- Main CSS-->
     <link href="<?= base_url();?>assets/css/theme.css" rel="stylesheet" media="all">
+    <!-- Mobile Responsive Overrides (load setelah theme.css) -->
+    <link href="<?= base_url();?>assets/css/mobile-fix.css" rel="stylesheet" media="all">
 
     <style>
         /* Animasi halus saat halaman dimuat */
-        @-webkit-keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-
-        /* Target utama konten halaman */
-        .page-content--bgf7, .container, .table-responsive, .main-content {
-            -webkit-animation: fadeIn 0.4s ease-in-out;
+        .page-content--bgf7, .table-responsive {
             animation: fadeIn 0.4s ease-in-out;
         }
-
-        /* Custom Sidebar & Dashboard Styling based on Image */
-        body {
-            background-color: #F8F9FA !important;
-        }
-        .page-wrapper {
-            background: #F8F9FA;
-        }
-        .menu-sidebar {
-            background-color: #03A9F4; /* Light Blue */
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-        .logo {
-            background-color: #03A9F4;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-        }
-        .logo-text {
-            color: #fff;
-            font-size: 20px;
-            font-weight: bold;
-            margin-left: 10px;
-            line-height: 1.2;
-        }
-        .logo-text span {
-            display: block;
-            font-size: 12px;
-            font-weight: normal;
-            color: #B3E5FC;
-        }
-        .menu-sidebar .navbar__list li {
-            border: none !important;
-            margin: 0;
-            padding: 0;
-        }
-        .menu-sidebar .navbar__list li::before,
-        .menu-sidebar .navbar__list li::after {
-            display: none !important;
-        }
-        .menu-sidebar .navbar__list li a {
-            color: #E1F5FE;
-            padding: 12px 20px;
-            display: block;
-            border-radius: 8px;
-            margin: 5px 15px;
-            font-size: 15px;
-            transition: all 0.3s;
-            border: none !important;
-            box-shadow: none !important;
-            text-decoration: none !important;
-        }
-        .menu-sidebar .navbar__list li a::before,
-        .menu-sidebar .navbar__list li a::after {
-            display: none !important;
-        }
-        .menu-sidebar .navbar__list li a i {
-            margin-right: 15px;
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
-        }
-        .menu-sidebar .navbar__list li a:hover,
-        .menu-sidebar .navbar__list li.active > a {
-            background-color: #0288D1; /* Highlight active in darker blue */
-            color: #fff;
-        }
-        .menu-category {
-            color: #E1F5FE;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 20px 20px 5px 20px;
-            font-weight: 600;
-        }
-
-        .page-container {
-            padding-left: 260px;
-            background: transparent;
-        }
-        .header-desktop {
-            background: #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-            left: 260px;
-            height: 70px;
-            border: none !important;
-        }
-        .header-wrap {
-            border: none !important;
-        }
-        .form-header {
-            border: none !important;
-            box-shadow: none !important;
-        }
-        .form-header button {
-            border: none !important;
-            outline: none !important;
-        }
-        .header-button {
-            justify-content: flex-end;
-        }
-        
-        .top-cards-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .top-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            display: flex;
-            align-items: center;
-        }
-        .top-card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-right: 15px;
-        }
-        .icon-green { background: #E8F5E9; color: #4CAF50; }
-        .icon-red { background: #FFEBEE; color: #F44336; }
-        .icon-blue { background: #E1F5FE; color: #03A9F4; }
-        .icon-yellow { background: #FFF8E1; color: #FFC107; }
-
-        .top-card-info h4 {
-            font-size: 13px;
-            color: #6C757D;
-            margin-bottom: 5px;
-            font-weight: normal;
-        }
-        .top-card-info h2 {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 2px;
-        }
-        .top-card-info p {
-            font-size: 11px;
-            color: #999;
-            margin: 0;
-        }
-        .top-card-info .trend-up { color: #4CAF50; font-weight: 600; }
-        .top-card-info .trend-down { color: #F44336; font-weight: 600; }
-
-        .saldo-card {
-            background: linear-gradient(135deg, #29B6F6 0%, #0288D1 100%);
-            border-radius: 16px;
-            padding: 30px;
-            color: #fff;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(3, 169, 244, 0.2);
-        }
-        .saldo-card h4 { color: rgba(255,255,255,0.8); font-weight: normal; font-size: 15px; margin-bottom: 10px; }
-        .saldo-card h1 { color: #fff; font-size: 32px; font-weight: bold; margin-bottom: 10px; }
-        .saldo-card p { color: rgba(255,255,255,0.6); font-size: 13px; }
-        .saldo-card i.bg-icon {
-            position: absolute;
-            right: -20px;
-            bottom: -20px;
-            font-size: 120px;
-            color: rgba(255,255,255,0.05);
-            transform: rotate(-15deg);
-        }
-
-        .dashboard-section-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .dashboard-section-title a {
-            font-size: 13px;
-            color: #2196F3;
-            font-weight: normal;
-        }
-
-        .quick-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .btn-quick {
-            border-radius: 10px;
-            padding: 12px 18px;
-            font-weight: 600;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 15px;
-            text-decoration: none !important;
-        }
-        .btn-quick i { font-size: 18px; width: 24px; text-align: center; }
-        .btn-quick:hover { transform: translateX(3px); }
-        .btn-q-green { background: #E8F5E9; color: #4CAF50; }
-        .btn-q-red { background: #FFEBEE; color: #F44336; }
-        .btn-q-blue { background: #E3F2FD; color: #2196F3; }
-        .btn-q-yellow { background: #FFF8E1; color: #FF9800; }
-        .btn-q-purple { background: #F3E5F5; color: #9C27B0; }
-
-        .list-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .list-item:last-child { border-bottom: none; }
-        .list-item-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 18px;
-        }
-        .list-item-content { flex: 1; }
-        .list-item-content h5 { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 3px; }
-        .list-item-content p { font-size: 12px; color: #888; margin: 0; }
-        .list-item-right { text-align: right; }
-        .list-item-right span { font-size: 12px; color: #888; display: block; margin-bottom: 5px; }
-        .list-item-right strong { font-size: 14px; }
-        .text-green { color: #4CAF50; }
-        .text-red { color: #F44336; }
     </style>
 </head>
 
 <body class="animsition">
     <div class="page-wrapper">
         <!-- MENU SIDEBAR-->
-        <aside class="menu-sidebar d-none d-lg-block">
+        <!-- Overlay gelap untuk menutup sidebar di mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+        <aside class="menu-sidebar" id="mainSidebar">
             <div class="logo">
-                <img src="<?= base_url();?>assets/icon-home.png" width="40" alt="E-KasRT" style="filter: brightness(0) invert(1);" />
+                <img src="<?= base_url();?>assets/icon-home.png" width="36" alt="E-KasRT" style="filter: brightness(0) invert(1); flex-shrink:0;" />
                 <div class="logo-text">
                     KAS RT
                     <span>Keuangan RT</span>
                 </div>
+                <!-- Tombol tutup sidebar, hanya tampil di mobile -->
+                <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Tutup menu">&times;</button>
             </div>
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
@@ -339,8 +91,8 @@
                             <a href="<?= base_url('warga');?>">
                                 <i class="fas fa-users"></i>Warga</a>
                         </li>
-                        <li>
-                            <a href="#">
+                        <li class="<?= (isset($menu) && $menu == 'iuran') ? 'active' : ''; ?>">
+                            <a href="<?= base_url('smartrt/iuran'); ?>">
                                 <i class="fas fa-credit-card"></i>Iuran Warga</a>
                         </li>
                         <li>
@@ -432,14 +184,21 @@
         <div class="page-container">
             <!-- HEADER DESKTOP-->
             <header class="header-desktop">
-                <div class="section__content section__content--p30">
+                <div class="section__content section__content--p30" style="padding:0;">
                     <div class="container-fluid">
                         <div class="header-wrap">
-                            <form class="form-header" action="" method="POST">
-                                <button class="au-btn--submit" type="submit" style="background: transparent; color: #333; font-size: 20px;">
-                                    <i class="zmdi zmdi-menu"></i>
+                            <div class="header-wrap-left">
+                                <!-- Hamburger button (mobile only) -->
+                                <button class="btn-hamburger" id="btnHamburger" onclick="openSidebar()" aria-label="Buka menu">
+                                    <i class="fas fa-bars"></i>
                                 </button>
-                            </form>
+                                <!-- Desktop menu toggle (hidden on mobile) -->
+                                <form class="form-header" action="" method="POST">
+                                    <button class="au-btn--submit" type="submit" style="background: transparent; color: #333; font-size: 20px;">
+                                        <i class="zmdi zmdi-menu"></i>
+                                    </button>
+                                </form>
+                            </div>
                             <div class="header-button">
                                 <div class="noti-wrap">
                                     <div class="noti__item js-item-menu">
