@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: production_deploy
   cancel-in-progress: true
 
 jobs:
@@ -61,9 +61,9 @@ jobs:
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.VPS_HOST || '43.157.230.29' }}
-          port: ${{ secrets.VPS_PORT || 22 }}
-          username: ${{ secrets.VPS_USER || 'ubuntu' }}
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }}
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script_stop: true
           script: |
