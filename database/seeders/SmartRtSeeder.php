@@ -95,3 +95,4 @@ class SmartRtSeeder extends Seeder
         }
     }
 }
+
