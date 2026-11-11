@@ -11,7 +11,7 @@ return new class extends Migration
         if (!Schema::hasTable('transactions')) {
             Schema::create('transactions', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->unsignedBigInteger('user_id')->nullable();
                 $table->enum('type', ['pemasukan', 'pengeluaran']);
                 $table->decimal('amount', 15, 2);
                 $table->string('description');
