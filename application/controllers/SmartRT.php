@@ -8,7 +8,7 @@ class SmartRT extends CI_Controller
 		parent::__construct();
 		// API endpoint untuk IoT / ESP32, live stream radar, cetak KMS, dan cetak Kwitansi
 		$method = $this->router->fetch_method();
-		if ($method !== 'posyandu_rfid_tap' && $method !== 'posyandu_live_stream' && $method !== 'posyandu_cetak_kms' && $method !== 'iuran_cetak_kwitansi') {
+		if ($method !== 'posyandu_rfid_tap' && $method !== 'posyandu_live_stream' && $method !== 'posyandu_cetak_kms' && $method !== 'iuran_cetak_kwitansi' && $method !== 'download_firmware_ino' && $method !== 'download_firmware_zip') {
 			if (!$this->session->userdata('username')) {
 				redirect('auth');
 			}
@@ -928,6 +928,69 @@ class SmartRT extends CI_Controller
 		$data['riwayat'] = $this->db->get()->result();
 
 		$this->load->view('smartrt/posyandu_kms_print', $data);
+	}
+
+	// ── Download File Firmware ESP32 ──────────────────────────
+	// Download file sketch Arduino .ino untuk NodeMCU ESP32 + RFID RC522
+	public function download_firmware_ino()
+	{
+		$paths = [
+			FCPATH . 'firmware_esp32/esp32_rfid_posyandu/esp32_rfid_posyandu.ino',
+			FCPATH . '../firmware_esp32/esp32_rfid_posyandu/esp32_rfid_posyandu.ino',
+			'D:/Repository/E-KASRT-main/E-KASRT-main/firmware_esp32/esp32_rfid_posyandu/esp32_rfid_posyandu.ino'
+		];
+		$file = null;
+		foreach ($paths as $p) {
+			if (file_exists($p)) {
+				$file = $p;
+				break;
+			}
+		}
+
+		if ($file) {
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename="esp32_rfid_posyandu.ino"');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($file));
+			readfile($file);
+			exit;
+		} else {
+			show_404();
+		}
+	}
+
+	// Download ZIP paket firmware (berisi folder esp32_rfid_posyandu yang langsung siap dibuka di Arduino IDE)
+	public function download_firmware_zip()
+	{
+		$paths = [
+			FCPATH . 'firmware_esp32/esp32_rfid_posyandu.zip',
+			FCPATH . '../firmware_esp32/esp32_rfid_posyandu.zip',
+			'D:/Repository/E-KASRT-main/E-KASRT-main/firmware_esp32/esp32_rfid_posyandu.zip'
+		];
+		$file = null;
+		foreach ($paths as $p) {
+			if (file_exists($p)) {
+				$file = $p;
+				break;
+			}
+		}
+
+		if ($file) {
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/zip');
+			header('Content-Disposition: attachment; filename="esp32_rfid_posyandu.zip"');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($file));
+			readfile($file);
+			exit;
+		} else {
+			show_404();
+		}
 	}
 
 	// ── RFID / e-KTP API Endpoint untuk NodeMCU ESP32 + RC522 ─

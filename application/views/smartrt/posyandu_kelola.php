@@ -757,11 +757,16 @@
 		<div class="card border-0 shadow-sm" style="border-radius: 16px;">
 			<div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center" style="gap: 10px;">
 				<h5 class="font-weight-bold text-dark mb-0">💻 Source Code Arduino IDE (NodeMCU ESP32 + MFRC522)</h5>
-				<div class="d-flex" style="gap: 8px;">
-					<a href="<?= base_url('firmware_esp32/esp32_rfid_posyandu/esp32_rfid_posyandu.ino'); ?>" download="esp32_rfid_posyandu.ino" class="btn btn-sm btn-success font-weight-bold" style="border-radius: 8px;">
-						<i class="fas fa-download mr-1"></i> Download File .ino
+				<div class="d-flex flex-wrap" style="gap: 8px;">
+					<a href="<?= base_url('smartrt/download_firmware_ino'); ?>" class="btn btn-sm btn-success font-weight-bold shadow-sm" style="border-radius: 8px;">
+						<i class="fas fa-file-code mr-1"></i> Download .ino
 					</a>
-					<button class="btn btn-sm btn-dark font-weight-bold" onclick="copyArduinoCode()" style="border-radius: 8px;">📋 Salin Seluruh Kode</button>
+					<a href="<?= base_url('smartrt/download_firmware_zip'); ?>" class="btn btn-sm btn-primary font-weight-bold shadow-sm" style="border-radius: 8px;">
+						<i class="fas fa-file-archive mr-1"></i> Download .ZIP (Arduino IDE Ready)
+					</a>
+					<button class="btn btn-sm btn-dark font-weight-bold" onclick="copyArduinoCode()" style="border-radius: 8px;">
+						<i class="fas fa-copy mr-1"></i> Salin Kode
+					</button>
 				</div>
 			</div>
 			<div class="card-body p-0">
