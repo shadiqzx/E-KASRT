@@ -647,6 +647,12 @@
                     <a href="{{ route('dashboard') }}" class="btn-nav-solid">
                         <i class="fas fa-th-large mr-1"></i> Buka Dashboard &rarr;
                     </a>
+                    <a href="{{ route('register') }}" class="btn-nav-outline">
+                        <i class="fas fa-user-plus mr-1"></i> Daftar Warga
+                    </a>
+                    <a href="{{ route('logout') }}" class="btn-nav-outline" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" title="Keluar dari akun saat ini">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                    </a>
                 @else
                     <a href="{{ route('login') }}" class="btn-nav-outline">
                         <i class="fas fa-sign-in-alt mr-1"></i> Masuk
@@ -678,11 +684,20 @@
         <div class="hero-btn-group">
             @if(Auth::check())
                 <a href="{{ route('dashboard') }}" class="btn-cta-primary">
-                    <span>Masuk ke Dashboard Utama</span>
-                    <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-th-large"></i>
+                    <span>Masuk ke Dashboard Utama &rarr;</span>
+                </a>
+                <a href="{{ route('register') }}" class="btn-cta-secondary">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Daftar Warga Baru</span>
+                </a>
+                <a href="{{ route('logout') }}" class="btn-cta-secondary" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Ganti Akun / Logout</span>
                 </a>
             @else
                 <a href="{{ route('login') }}" class="btn-cta-primary">
+                    <i class="fas fa-sign-in-alt"></i>
                     <span>Masuk ke Sistem Kas &rarr;</span>
                 </a>
                 <a href="{{ route('register') }}" class="btn-cta-secondary">
