@@ -28,7 +28,75 @@
             --glass-border: rgba(255, 255, 255, 0.16);
             --glass-card: rgba(255, 255, 255, 0.06);
             --primary-accent: #0284c7;
+            /* Theme-switchable vars */
+            --kb-accent:  #0284c7;
+            --kb-accent2: #2563eb;
+            --kb-light:   #38bdf8;
+            --kb-bg:      #060b17;
         }
+
+        /* Smooth global color transition on theme switch */
+        body, .glass-navbar, .glass-stat-card, .feature-card,
+        .cta-box-glass, .site-footer, .hero-pill,
+        .btn-cta-primary, .btn-nav-solid, .gradient-text,
+        .brand-logo-box, .feature-icon-wrapper,
+        .orb, #scroll-progress {
+            transition: background 1.2s ease, background-color 1.2s ease,
+                        border-color 1.2s ease, color 1.2s ease,
+                        box-shadow 1.2s ease, filter 1.2s ease !important;
+        }
+
+        /* Full-page theme flash overlay */
+        #theme-flash {
+            position: fixed;
+            inset: 0;
+            z-index: 99998;
+            pointer-events: none;
+            opacity: 0;
+            border-radius: 50%;
+            transform: scale(0);
+            transition: none;
+        }
+        #theme-flash.burst {
+            animation: themeBurst 1.4s cubic-bezier(.22,.68,0,1) forwards;
+        }
+        @keyframes themeBurst {
+            0%   { opacity: 0.55; transform: scale(0);   border-radius: 50%; }
+            50%  { opacity: 0.18; transform: scale(2.5); border-radius: 30%; }
+            100% { opacity: 0;    transform: scale(4);   border-radius: 10%; }
+        }
+
+        /* Theme name toast */
+        #theme-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 99999;
+            background: rgba(2,10,30,0.92);
+            backdrop-filter: blur(24px);
+            border: 2px solid var(--kb-light, #38bdf8);
+            border-radius: 20px;
+            padding: 18px 32px;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+        #theme-toast.show {
+            animation: themeToastPop 2.5s cubic-bezier(.22,.68,0,1.2) forwards;
+        }
+        @keyframes themeToastPop {
+            0%   { opacity:0; transform:translate(-50%,-50%) scale(0.5); }
+            15%  { opacity:1; transform:translate(-50%,-50%) scale(1.08); }
+            25%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
+            75%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
+            100% { opacity:0; transform:translate(-50%,-50%) scale(0.8); }
+        }
+        #theme-toast .tt-emoji { font-size: 36px; display:block; margin-bottom:6px; }
+        #theme-toast .tt-label { font-family:'Plus Jakarta Sans',sans-serif; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+        #theme-toast .tt-name  { font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; color:#ffffff; }
 
         html {
             scroll-behavior: smooth;
@@ -975,6 +1043,16 @@
     <!-- Particle Canvas -->
     <canvas id="particle-canvas"></canvas>
 
+    <!-- Theme Flash Overlay -->
+    <div id="theme-flash"></div>
+
+    <!-- Theme Name Toast -->
+    <div id="theme-toast">
+        <span class="tt-emoji" id="tt-emoji">🎨</span>
+        <div class="tt-label">Tema Berubah!</div>
+        <div class="tt-name" id="tt-name">Ocean Blue</div>
+    </div>
+
     <!-- 1. STICKY GLASS NAVBAR -->
     <header class="glass-navbar">
         <div class="nav-container">
@@ -1508,6 +1586,189 @@
     })();
     </script>
     {{-- ===== END ANIMATION ENGINE ===== --}}
+
+    {{-- ===== THEME ENGINE ===== --}}
+    <script>
+    window.KasBotTheme = (function() {
+        var root    = document.documentElement;
+        var body    = document.body;
+        var orb1    = document.querySelector('.orb-1');
+        var orb2    = document.querySelector('.orb-2');
+        var orb3    = document.querySelector('.orb-3');
+        var prog    = document.getElementById('scroll-progress');
+        var flash   = document.getElementById('theme-flash');
+        var toast   = document.getElementById('theme-toast');
+        var ttEmoji = document.getElementById('tt-emoji');
+        var ttName  = document.getElementById('tt-name');
+
+        var themeIdx = 0;
+
+        var themes = [
+            {
+                name: 'Ocean Blue', emoji: '🌊',
+                bg: '#060b17',
+                accent: '#0284c7', accent2: '#2563eb', light: '#38bdf8',
+                o1: 'radial-gradient(circle, rgba(2,132,199,0.75) 0%, rgba(37,99,235,0.1) 70%)',
+                o2: 'radial-gradient(circle, rgba(16,185,129,0.6) 0%, rgba(6,182,212,0.08) 70%)',
+                o3: 'radial-gradient(circle, rgba(124,58,237,0.5) 0%, rgba(219,39,119,0.05) 70%)',
+                prog: 'linear-gradient(90deg,#0284c7,#38bdf8,#34d399,#818cf8)',
+                flash: 'rgba(2,132,199,0.6)',
+            },
+            {
+                name: 'Cosmic Purple', emoji: '🔮',
+                bg: '#0a0618',
+                accent: '#7c3aed', accent2: '#6d28d9', light: '#c084fc',
+                o1: 'radial-gradient(circle, rgba(124,58,237,0.75) 0%, rgba(109,40,217,0.1) 70%)',
+                o2: 'radial-gradient(circle, rgba(236,72,153,0.6) 0%, rgba(167,139,250,0.08) 70%)',
+                o3: 'radial-gradient(circle, rgba(239,68,68,0.5) 0%, rgba(124,58,237,0.05) 70%)',
+                prog: 'linear-gradient(90deg,#7c3aed,#c084fc,#f472b6,#a78bfa)',
+                flash: 'rgba(124,58,237,0.6)',
+            },
+            {
+                name: 'Matrix Green', emoji: '💚',
+                bg: '#010f08',
+                accent: '#059669', accent2: '#047857', light: '#34d399',
+                o1: 'radial-gradient(circle, rgba(5,150,105,0.75) 0%, rgba(4,120,87,0.1) 70%)',
+                o2: 'radial-gradient(circle, rgba(16,185,129,0.6) 0%, rgba(6,182,212,0.08) 70%)',
+                o3: 'radial-gradient(circle, rgba(6,182,212,0.5) 0%, rgba(5,150,105,0.05) 70%)',
+                prog: 'linear-gradient(90deg,#059669,#34d399,#67e8f9,#a7f3d0)',
+                flash: 'rgba(5,150,105,0.6)',
+            },
+            {
+                name: 'Solar Flare', emoji: '🔥',
+                bg: '#0f0702',
+                accent: '#d97706', accent2: '#b45309', light: '#fbbf24',
+                o1: 'radial-gradient(circle, rgba(217,119,6,0.75) 0%, rgba(180,83,9,0.1) 70%)',
+                o2: 'radial-gradient(circle, rgba(251,191,36,0.6) 0%, rgba(239,68,68,0.08) 70%)',
+                o3: 'radial-gradient(circle, rgba(239,68,68,0.5) 0%, rgba(217,119,6,0.05) 70%)',
+                prog: 'linear-gradient(90deg,#d97706,#fbbf24,#f97316,#ef4444)',
+                flash: 'rgba(217,119,6,0.6)',
+            },
+            {
+                name: 'Cherry Blossom', emoji: '🌸',
+                bg: '#0f0208',
+                accent: '#e11d48', accent2: '#be123c', light: '#fb7185',
+                o1: 'radial-gradient(circle, rgba(225,29,72,0.75) 0%, rgba(190,18,60,0.1) 70%)',
+                o2: 'radial-gradient(circle, rgba(244,114,182,0.6) 0%, rgba(251,113,133,0.08) 70%)',
+                o3: 'radial-gradient(circle, rgba(236,72,153,0.5) 0%, rgba(225,29,72,0.05) 70%)',
+                prog: 'linear-gradient(90deg,#e11d48,#fb7185,#f472b6,#c084fc)',
+                flash: 'rgba(225,29,72,0.6)',
+            },
+            {
+                name: 'Neon Cyan', emoji: '⚡',
+                bg: '#010d12',
+                accent: '#0891b2', accent2: '#0e7490', light: '#67e8f9',
+                o1: 'radial-gradient(circle, rgba(8,145,178,0.75) 0%, rgba(14,116,144,0.1) 70%)',
+                o2: 'radial-gradient(circle, rgba(45,212,191,0.6) 0%, rgba(103,232,249,0.08) 70%)',
+                o3: 'radial-gradient(circle, rgba(16,185,129,0.5) 0%, rgba(8,145,178,0.05) 70%)',
+                prog: 'linear-gradient(90deg,#0891b2,#67e8f9,#2dd4bf,#a7f3d0)',
+                flash: 'rgba(8,145,178,0.6)',
+            },
+        ];
+
+        function applyTheme(t, fromCenter) {
+            // 1. Background
+            body.style.background = t.bg;
+
+            // 2. CSS vars
+            root.style.setProperty('--primary-accent', t.accent);
+            root.style.setProperty('--kb-accent',  t.accent);
+            root.style.setProperty('--kb-accent2', t.accent2);
+            root.style.setProperty('--kb-light',   t.light);
+
+            // 3. Orb colors
+            if (orb1) orb1.style.background = t.o1;
+            if (orb2) orb2.style.background = t.o2;
+            if (orb3) orb3.style.background = t.o3;
+
+            // 4. Scroll progress bar gradient
+            if (prog) prog.style.backgroundImage = t.prog;
+
+            // 5. Recolor buttons (primary)
+            document.querySelectorAll('.btn-cta-primary, .btn-nav-solid').forEach(function(el) {
+                el.style.background = 'linear-gradient(135deg,' + t.accent + ' 0%,' + t.accent2 + ' 100%)';
+                el.style.boxShadow  = '0 10px 30px -4px ' + t.accent + '88';
+            });
+
+            // 6. Brand logo box
+            var logoBox = document.querySelector('.brand-logo-box');
+            if (logoBox) logoBox.style.background = 'linear-gradient(135deg,' + t.accent + ' 0%,' + t.accent2 + ' 100%)';
+
+            // 7. Gradient text animation (update gradient)
+            document.querySelectorAll('.gradient-text').forEach(function(el) {
+                el.style.backgroundImage = 'linear-gradient(135deg,' + t.light + ' 0%,' + t.accent + ' 50%,' + t.light + ' 100%)';
+            });
+
+            // 8. Section badges & accent text
+            document.querySelectorAll('.section-badge, .brand-title-group span, .hero-pill').forEach(function(el) {
+                el.style.color = t.light;
+            });
+
+            // 9. Hero pill border
+            document.querySelectorAll('.hero-pill').forEach(function(el) {
+                el.style.borderColor = t.light + '44';
+            });
+
+            // 10. KasBot SVG accent (iris, antenna)
+            var irisL = document.getElementById('kb-iris-l');
+            var irisR = document.getElementById('kb-iris-r');
+            var antDot = document.getElementById('kb-antenna-dot');
+            if (irisL) irisL.setAttribute('fill', t.light);
+            if (irisR) irisR.setAttribute('fill', t.light);
+            if (antDot) antDot.setAttribute('fill', t.light);
+
+            // 11. KasBot SVG drop shadow
+            var svg = document.getElementById('kasbot-svg');
+            if (svg) svg.style.filter = 'drop-shadow(0 8px 24px ' + t.accent + '99)';
+        }
+
+        function triggerFlash(t) {
+            if (!flash) return;
+            // Position flash at robot center
+            var wrap = document.getElementById('kasbot-wrap');
+            if (wrap) {
+                var rect = wrap.getBoundingClientRect();
+                var cx = rect.left + rect.width/2;
+                var cy = rect.top  + rect.height/2;
+                flash.style.left   = cx + 'px';
+                flash.style.top    = cy + 'px';
+                flash.style.width  = '4px';
+                flash.style.height = '4px';
+                flash.style.marginLeft = '-2px';
+                flash.style.marginTop  = '-2px';
+            }
+            flash.style.background = t.flash;
+            flash.classList.remove('burst');
+            void flash.offsetWidth;
+            flash.classList.add('burst');
+        }
+
+        function triggerToast(t) {
+            if (!toast) return;
+            ttEmoji.textContent = t.emoji;
+            ttName.textContent  = t.name;
+            toast.style.borderColor = t.light;
+            ttName.style.color      = t.light;
+            toast.classList.remove('show');
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+        }
+
+        return {
+            nextTheme: function() {
+                themeIdx = (themeIdx + 1) % themes.length;
+                var t = themes[themeIdx];
+                triggerFlash(t);
+                setTimeout(function() { applyTheme(t); }, 300);
+                triggerToast(t);
+            },
+            currentIdx: function() { return themeIdx; },
+            themes: themes,
+        };
+    })();
+    </script>
+    {{-- ===== END THEME ENGINE ===== --}}
 
     {{-- ===== KASBOT MASCOT ===== --}}
     <style>
@@ -2175,6 +2436,16 @@
                 showBubble(messages[msgIdx % messages.length]);
                 msgIdx++;
                 waveArms();
+            } else if (tapCount % 100 === 0) {
+                // 🎨 THEME CHANGE every 100 taps!
+                if (window.KasBotTheme) window.KasBotTheme.nextTheme();
+                var t = window.KasBotTheme ? window.KasBotTheme.themes[window.KasBotTheme.currentIdx()] : null;
+                setFace('excited', 4000);
+                showBubble('🎨 TEMA BERUBAH!\n' + (t ? t.emoji + ' ' + t.name : '') + '\nUdah ' + tapCount + 'x tap!', 4500);
+                triggerAnim('spin', 600);
+                blushL.style.opacity='1'; blushR.style.opacity='1';
+                angVel += (Math.random()>0.5?1:-1)*8;
+                vx = (Math.random()-0.5)*18; vy = (Math.random()-0.5)*18;
             } else if (tapCount % 10 === 0) {
                 setFace('excited', 2500);
                 showBubble('🤩 WOW! Udah '+tapCount+'x tap!\nKamu keren banget!');
