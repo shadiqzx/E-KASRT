@@ -611,6 +611,285 @@
                 font-size: 26px;
             }
         }
+
+        /* ================================================================
+           ANIMATION SYSTEM
+           ================================================================ */
+
+        /* --- Page Load Fade-in --- */
+        body { animation: pageFadeIn 0.6s ease both; }
+        @keyframes pageFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* --- Scroll Reveal (Intersection Observer) --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s cubic-bezier(.22,.68,0,1.1), transform 0.7s cubic-bezier(.22,.68,0,1.1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.7s cubic-bezier(.22,.68,0,1.1), transform 0.7s cubic-bezier(.22,.68,0,1.1);
+        }
+        .reveal-left.visible { opacity: 1; transform: translateX(0); }
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: opacity 0.7s cubic-bezier(.22,.68,0,1.1), transform 0.7s cubic-bezier(.22,.68,0,1.1);
+        }
+        .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+        /* Stagger delays */
+        .delay-1 { transition-delay: 0.1s !important; }
+        .delay-2 { transition-delay: 0.2s !important; }
+        .delay-3 { transition-delay: 0.3s !important; }
+        .delay-4 { transition-delay: 0.4s !important; }
+        .delay-5 { transition-delay: 0.5s !important; }
+        .delay-6 { transition-delay: 0.6s !important; }
+
+        /* --- Hero Section Entrance --- */
+        .hero-pill     { animation: heroEntrance 0.8s cubic-bezier(.22,.68,0,1.2) 0.2s both; }
+        .hero-main-title { animation: heroEntrance 0.9s cubic-bezier(.22,.68,0,1.2) 0.35s both; }
+        .hero-subtitle { animation: heroEntrance 0.9s cubic-bezier(.22,.68,0,1.2) 0.5s both; }
+        .hero-btn-group { animation: heroEntrance 0.9s cubic-bezier(.22,.68,0,1.2) 0.65s both; }
+        @keyframes heroEntrance {
+            from { opacity: 0; transform: translateY(32px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* --- Gradient Text Animation --- */
+        .gradient-text {
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Typing Cursor on hero pill --- */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            color: #38bdf8;
+            margin-left: 2px;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+
+        /* --- Navbar Logo Spin on Load --- */
+        .brand-logo-box {
+            animation: logoPop 0.7s cubic-bezier(.22,.68,0,1.4) 0.1s both;
+        }
+        @keyframes logoPop {
+            from { transform: scale(0) rotate(-180deg); opacity: 0; }
+            to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+        }
+
+        /* --- Navbar Links Stagger --- */
+        .nav-links li {
+            animation: navLinkFade 0.5s ease both;
+        }
+        .nav-links li:nth-child(1) { animation-delay: 0.3s; }
+        .nav-links li:nth-child(2) { animation-delay: 0.4s; }
+        .nav-links li:nth-child(3) { animation-delay: 0.5s; }
+        .nav-links li:nth-child(4) { animation-delay: 0.6s; }
+        @keyframes navLinkFade {
+            from { opacity: 0; transform: translateY(-12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Orb Enhanced Float --- */
+        .orb-1 { animation: orbFloat1 18s ease-in-out infinite alternate; }
+        .orb-2 { animation: orbFloat2 22s ease-in-out infinite alternate; }
+        .orb-3 { animation: orbFloat3 20s ease-in-out infinite alternate; }
+        @keyframes orbFloat1 {
+            0%   { transform: translate(0,0) scale(1); opacity: 0.65; }
+            33%  { transform: translate(60px,-70px) scale(1.1); opacity: 0.75; }
+            66%  { transform: translate(-40px, 50px) scale(0.95); opacity: 0.6; }
+            100% { transform: translate(30px, -30px) scale(1.05); opacity: 0.7; }
+        }
+        @keyframes orbFloat2 {
+            0%   { transform: translate(0,0) scale(1); opacity: 0.55; }
+            50%  { transform: translate(-80px, 60px) scale(1.12); opacity: 0.7; }
+            100% { transform: translate(50px, -40px) scale(0.9); opacity: 0.5; }
+        }
+        @keyframes orbFloat3 {
+            0%   { transform: translate(0,0) scale(1) rotate(0deg); opacity: 0.45; }
+            50%  { transform: translate(70px, -60px) scale(1.08) rotate(10deg); opacity: 0.6; }
+            100% { transform: translate(-50px, 30px) scale(0.93) rotate(-8deg); opacity: 0.4; }
+        }
+
+        /* --- Stat Card Counter Animation --- */
+        .stat-val[data-count] {
+            transition: color 0.3s;
+        }
+
+        /* --- Glass Card Shimmer on Hover --- */
+        .glass-stat-card, .feature-card, .cta-box-glass {
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-stat-card::before, .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -60%;
+            width: 60%;
+            height: 220%;
+            background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.08) 50%, transparent 70%);
+            transform: skewX(-20deg);
+            transition: left 0.6s ease;
+            pointer-events: none;
+        }
+        .glass-stat-card:hover::before, .feature-card:hover::before {
+            left: 160%;
+        }
+
+        /* --- Button Ripple Effect --- */
+        .btn-cta-primary, .btn-cta-secondary, .btn-nav-solid, .btn-nav-outline {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-cta-primary::after, .btn-cta-secondary::after,
+        .btn-nav-solid::after, .btn-nav-outline::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            width: 0; height: 0;
+            background: rgba(255,255,255,0.25);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .btn-cta-primary:active::after, .btn-cta-secondary:active::after,
+        .btn-nav-solid:active::after, .btn-nav-outline:active::after {
+            width: 300px; height: 300px; opacity: 0;
+            transition: 0s;
+        }
+
+        /* --- Feature Icon Bounce on Hover --- */
+        .feature-icon-wrapper {
+            transition: transform 0.35s cubic-bezier(.22,.68,0,1.4), box-shadow 0.35s;
+        }
+        .feature-card:hover .feature-icon-wrapper {
+            transform: translateY(-6px) scale(1.12) rotate(-5deg);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+
+        /* --- Particle Canvas --- */
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.4;
+        }
+
+        /* --- Scroll Progress Bar --- */
+        #scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, #0284c7, #38bdf8, #34d399, #818cf8);
+            background-size: 200% 100%;
+            z-index: 9999;
+            transition: width 0.1s linear;
+            animation: progressGlow 3s linear infinite;
+        }
+        @keyframes progressGlow {
+            0%   { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        /* --- Section Badge Pulse --- */
+        .section-badge {
+            animation: badgePulse 3s ease infinite;
+        }
+        @keyframes badgePulse {
+            0%, 100% { opacity: 1; letter-spacing: 1px; }
+            50%       { opacity: 0.7; letter-spacing: 1.5px; }
+        }
+
+        /* --- Stat Icon Rotate on Hover --- */
+        .stat-icon {
+            transition: transform 0.4s cubic-bezier(.22,.68,0,1.4), box-shadow 0.3s;
+        }
+        .glass-stat-card:hover .stat-icon {
+            transform: rotate(10deg) scale(1.15);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* --- CTA Box Pulsing Border --- */
+        .cta-box-glass {
+            animation: ctaBorderPulse 4s ease-in-out infinite;
+        }
+        @keyframes ctaBorderPulse {
+            0%, 100% { box-shadow: 0 25px 60px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.0); }
+            50%       { box-shadow: 0 25px 60px -10px rgba(0,0,0,0.5), 0 0 30px 2px rgba(2,132,199,0.3); }
+        }
+
+        /* --- Navbar on Scroll (shrink) --- */
+        .glass-navbar.scrolled {
+            height: 58px;
+            background: rgba(6, 11, 23, 0.95);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+        }
+
+        /* --- Floating Scroll Down Arrow --- */
+        .scroll-down-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.3);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: scrollHintBounce 2s ease-in-out infinite;
+            cursor: pointer;
+        }
+        .scroll-down-hint i { font-size: 18px; }
+        @keyframes scrollHintBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.3; }
+            50%       { transform: translateY(8px); opacity: 0.6; }
+        }
+
+        /* --- Pulse Live Enhanced --- */
+        .pulse-live {
+            animation: pulseLive 2s infinite, pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.8), 0 0 6px rgba(16,185,129,0.5); }
+            70%       { box-shadow: 0 0 0 8px rgba(16,185,129,0), 0 0 12px rgba(16,185,129,0.8); }
+        }
+
+        /* --- Footer Fade In --- */
+        .site-footer {
+            animation: footerFadeIn 1s ease 0.5s both;
+        }
+        @keyframes footerFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -689,6 +968,12 @@
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
     </div>
+
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress"></div>
+
+    <!-- Particle Canvas -->
+    <canvas id="particle-canvas"></canvas>
 
     <!-- 1. STICKY GLASS NAVBAR -->
     <header class="glass-navbar">
@@ -778,12 +1063,18 @@
                 <span>Jelajahi Fitur Sekilas</span>
             </a>
         </div>
+
+        <!-- Scroll Down Hint -->
+        <div class="scroll-down-hint" onclick="document.querySelector('.stats-grid').scrollIntoView({behavior:'smooth'})">
+            <span>Scroll</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
     </section>
 
     <!-- 3. LIVE STATS TICKER (Real DB Numbers) -->
     <section class="stats-grid">
         <!-- Stat 1: Saldo Kas -->
-        <div class="glass-stat-card">
+        <div class="glass-stat-card reveal delay-1">
             <div class="stat-icon stat-icon-blue">
                 <i class="fas fa-wallet"></i>
             </div>
@@ -797,7 +1088,7 @@
         </div>
 
         <!-- Stat 2: Total Pemasukan -->
-        <div class="glass-stat-card">
+        <div class="glass-stat-card reveal delay-2">
             <div class="stat-icon stat-icon-green">
                 <i class="fas fa-arrow-down"></i>
             </div>
@@ -811,7 +1102,7 @@
         </div>
 
         <!-- Stat 3: Warga Terdata -->
-        <div class="glass-stat-card">
+        <div class="glass-stat-card reveal delay-3">
             <div class="stat-icon stat-icon-purple">
                 <i class="fas fa-users"></i>
             </div>
@@ -825,7 +1116,7 @@
         </div>
 
         <!-- Stat 4: Posyandu IoT -->
-        <div class="glass-stat-card">
+        <div class="glass-stat-card reveal delay-4">
             <div class="stat-icon stat-icon-teal">
                 <i class="fas fa-heartbeat"></i>
             </div>
@@ -837,10 +1128,16 @@
                 <i class="fas fa-wifi text-success mr-1"></i> Scanner RFID e-KTP Online
             </div>
         </div>
+
+        <!-- Scroll Down Hint -->
+        <div class="scroll-down-hint" onclick="document.querySelector('.stats-grid').scrollIntoView({behavior:'smooth'})">
+            <span>Scroll</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
     </section>
 
     <!-- 4. FEATURE SHOWCASE (FITUR SEKILAS) -->
-    <section class="features-section" id="fitur">
+    <section class="features-section reveal" id="fitur">
         <div class="section-header">
             <div class="section-badge">SEKILAS FITUR UTAMA</div>
             <h2 class="section-title">Teknologi Cerdas untuk Kemajuan Lingkungan RT</h2>
@@ -952,6 +1249,12 @@
                 </ul>
             </div>
         </div>
+
+        <!-- Scroll Down Hint -->
+        <div class="scroll-down-hint" onclick="document.querySelector('.stats-grid').scrollIntoView({behavior:'smooth'})">
+            <span>Scroll</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
     </section>
 
     <!-- 5. CALL TO ACTION BOX -->
@@ -988,6 +1291,192 @@
             Dikelola oleh Pengurus Lingkungan RT &bull; Berbasis Laravel 11 &amp; ESP32 IoT &bull; &copy; {{ date('Y') }} Hak Cipta Dilindungi.
         </p>
     </footer>
+
+    {{-- ===== ANIMATION ENGINE ===== --}}
+    <script>
+    (function() {
+
+        /* ── 1. SCROLL PROGRESS BAR ── */
+        var prog = document.getElementById('scroll-progress');
+        window.addEventListener('scroll', function() {
+            var scrolled = document.documentElement.scrollTop;
+            var total = document.documentElement.scrollHeight - window.innerHeight;
+            if (prog) prog.style.width = (total > 0 ? (scrolled / total * 100) : 0) + '%';
+        }, { passive: true });
+
+        /* ── 2. NAVBAR SHRINK ON SCROLL ── */
+        var navbar = document.querySelector('.glass-navbar');
+        window.addEventListener('scroll', function() {
+            if (navbar) {
+                if (window.scrollY > 60) navbar.classList.add('scrolled');
+                else navbar.classList.remove('scrolled');
+            }
+        }, { passive: true });
+
+        /* ── 3. SCROLL REVEAL (Intersection Observer) ── */
+        var revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+        if (revealEls.length > 0 && 'IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+            revealEls.forEach(function(el) { observer.observe(el); });
+        } else {
+            revealEls.forEach(function(el) { el.classList.add('visible'); });
+        }
+
+        /* ── 4. PARTICLE SYSTEM ── */
+        var canvas = document.getElementById('particle-canvas');
+        if (canvas) {
+            var ctx = canvas.getContext('2d');
+            var particles = [];
+            var W, H;
+
+            function resize() {
+                W = canvas.width  = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize, { passive: true });
+
+            var PARTICLE_COUNT = window.innerWidth < 768 ? 35 : 65;
+            var colors = ['rgba(2,132,199,', 'rgba(56,189,248,', 'rgba(52,211,153,', 'rgba(129,140,248,', 'rgba(45,212,191,'];
+
+            function rand(min, max) { return Math.random() * (max - min) + min; }
+
+            for (var i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push({
+                    x:    rand(0, window.innerWidth),
+                    y:    rand(0, window.innerHeight),
+                    r:    rand(1, 2.8),
+                    dx:   rand(-0.25, 0.25),
+                    dy:   rand(-0.35, -0.08),
+                    op:   rand(0.15, 0.6),
+                    dop:  rand(0.003, 0.008),
+                    col:  colors[Math.floor(rand(0, colors.length))]
+                });
+            }
+
+            var mouseX = -9999, mouseY = -9999;
+            window.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX; mouseY = e.clientY;
+            }, { passive: true });
+
+            function loop() {
+                ctx.clearRect(0, 0, W, H);
+                for (var j = 0; j < particles.length; j++) {
+                    var p = particles[j];
+                    var ddx = p.x - mouseX, ddy = p.y - mouseY;
+                    var dist = Math.sqrt(ddx*ddx + ddy*ddy);
+                    if (dist < 100) {
+                        var force = (100 - dist) / 100 * 0.4;
+                        p.x += ddx / dist * force;
+                        p.y += ddy / dist * force;
+                    }
+                    p.x += p.dx;
+                    p.y += p.dy;
+                    p.op += p.dop;
+                    if (p.op >= 0.6 || p.op <= 0.1) p.dop *= -1;
+                    if (p.y < -10) { p.y = H + 5; p.x = rand(0, W); }
+                    if (p.x < -10) p.x = W + 5;
+                    if (p.x > W + 10) p.x = -5;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.col + p.op + ')';
+                    ctx.fill();
+                }
+                for (var a = 0; a < particles.length; a++) {
+                    for (var b = a+1; b < particles.length; b++) {
+                        var cx = particles[a].x - particles[b].x;
+                        var cy = particles[a].y - particles[b].y;
+                        var d = Math.sqrt(cx*cx + cy*cy);
+                        if (d < 110) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[a].x, particles[a].y);
+                            ctx.lineTo(particles[b].x, particles[b].y);
+                            ctx.strokeStyle = 'rgba(56,189,248,' + (0.07 * (1 - d/110)) + ')';
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* ── 5. TYPING EFFECT ON HERO PILL ── */
+        var pill = document.querySelector('.hero-pill');
+        if (pill) {
+            var pillText = pill.textContent.trim();
+            pill.innerHTML = '<span class="pulse-live"></span><span id="typed-pill"></span>';
+            var typedEl = document.getElementById('typed-pill');
+            var ti = 0;
+            function typePill() {
+                if (ti <= pillText.length) {
+                    typedEl.textContent = pillText.slice(0, ti);
+                    ti++;
+                    setTimeout(typePill, ti < 3 ? 0 : 38);
+                }
+            }
+            setTimeout(typePill, 600);
+        }
+
+        /* ── 6. RIPPLE on button click ── */
+        document.querySelectorAll('.btn-cta-primary, .btn-cta-secondary, .btn-nav-solid, .btn-nav-outline').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                var ripple = document.createElement('span');
+                ripple.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);transform:scale(0);animation:rippleAnim 0.6s linear;pointer-events:none;';
+                var rect = btn.getBoundingClientRect();
+                var size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                ripple.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+                btn.appendChild(ripple);
+                setTimeout(function() { ripple.remove(); }, 700);
+            });
+        });
+        var rippleStyle = document.createElement('style');
+        rippleStyle.textContent = '@keyframes rippleAnim { to { transform: scale(2.5); opacity: 0; } }';
+        document.head.appendChild(rippleStyle);
+
+        /* ── 7. TILT EFFECT on feature cards (desktop only) ── */
+        if (window.innerWidth > 768) {
+            document.querySelectorAll('.feature-card, .glass-stat-card').forEach(function(card) {
+                card.addEventListener('mousemove', function(e) {
+                    var rect = card.getBoundingClientRect();
+                    var x = e.clientX - rect.left;
+                    var y = e.clientY - rect.top;
+                    var cx = rect.width / 2;
+                    var cy = rect.height / 2;
+                    var rotX = ((y - cy) / cy) * -6;
+                    var rotY = ((x - cx) / cx) *  6;
+                    card.style.transform = 'translateY(-6px) perspective(600px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    card.style.transition = 'transform 0.4s ease';
+                    card.style.transform = '';
+                    setTimeout(function() { card.style.transition = ''; }, 400);
+                });
+            });
+        }
+
+        /* ── 8. HEARTBEAT ICON on Posyandu stat card ── */
+        var heartIcon = document.querySelector('.stat-icon-teal .fa-heartbeat');
+        if (heartIcon) {
+            heartIcon.style.animation = 'heartbeat 1.2s ease-in-out infinite';
+            var hbStyle = document.createElement('style');
+            hbStyle.textContent = '@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(1)}42%{transform:scale(1.2)}56%{transform:scale(1)}}';
+            document.head.appendChild(hbStyle);
+        }
+
+    })();
+    </script>
+    {{-- ===== END ANIMATION ENGINE ===== --}}
 
 </body>
 </html>
