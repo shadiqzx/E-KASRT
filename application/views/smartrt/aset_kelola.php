@@ -1,5 +1,5 @@
 <div class="page-content--bgf7">
-	<section class="p-t-30">
+	<section style="padding-top: 85px; padding-bottom: 50px;">
 		<div class="container">
 			<?= $this->session->flashdata('message'); ?>
 			

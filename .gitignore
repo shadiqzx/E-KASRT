@@ -29,3 +29,9 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 *.sublime-project
 /tests/tests/
 /tests/results/
+database/.gh_token
+*.log
+.gradle/
+local.properties
+.idea/
+**/build/

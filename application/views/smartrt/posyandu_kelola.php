@@ -6,6 +6,7 @@
 .posyandu-container {
 	font-family: 'Plus Jakarta Sans', sans-serif;
 	color: #0f172a;
+	padding-top: 85px !important;
 }
 
 /* Stat Cards Modern */

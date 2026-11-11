@@ -69,17 +69,17 @@
                         </li>
                         
                         <div class="menu-category">TRANSAKSI</div>
-                        <li class="<?= ($judul == 'Kas Masuk' || isset($menu) && $menu == 'masuk') ? 'active' : ''; ?>">
+                        <li class="<?= ($judul == 'Kas Masuk' || (isset($menu) && ($menu == 'masuk' || $menu == 'Kas Masuk'))) ? 'active' : ''; ?>">
                             <a href="<?= base_url('kasRT');?>">
                                 <i class="fas fa-arrow-down text-success"></i>Pemasukan</a>
                         </li>
-                        <li class="<?= ($judul == 'Kas Keluar' || isset($menu) && $menu == 'keluar') ? 'active' : ''; ?>">
+                        <li class="<?= ($judul == 'Kas Keluar' || (isset($menu) && ($menu == 'keluar' || $menu == 'Kas Keluar'))) ? 'active' : ''; ?>">
                             <a href="<?= base_url('kasRT/kasKeluar');?>">
                                 <i class="fas fa-arrow-up text-danger"></i>Pengeluaran</a>
                         </li>
-                        <li>
-                            <a href="#">
-                                <i class="fas fa-exchange-alt"></i>Transfer</a>
+                        <li class="<?= ($judul == 'Transfer Kas RT' || (isset($menu) && ($menu == 'transfer' || $menu == 'Transfer'))) ? 'active' : ''; ?>">
+                            <a href="<?= base_url('kasRT/transfer');?>">
+                                <i class="fas fa-exchange-alt text-primary"></i>Transfer</a>
                         </li>
                         <li>
                             <a href="#">

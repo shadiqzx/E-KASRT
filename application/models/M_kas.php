@@ -37,6 +37,8 @@ class M_kas extends CI_Model
 
     public function getKasMasuk()
     {
+        $this->db->order_by('tanggal', 'DESC');
+        $this->db->order_by('idKas', 'DESC');
         return $this->db->get_where('data_kas', ['jenis' => 'masuk'])->result();
     }
 
@@ -47,6 +49,8 @@ class M_kas extends CI_Model
 
     public function getKasKeluar()
     {
+        $this->db->order_by('tanggal', 'DESC');
+        $this->db->order_by('idKas', 'DESC');
         return $this->db->get_where('data_kas', ['jenis' => 'keluar'])->result();
     }
 

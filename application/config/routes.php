@@ -52,3 +52,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'auth';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+// Alias route untuk Transfer Kas RT agar URL smartrt/transfer dan transfer langsung terbuka
+$route['smartrt/transfer'] = 'kasRT/transfer';
+$route['smartrt/addTransfer'] = 'kasRT/addTransfer';
+$route['transfer'] = 'kasRT/transfer';
+

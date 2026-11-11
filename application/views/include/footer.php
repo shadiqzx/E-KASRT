@@ -109,6 +109,36 @@
 			$('#deleteModal').modal();
 		}
 	</script>
+
+    <!-- Mobile Sidebar Toggle -->
+    <script>
+        function openSidebar() {
+            var sidebar = document.getElementById('mainSidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.add('sidebar-open');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            var sidebar = document.getElementById('mainSidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.remove('sidebar-open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Tutup sidebar otomatis saat rotasi layar
+        window.addEventListener('orientationchange', function() { closeSidebar(); });
+
+        // Tutup sidebar saat resize ke desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 992) {
+                closeSidebar();
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
 	<audio id="myAudio" loop>
     <source src="<?= base_url('assets/music/bg-musik.mp3'); ?>" type="audio/mpeg">
 </audio>
@@ -158,6 +188,61 @@
     audio.ontimeupdate = function() {
         localStorage.setItem("musicTime", audio.currentTime);
     };
+</script>
+<script>
+/* =========================================================
+   MOBILE REDIRECT — Deteksi layar ≤ 768px → buka halaman
+   mobile khusus yang tampilannya beda total
+   ========================================================= */
+(function() {
+    var MOBILE_BP = 768;
+    var MOBILE_URL  = '<?= base_url("admin/mobile_view") ?>';
+    var DESKTOP_URL = '<?= base_url("admin") ?>';
+    var currentUrl  = window.location.href;
+
+    // Hanya aktifkan di halaman dashboard admin (bukan di mobile_view sendiri)
+    var isMobileView = currentUrl.indexOf('mobile_view') !== -1;
+    var isAdminPage  = currentUrl.indexOf('/admin') !== -1 || currentUrl === DESKTOP_URL;
+
+    if (isMobileView) {
+        // Di mobile view: redirect ke desktop kalau layar dibesarkan
+        window.addEventListener('resize', (function() {
+            var t;
+            return function() {
+                clearTimeout(t);
+                t = setTimeout(function() {
+                    if (window.innerWidth > MOBILE_BP) {
+                        sessionStorage.removeItem('fromMobile');
+                        window.location.replace(DESKTOP_URL);
+                    }
+                }, 250);
+            };
+        })());
+        return;
+    }
+
+    if (!isAdminPage) return; // Jangan redirect di halaman lain
+
+    function goMobile() {
+        sessionStorage.setItem('fromMobile', '1');
+        window.location.replace(MOBILE_URL);
+    }
+
+    // Cek saat load
+    if (window.innerWidth <= MOBILE_BP) {
+        goMobile();
+        return;
+    }
+
+    // Cek saat resize (F12 toggle)
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth <= MOBILE_BP) goMobile();
+        }, 250);
+    });
+})();
 </script>
 </body>
 

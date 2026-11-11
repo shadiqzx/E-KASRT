@@ -6,6 +6,139 @@
 .iuran-wrapper {
 	font-family: 'Plus Jakarta Sans', sans-serif;
 	color: #0f172a;
+	padding-top: 90px !important;
+	padding-left: 28px !important;
+	padding-right: 28px !important;
+	padding-bottom: 60px !important;
+	background: #f8fafc;
+	min-height: 100vh;
+}
+@media (max-width: 991px) {
+	.iuran-wrapper {
+		padding-top: 85px !important;
+		padding-left: 16px !important;
+		padding-right: 16px !important;
+	}
+}
+
+/* Hero Banner Modern */
+.iuran-hero-banner {
+	background: linear-gradient(135deg, #022c22 0%, #064e3b 45%, #059669 85%, #0d9488 100%);
+	border-radius: 20px;
+	padding: 26px 30px;
+	color: #ffffff;
+	box-shadow: 0 16px 36px -10px rgba(5, 150, 105, 0.4);
+	position: relative;
+	overflow: hidden;
+	margin-bottom: 26px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.iuran-hero-banner::before {
+	content: '';
+	position: absolute;
+	width: 260px;
+	height: 260px;
+	background: radial-gradient(circle, rgba(52, 211, 153, 0.25) 0%, rgba(52, 211, 153, 0) 70%);
+	top: -60px;
+	right: 12%;
+	border-radius: 50%;
+	pointer-events: none;
+}
+.hero-glass-pill {
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	color: #a7f3d0;
+	font-size: 11.5px;
+	font-weight: 800;
+	letter-spacing: 0.8px;
+	padding: 5px 14px;
+	border-radius: 30px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 10px;
+}
+.hero-pulsing-dot {
+	width: 8px;
+	height: 8px;
+	background: #34d399;
+	border-radius: 50%;
+	display: inline-block;
+	box-shadow: 0 0 8px #34d399;
+	animation: pulseGreen 1.8s infinite;
+}
+@keyframes pulseGreen {
+	0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+	70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+	100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+.btn-quick-add-iuran {
+	background: #ffffff !important;
+	color: #065f46 !important;
+	font-weight: 800 !important;
+	font-size: 13.5px !important;
+	padding: 11px 22px !important;
+	border-radius: 12px !important;
+	border: none !important;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18) !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 9px !important;
+	transition: all 0.2s ease !important;
+	text-decoration: none !important;
+	white-space: nowrap !important;
+	cursor: pointer;
+}
+.btn-quick-add-iuran:hover {
+	background: #ecfdf5 !important;
+	color: #047857 !important;
+	transform: translateY(-2px) !important;
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24) !important;
+}
+
+.select-tahun-pill {
+	background: rgba(255, 255, 255, 0.18);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	color: #ffffff;
+	border-radius: 10px;
+	font-weight: 700;
+	font-size: 13px;
+	padding: 6px 10px;
+	outline: none;
+	cursor: pointer;
+}
+.select-tahun-pill option {
+	color: #0f172a;
+	background: #ffffff;
+}
+
+/* Floating Action Button (FAB) */
+.fab-quick-iuran {
+	position: fixed;
+	bottom: 28px;
+	right: 28px;
+	z-index: 850;
+	background: linear-gradient(135deg, #059669 0%, #047857 100%);
+	color: #ffffff !important;
+	padding: 12px 22px;
+	border-radius: 30px;
+	font-weight: 800;
+	font-size: 13.5px;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	box-shadow: 0 8px 24px -2px rgba(5, 150, 105, 0.5);
+	transition: all 0.25s ease;
+	text-decoration: none !important;
+	border: 1.5px solid rgba(255, 255, 255, 0.3);
+}
+.fab-quick-iuran:hover {
+	transform: translateY(-3px) scale(1.03);
+	box-shadow: 0 14px 28px -2px rgba(5, 150, 105, 0.65);
+	color: #ffffff !important;
 }
 
 /* Stat Cards */
@@ -185,41 +318,52 @@
 }
 </style>
 
-<div class="iuran-wrapper p-4">
+<div class="iuran-wrapper">
 	<?= $this->session->flashdata('message'); ?>
 
-	<!-- Header Posyandu / Iuran Warga -->
-	<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
-		<div>
-			<div class="d-flex align-items-center gap-2 mb-1">
-				<span class="badge badge-success px-3 py-1 font-weight-bold" style="border-radius: 20px; font-size: 12px;">
-					SISTEM KEUANGAN RT
-				</span>
-				<span class="text-muted" style="font-size: 13px;">• Tarif Iuran Kas: <strong>Rp 50.000 / Bulan</strong></span>
-			</div>
-			<h2 class="font-weight-bold text-dark mb-0">Kelola Iuran Kas Warga</h2>
-			<p class="text-muted mb-0" style="font-size: 14px;">
-				Monitoring matriks 12 bulan pembayaran iuran warga, verifikasi transfer, dan pencatatan kas otomatis.
-			</p>
-		</div>
-		<div class="mt-3 mt-md-0 d-flex gap-2">
-			<!-- Filter Tahun -->
-			<form method="get" action="<?= base_url('smartrt/iuran'); ?>" class="form-inline">
-				<div class="input-group input-group-sm">
-					<div class="input-group-prepend"><span class="input-group-text font-weight-bold bg-white">Tahun:</span></div>
-					<select name="tahun" class="form-control font-weight-bold" onchange="this.form.submit()" style="border-radius: 0 8px 8px 0;">
-						<?php for ($y = date('Y') + 1; $y >= 2024; $y--): ?>
-							<option value="<?= $y; ?>" <?= ($tahun == $y) ? 'selected' : ''; ?>><?= $y; ?></option>
-						<?php endfor; ?>
-					</select>
+	<!-- Hero Header Modern -->
+	<div class="iuran-hero-banner">
+		<div class="d-flex flex-wrap align-items-center justify-content-between" style="gap: 18px;">
+			<div>
+				<div class="hero-glass-pill">
+					<span class="hero-pulsing-dot"></span>
+					SISTEM KEUANGAN RT &bull; TARIF IURAN: <strong>Rp 50.000 / BULAN</strong>
 				</div>
-			</form>
+				<h1 class="font-weight-bold text-white mb-2" style="font-size: 26px; letter-spacing: -0.5px;">
+					<i class="fas fa-credit-card mr-2" style="opacity: 0.9;"></i> Kelola Iuran Kas Warga
+				</h1>
+				<p class="mb-0 text-white-50" style="font-size: 13.5px; max-width: 620px;">
+					Monitoring matriks 12 bulan pembayaran seluruh warga RT, verifikasi bukti transfer, dan pencatatan kas otomatis.
+				</p>
+			</div>
 
-			<a href="#modalQuickPay" data-toggle="modal" class="btn btn-success btn-sm px-3 py-2 font-weight-bold" style="border-radius: 10px;">
-				💵 Input Bayar Tunai (Quick Pay)
-			</a>
+			<div class="d-flex flex-wrap align-items-center" style="gap: 12px;">
+				<!-- Filter Tahun -->
+				<form method="get" action="<?= base_url('smartrt/iuran'); ?>" class="form-inline m-0">
+					<div class="d-flex align-items-center" style="background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.25);">
+						<span class="text-white mr-2 font-weight-bold" style="font-size: 12px;">Tahun:</span>
+						<select name="tahun" class="select-tahun-pill" onchange="this.form.submit()">
+							<?php for ($y = date('Y') + 1; $y >= 2024; $y--): ?>
+								<option value="<?= $y; ?>" <?= ($tahun == $y) ? 'selected' : ''; ?>><?= $y; ?></option>
+							<?php endfor; ?>
+						</select>
+					</div>
+				</form>
+
+				<!-- Tombol Catat Iuran (Quick Pay) -->
+				<button type="button" class="btn-quick-add-iuran" data-toggle="modal" data-target="#modalQuickPay">
+					<i class="fas fa-plus-circle text-success" style="font-size: 18px;"></i>
+					<span>+ Catat Bayar Iuran (Quick Pay)</span>
+				</button>
+			</div>
 		</div>
 	</div>
+
+	<!-- Floating Action Button for easy access on scroll -->
+	<button type="button" class="fab-quick-iuran" data-toggle="modal" data-target="#modalQuickPay" title="Input Pembayaran Tunai Iuran Warga">
+		<i class="fas fa-plus-circle" style="font-size: 17px;"></i>
+		<span>+ Catat Iuran</span>
+	</button>
 
 	<!-- 4 Stat Cards Modern -->
 	<div class="row mb-4">
@@ -286,8 +430,11 @@
 						<span class="legend-badge" style="background: #f1f5f9; color: #64748b;">○ Depan</span>
 					</div>
 				</div>
-				<div class="mt-2 mt-md-0 text-muted" style="font-size: 13px;">
-					<em>*Klik tanda pada tabel untuk bayar tunai / cetak kwitansi</em>
+				<div class="mt-2 mt-md-0 d-flex align-items-center gap-2">
+					<input type="text" id="matrixSearchInput" class="form-control form-control-sm" placeholder="🔍 Cari rumah / nama..." style="width: 200px; border-radius: 8px;">
+					<button type="button" class="btn btn-sm btn-success font-weight-bold px-3 py-1" data-toggle="modal" data-target="#modalQuickPay" style="border-radius: 8px; white-space: nowrap;">
+						<i class="fas fa-plus mr-1"></i> Input Iuran
+					</button>
 				</div>
 			</div>
 
@@ -622,5 +769,19 @@ function recalcTotalQuickPay() {
 	const checked = document.querySelectorAll('.month-check:checked').length;
 	const total = checked * 50000;
 	document.getElementById('quickPayTotalText').innerText = 'Rp ' + total.toLocaleString('id-ID');
+}
+
+// Live search warga di tabel matriks
+var matrixInput = document.getElementById('matrixSearchInput');
+if (matrixInput) {
+	matrixInput.addEventListener('keyup', function() {
+		var q = this.value.toLowerCase().trim();
+		var rows = document.querySelectorAll('.matrix-table tbody tr');
+		rows.forEach(function(r) {
+			var col = r.querySelector('.sticky-col');
+			var txt = col ? col.innerText.toLowerCase() : '';
+			r.style.display = txt.indexOf(q) !== -1 ? '' : 'none';
+		});
+	});
 }
 </script>

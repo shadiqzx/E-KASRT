@@ -105,8 +105,13 @@ class SmartRT extends CI_Controller
 			$payment = $this->db->get_where('sampah_payment', ['id' => $id])->row_array();
 			$warga = $this->db->get_where('data_warga', ['idWarga' => $payment['warga_id']])->row_array();
 
+			$cekId = $this->db->query('SELECT MAX(idKas) AS id_kas FROM data_kas')->row();
+			$getId = substr($cekId ? $cekId->id_kas : '30000000', 4, 4);
+			$nextIdKas = '3000' . sprintf("%04s", (int)$getId + 1);
+
 			$kas_data = [
-				'keterangan' => 'Uang Sampah ' . $payment['bulan'] . ' ' . $payment['tahun'] . ' - ' . $warga['nama'],
+				'idKas' => $nextIdKas,
+				'keterangan' => 'Uang Sampah ' . $payment['bulan'] . ' ' . $payment['tahun'] . ' - ' . ($warga ? $warga['nama'] : 'Warga'),
 				'tanggal' => date('Y-m-d'),
 				'jumlah' => $payment['jumlah'],
 				'jenis' => 'masuk'
@@ -116,6 +121,17 @@ class SmartRT extends CI_Controller
 
 		$this->session->set_flashdata('message', '<div class="alert alert-success">Status pembayaran diperbarui!</div>');
 		redirect('smartrt/sampah');
+	}
+
+	// 1.4.5. TRANSFER KAS RT
+	public function transfer()
+	{
+		redirect('kasRT/transfer');
+	}
+
+	public function addTransfer()
+	{
+		redirect('kasRT/addTransfer');
 	}
 
 	// 1.5. IURAN KAS WARGA (Bulanan RT)
@@ -302,7 +318,12 @@ class SmartRT extends CI_Controller
 			$payment = $this->db->get_where('iuran_payment', ['id' => $id])->row_array();
 			$warga   = $this->db->get_where('data_warga', ['idWarga' => $payment['warga_id']])->row_array();
 
+			$cekId = $this->db->query('SELECT MAX(idKas) AS id_kas FROM data_kas')->row();
+			$getId = substr($cekId ? $cekId->id_kas : '30000000', 4, 4);
+			$nextIdKas = '3000' . sprintf("%04s", (int)$getId + 1);
+
 			$kas_data = [
+				'idKas'      => $nextIdKas,
 				'keterangan' => 'Iuran Warga ' . $payment['bulan'] . ' ' . $payment['tahun'] . ' - ' . ($warga ? $warga['nama'] . ' (' . $warga['no_rumah'] . ')' : 'Warga'),
 				'tanggal'    => date('Y-m-d'),
 				'jumlah'     => $payment['jumlah'],
@@ -360,7 +381,12 @@ class SmartRT extends CI_Controller
 			}
 
 			// Masuk buku kas
+			$cekId = $this->db->query('SELECT MAX(idKas) AS id_kas FROM data_kas')->row();
+			$getId = substr($cekId ? $cekId->id_kas : '30000000', 4, 4);
+			$nextIdKas = '3000' . sprintf("%04s", (int)$getId + 1);
+
 			$this->db->insert('data_kas', [
+				'idKas'      => $nextIdKas,
 				'keterangan' => 'Iuran Warga ' . $b . ' ' . $tahun . ' - ' . $warga_nama . ' (Tunai)',
 				'tanggal'    => date('Y-m-d'),
 				'jumlah'     => $jumlah,

@@ -30,6 +30,7 @@ class Admin extends CI_Controller
             $data['keluar'] = $this->m_kas->TotalKeluar();
             $data['total_warga'] = $this->m_kas->TotalWarga();
             $data['recent_kas'] = $this->m_kas->getRecentKas(5);
+            // Satu view untuk semua — CSS yang membedakan tampilan mobile vs desktop
             $this->load->view('include/header', $data);
             $this->load->view('index', $data);
             $this->load->view('include/footer');
@@ -41,6 +42,30 @@ class Admin extends CI_Controller
             redirect('users/warga');
         }
     }
+
+    /**
+     * Tampilan dashboard khusus mobile (layar ≤ 768px)
+     * Dipanggil otomatis oleh JS redirect di footer.php
+     * URL: /admin/mobile_view
+     */
+    public function mobile_view()
+    {
+        $username = $this->session->userdata('username');
+        if (!$username) redirect('auth');
+
+        $user = $this->db->get_where('users', ['username' => $username])->row_array();
+        if (!$user) redirect('auth');
+
+        $data['user'] = $user;
+        $data['masuk'] = $this->m_kas->TotalMasuk();
+        $data['keluar'] = $this->m_kas->TotalKeluar();
+        $data['total_warga'] = $this->m_kas->TotalWarga();
+        $data['recent_kas'] = $this->m_kas->getRecentKas(5);
+
+        // Halaman mobile mandiri — tidak pakai header/footer desktop
+        $this->load->view('index_mobile', $data);
+    }
+
 
     public function user()
     {

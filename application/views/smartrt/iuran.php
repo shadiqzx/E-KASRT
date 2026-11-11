@@ -48,7 +48,7 @@
 </style>
 
 <div class="page-content--bgf7 warga-iuran-page">
-	<section class="p-t-30 p-b-50">
+	<section style="padding-top: 85px; padding-bottom: 50px;">
 		<div class="container">
 			<?= $this->session->flashdata('message'); ?>
 
