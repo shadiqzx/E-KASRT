@@ -227,7 +227,13 @@
 				Absensi kehadiran balita otomatis dengan tap <strong>e-KTP Ibu Balita</strong> via scanner RFID.
 			</p>
 		</div>
-		<div class="mt-3 mt-md-0 d-flex gap-2">
+		<div class="mt-3 mt-md-0 d-flex flex-wrap gap-2" style="gap: 8px;">
+			<a href="#modalPairKtp" data-toggle="modal" class="btn btn-info btn-sm px-3 py-2 font-weight-bold shadow-sm" style="border-radius: 10px;">
+				🪪 Hubungkan e-KTP Warga
+			</a>
+			<button type="button" class="btn btn-warning btn-sm px-3 py-2 font-weight-bold shadow-sm text-dark" onclick="switchTab('tabEsp32', document.querySelectorAll('.modern-tab-nav .nav-link-item')[3]); document.getElementById('tabEsp32').scrollIntoView({behavior: 'smooth'});" style="border-radius: 10px;">
+				⚡ Panduan & Wiring ESP32
+			</button>
 			<?php if ($sesi_aktif): ?>
 				<a href="#modalHadirManual" data-toggle="modal" class="btn btn-outline-primary btn-sm px-3 py-2 font-weight-bold" style="border-radius: 10px;">
 					✍️ Absen Balita Manual
@@ -267,6 +273,16 @@
 						Silakan aktifkan salah satu jadwal sesi posyandu di tab "Manajemen Sesi" agar mesin RFID dapat mulai menerima absensi.
 					<?php endif; ?>
 				</p>
+
+				<!-- Info Penghubung Endpoint ESP32 -->
+				<div class="mt-3 pt-2 border-top border-secondary d-flex flex-wrap align-items-center" style="gap: 12px; font-size: 12px;">
+					<span class="text-white-50"><i class="fas fa-network-wired text-info mr-1"></i> IP Laptop: <strong class="text-white" style="font-family: 'JetBrains Mono', monospace;">10.246.16.194</strong></span>
+					<span class="text-white-50"><i class="fas fa-link text-warning mr-1"></i> Endpoint: <code class="text-info bg-dark px-2 py-1 rounded" style="font-size: 11px;"><?= base_url('smartrt/posyandu_rfid_tap'); ?></code></span>
+					<span class="text-white-50"><i class="fas fa-key text-success mr-1"></i> Key: <code class="text-success bg-dark px-2 py-1 rounded">kasrt2025</code></span>
+					<button type="button" class="btn btn-sm btn-outline-light font-weight-bold ml-auto py-1 px-2" onclick="testSimulasiTap()" style="font-size: 11px; border-radius: 6px;">
+						🧪 Test Simulasi Tap
+					</button>
+				</div>
 			</div>
 
 			<div class="col-lg-5">
@@ -1403,6 +1419,22 @@ function fetchLiveStream() {
 			}
 		})
 		.catch(err => console.log('Polling error:', err));
+}
+
+function testSimulasiTap() {
+	var uid = prompt("🧪 TEST SIMULASI TAP e-KTP / RFID\n\nMasukkan UID Kartu yang ingin ditest:\n(Gunakan UID contoh atau nomor acak seperti 99AA88BB)", "99AA88BB");
+	if (!uid) return;
+	fetch("<?= base_url('smartrt/posyandu_rfid_tap'); ?>", {
+		method: "POST",
+		headers: { "Content-Type": "application/x-www-form-urlencoded" },
+		body: "api_key=kasrt2025&uid=" + encodeURIComponent(uid.trim())
+	})
+	.then(r => r.json())
+	.then(res => {
+		alert("✅ Respon Server E-KASRT:\n\nStatus: " + res.status + "\nPesan: " + res.message);
+		fetchLiveStream();
+	})
+	.catch(err => alert("❌ Gagal mengirim: " + err));
 }
 
 // Jalankan polling setiap 2.5 detik
