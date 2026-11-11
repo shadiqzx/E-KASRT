@@ -48,5 +48,10 @@ class DatabaseSeeder extends Seeder
         echo "   Email   : admin@kasrt.com\n";
         echo "   Password: admin123\n";
         echo "   Transaksi contoh: " . count($contohData) . " data\n\n";
+
+        // Jalankan SmartRT seeder (aset, pengurus, aspirasi)
+        $this->call(SmartRtSeeder::class);
+
+        echo "✅ SmartRT seed data berhasil diisi!\n\n";
     }
 }
