@@ -1,157 +1,257 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 .posyandu-container {
-	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	color: #0f172a;
 	padding-top: 85px !important;
+	padding-bottom: 50px;
 }
 
-/* Stat Cards Modern */
-.stat-box {
+/* Header & Unified Buttons */
+.page-title {
+	font-size: 24px;
+	font-weight: 800;
+	color: #0f172a;
+	letter-spacing: -0.5px;
+}
+.btn-action-primary {
+	background: #0284c7;
+	color: #ffffff !important;
+	border: 1px solid #0284c7;
+	border-radius: 10px;
+	font-weight: 700;
+	font-size: 13px;
+	padding: 8px 16px;
+	transition: all 0.2s;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	text-decoration: none !important;
+}
+.btn-action-primary:hover {
+	background: #0369a1;
+	box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+	transform: translateY(-1px);
+}
+.btn-action-light {
 	background: #ffffff;
-	border-radius: 16px;
-	padding: 22px 24px;
+	color: #334155 !important;
+	border: 1px solid #cbd5e1;
+	border-radius: 10px;
+	font-weight: 600;
+	font-size: 13px;
+	padding: 8px 14px;
+	transition: all 0.2s;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	text-decoration: none !important;
+}
+.btn-action-light:hover {
+	background: #f8fafc;
+	color: #0f172a !important;
+	border-color: #94a3b8;
+	transform: translateY(-1px);
+}
+
+/* IoT Hardware & Live Monitor Hub (Clean SaaS Card) */
+.iot-hub-card {
+	background: #ffffff;
 	border: 1px solid #e2e8f0;
-	box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+	border-radius: 18px;
+	padding: 22px 24px;
+	box-shadow: 0 4px 20px -3px rgba(15, 23, 42, 0.05);
 	position: relative;
 	overflow: hidden;
+	margin-bottom: 22px;
+}
+.iot-hub-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(90deg, #0284c7, #06b6d4, #10b981);
+}
+
+.radar-pulse-green {
+	width: 9px;
+	height: 9px;
+	background: #10b981;
+	border-radius: 50%;
+	display: inline-block;
+	box-shadow: 0 0 0 rgba(16, 185, 129, 0.7);
+	animation: pulse-ring-green 1.8s infinite;
+}
+@keyframes pulse-ring-green {
+	0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+	70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+	100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.iot-meta-chip {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	color: #475569;
+	font-size: 11.5px;
+	font-weight: 600;
+	padding: 5px 11px;
+	border-radius: 8px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+.iot-meta-chip strong {
+	color: #0f172a;
+	font-family: 'JetBrains Mono', monospace;
+}
+
+/* Radar Tap Display Card */
+.radar-display-card {
+	background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+	border: 1px solid #bae6fd;
+	border-radius: 14px;
+	padding: 16px 18px;
+	position: relative;
 	transition: all 0.25s ease;
 }
-.stat-box:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.09);
-}
-.stat-box .glow-dot {
-	position: absolute;
-	top: -24px;
-	right: -24px;
-	width: 90px;
-	height: 90px;
-	border-radius: 50%;
-	opacity: 0.12;
-}
-.stat-box.cyan .glow-dot { background: #06b6d4; }
-.stat-box.emerald .glow-dot { background: #10b981; }
-.stat-box.indigo .glow-dot { background: #6366f1; }
-.stat-box.amber .glow-dot { background: #f59e0b; }
-
-.stat-icon-wrap {
-	width: 48px;
-	height: 48px;
+.radar-avatar-circle {
+	width: 44px;
+	height: 44px;
 	border-radius: 12px;
+	background: #ffffff;
+	border: 1px solid #93c5fd;
+	box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-size: 22px;
-	margin-bottom: 14px;
-}
-.stat-box.cyan .stat-icon-wrap { background: #ecfeff; color: #0891b2; }
-.stat-box.emerald .stat-icon-wrap { background: #ecfdf5; color: #059669; }
-.stat-box.indigo .stat-icon-wrap { background: #eef2ff; color: #4f46e5; }
-.stat-box.amber .stat-icon-wrap { background: #fffbeb; color: #d97706; }
-
-.stat-num {
-	font-size: 30px;
-	font-weight: 800;
-	line-height: 1.1;
-	letter-spacing: -0.5px;
-	color: #0f172a;
-}
-.stat-label {
-	font-size: 13px;
-	font-weight: 600;
-	color: #64748b;
-	margin-top: 4px;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
+	flex-shrink: 0;
 }
 
-/* Live Scanner Monitor Widget */
-.scanner-banner {
-	background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-	border-radius: 18px;
-	padding: 24px 28px;
-	color: #ffffff;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.4);
-	margin-bottom: 28px;
-}
-
-.radar-pulse {
-	width: 14px;
-	height: 14px;
-	background: #22c55e;
-	border-radius: 50%;
-	display: inline-block;
-	box-shadow: 0 0 0 rgba(34, 197, 94, 0.7);
-	animation: pulse-ring 1.8s infinite;
-}
-@keyframes pulse-ring {
-	0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-	70% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
-	100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-}
-
-.ktp-card-visual {
-	background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
-	border-radius: 12px;
-	padding: 16px 20px;
-	color: #fff;
-	box-shadow: 0 8px 24px rgba(2, 132, 199, 0.3);
-	border: 1px solid rgba(255,255,255,0.2);
+/* Compact Fintech KPI Cards */
+.kpi-compact-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 14px;
+	padding: 16px 18px;
+	box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	position: relative;
 	overflow: hidden;
+	transition: all 0.2s ease;
+	height: 100%;
 }
-.ktp-card-visual::after {
-	content: 'REPUBLIK INDONESIA';
+.kpi-compact-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.08);
+	border-color: #cbd5e1;
+}
+.kpi-compact-card::before {
+	content: '';
 	position: absolute;
-	right: -10px;
-	bottom: -8px;
-	font-size: 18px;
-	font-weight: 900;
-	color: rgba(255,255,255,0.06);
-	letter-spacing: 2px;
-	pointer-events: none;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 4px;
 }
+.kpi-compact-card.cyan::before { background: #06b6d4; }
+.kpi-compact-card.emerald::before { background: #10b981; }
+.kpi-compact-card.indigo::before { background: #6366f1; }
+.kpi-compact-card.amber::before { background: #f59e0b; }
 
-/* Nav Tabs Modern */
-.modern-tab-nav {
+.kpi-val {
+	font-size: 26px;
+	font-weight: 800;
+	line-height: 1;
+	color: #0f172a;
+	letter-spacing: -0.5px;
+}
+.kpi-tit {
+	font-size: 11.5px;
+	font-weight: 700;
+	color: #64748b;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-top: 5px;
+}
+.kpi-ico {
+	width: 42px;
+	height: 42px;
+	border-radius: 10px;
 	display: flex;
-	gap: 10px;
-	margin-bottom: 24px;
+	align-items: center;
+	justify-content: center;
+	font-size: 20px;
+}
+.kpi-compact-card.cyan .kpi-ico { background: #ecfeff; color: #0891b2; }
+.kpi-compact-card.emerald .kpi-ico { background: #ecfdf5; color: #059669; }
+.kpi-compact-card.indigo .kpi-ico { background: #eef2ff; color: #4f46e5; }
+.kpi-compact-card.amber .kpi-ico { background: #fffbeb; color: #d97706; }
+
+/* Navigation Tabs */
+.posyandu-nav-tabs {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 20px;
 	border-bottom: 2px solid #e2e8f0;
-	padding-bottom: 12px;
+	padding-bottom: 10px;
 	flex-wrap: wrap;
 }
-.modern-tab-nav .nav-link-item {
-	padding: 10px 22px;
+.posyandu-nav-tabs .nav-link-item {
+	padding: 9px 18px;
 	border-radius: 10px;
 	font-weight: 700;
-	font-size: 14px;
+	font-size: 13.5px;
 	color: #64748b;
-	background: #f1f5f9;
-	border: 1px solid transparent;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
 	cursor: pointer;
 	text-decoration: none;
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: 7px;
 	transition: all 0.2s ease;
 }
-.modern-tab-nav .nav-link-item:hover {
-	background: #e2e8f0;
+.posyandu-nav-tabs .nav-link-item:hover {
+	background: #f1f5f9;
 	color: #0f172a;
 }
-.modern-tab-nav .nav-link-item.active {
+.posyandu-nav-tabs .nav-link-item.active {
 	background: #0284c7;
 	color: #ffffff;
 	border-color: #0284c7;
-	box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+	box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+.posyandu-nav-tabs .nav-link-item.active .badge {
+	background: #ffffff !important;
+	color: #0284c7 !important;
 }
 
+/* Modern Tables */
+.content-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 16px;
+	box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+	overflow: hidden;
+}
+.content-card-header {
+	background: #ffffff;
+	padding: 18px 24px;
+	border-bottom: 1px solid #e2e8f0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+}
 .table-modern {
 	border-collapse: separate;
 	border-spacing: 0;
@@ -164,8 +264,8 @@
 	font-weight: 700;
 	text-transform: uppercase;
 	letter-spacing: 0.6px;
-	padding: 14px 16px;
-	border-top: 1px solid #e2e8f0;
+	padding: 14px 18px;
+	border-top: none;
 	border-bottom: 2px solid #e2e8f0;
 }
 .table-modern tbody tr {
@@ -175,10 +275,10 @@
 	background: #f8fafc;
 }
 .table-modern tbody td {
-	padding: 16px;
+	padding: 16px 18px;
 	vertical-align: middle;
 	border-bottom: 1px solid #f1f5f9;
-	font-size: 13px;
+	font-size: 13.5px;
 }
 
 /* Code Snippet Box */
@@ -213,60 +313,67 @@
 <div class="posyandu-container p-4">
 	<?= $this->session->flashdata('message'); ?>
 
-	<!-- Header Posyandu Digital -->
-	<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+	<!-- Header Posyandu Digital Modern -->
+	<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
 		<div>
-			<div class="d-flex align-items-center gap-2 mb-1">
-				<span class="badge badge-primary px-3 py-1 font-weight-bold" style="border-radius: 20px; font-size: 12px;">
-					IoT SMART RT v2.0
+			<div class="d-flex align-items-center gap-2 mb-1" style="gap: 8px;">
+				<span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700; border-radius: 8px; padding: 5px 12px; font-size: 11.5px;">
+					⚡ IoT Posyandu Digital v2.0
 				</span>
-				<span class="text-muted" style="font-size: 13px;">• NodeMCU ESP32 + MFRC522 RC522</span>
+				<span class="text-muted" style="font-size: 12.5px;">• NodeMCU ESP32 + MFRC522 RC522</span>
 			</div>
-			<h2 class="font-weight-bold text-dark mb-0">Posyandu Balita Digital</h2>
-			<p class="text-muted mb-0" style="font-size: 14px;">
-				Absensi kehadiran balita otomatis dengan tap <strong>e-KTP Ibu Balita</strong> via scanner RFID.
+			<h2 class="page-title mb-1">Posyandu Balita Digital</h2>
+			<p class="text-muted mb-0" style="font-size: 13.5px;">
+				Absensi kehadiran balita otomatis via tap <strong>e-KTP Ibu Balita</strong> & rekap tumbuh kembang KMS.
 			</p>
 		</div>
-		<div class="mt-3 mt-md-0 d-flex flex-wrap gap-2" style="gap: 8px;">
-			<a href="#modalPairKtp" data-toggle="modal" class="btn btn-info btn-sm px-3 py-2 font-weight-bold shadow-sm" style="border-radius: 10px;">
-				🪪 Hubungkan e-KTP Warga
+		<div class="mt-3 mt-md-0 d-flex flex-wrap" style="gap: 8px;">
+			<a href="#modalTambahSesi" data-toggle="modal" class="btn btn-action-primary shadow-sm">
+				<i class="fas fa-plus-circle"></i> Buat Sesi Baru
 			</a>
-			<button type="button" class="btn btn-warning btn-sm px-3 py-2 font-weight-bold shadow-sm text-dark" onclick="switchTab('tabEsp32', document.querySelectorAll('.modern-tab-nav .nav-link-item')[3]); document.getElementById('tabEsp32').scrollIntoView({behavior: 'smooth'});" style="border-radius: 10px;">
-				⚡ Panduan & Wiring ESP32
-			</button>
 			<?php if ($sesi_aktif): ?>
-				<a href="#modalHadirManual" data-toggle="modal" class="btn btn-outline-primary btn-sm px-3 py-2 font-weight-bold" style="border-radius: 10px;">
-					✍️ Absen Balita Manual
+				<a href="#modalHadirManual" data-toggle="modal" class="btn btn-action-light">
+					<i class="fas fa-pen-alt text-primary"></i> Absen Manual
 				</a>
 			<?php endif; ?>
-			<a href="#modalTambahSesi" data-toggle="modal" class="btn btn-primary btn-sm px-3 py-2 font-weight-bold" style="border-radius: 10px;">
-				➕ Buat Sesi Posyandu
+			<a href="#modalPairKtp" data-toggle="modal" class="btn btn-action-light">
+				<i class="fas fa-id-card text-info"></i> Hubungkan e-KTP
 			</a>
+			<button type="button" class="btn btn-action-light" onclick="switchTab('tabEsp32', document.querySelectorAll('.posyandu-nav-tabs .nav-link-item')[3]); document.getElementById('tabEsp32').scrollIntoView({behavior: 'smooth'});">
+				<i class="fas fa-microchip text-warning"></i> Panduan Alat
+			</button>
 		</div>
 	</div>
 
-	<!-- Live Scanner Monitor Widget (ESP32 Live Radar) -->
-	<div class="scanner-banner">
+	<!-- IoT Hardware Hub & Live Radar Monitor -->
+	<div class="iot-hub-card">
 		<div class="row align-items-center">
+			<!-- Sisi Kiri: Status Scanner & Koneksi Hardware -->
 			<div class="col-lg-7 mb-3 mb-lg-0">
-				<div class="d-flex align-items-center mb-2">
-					<span class="radar-pulse mr-2"></span>
-					<span class="text-success font-weight-bold text-uppercase" style="font-size: 12px; letter-spacing: 1px;">
-						Scanner NodeMCU ESP32 Active & Listening
+				<div class="d-flex flex-wrap align-items-center mb-2" style="gap: 8px;">
+					<span class="badge" style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 20px; font-weight: 700; font-size: 11.5px; padding: 5px 12px; display: inline-flex; align-items: center; gap: 6px;">
+						<span class="radar-pulse-green"></span>
+						SCANNER ESP32 SIAP & LISTENING
 					</span>
-					<span class="badge badge-dark ml-2 text-white-50" id="livePingBadge">Live Polling</span>
-					<button id="toggleAudioBtn" class="btn btn-sm btn-outline-light ml-3 py-0 px-2" style="font-size: 11px; border-radius: 6px;" title="Aktifkan Bunyi Beep saat KTP di-tap">
+					<span class="badge badge-light text-muted border px-2 py-1" id="livePingBadge" style="font-size: 11px; border-radius: 6px;">
+						Live Polling
+					</span>
+					<button id="toggleAudioBtn" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px; border-radius: 6px; font-weight: 600;" title="Bunyikan Suara & Chime saat e-KTP di-tap">
 						🔊 Audio: ON
 					</button>
+					<button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" onclick="testSimulasiTap()" style="font-size: 11px; border-radius: 6px; font-weight: 600;">
+						🧪 Test Simulasi Tap
+					</button>
 				</div>
-				<h4 class="font-weight-bold text-white mb-2" id="scannerStatusTitle">
+
+				<h4 class="font-weight-bold text-dark mb-1" id="scannerStatusTitle" style="letter-spacing: -0.3px;">
 					<?php if ($sesi_aktif): ?>
-						Sesi: <?= htmlspecialchars($sesi_aktif->nama_sesi); ?>
+						Sesi Aktif: <?= htmlspecialchars($sesi_aktif->nama_sesi); ?>
 					<?php else: ?>
 						Belum Ada Sesi Posyandu yang Berstatus "Aktif"
 					<?php endif; ?>
 				</h4>
-				<p class="text-white-50 mb-0" style="font-size: 13px;" id="scannerStatusDesc">
+				<p class="text-muted mb-3" style="font-size: 13px;" id="scannerStatusDesc">
 					<?php if ($sesi_aktif): ?>
 						Ibu balita dapat langsung menempelkan e-KTP ke sensor RC522. Balita milik ibu akan otomatis tercatat hadir.
 					<?php else: ?>
@@ -274,87 +381,99 @@
 					<?php endif; ?>
 				</p>
 
-				<!-- Info Penghubung Endpoint ESP32 -->
-				<div class="mt-3 pt-2 border-top border-secondary d-flex flex-wrap align-items-center" style="gap: 12px; font-size: 12px;">
-					<span class="text-white-50"><i class="fas fa-network-wired text-info mr-1"></i> IP Laptop: <strong class="text-white" style="font-family: 'JetBrains Mono', monospace;">10.246.16.194</strong></span>
-					<span class="text-white-50"><i class="fas fa-link text-warning mr-1"></i> Endpoint: <code class="text-info bg-dark px-2 py-1 rounded" style="font-size: 11px;"><?= base_url('smartrt/posyandu_rfid_tap'); ?></code></span>
-					<span class="text-white-50"><i class="fas fa-key text-success mr-1"></i> Key: <code class="text-success bg-dark px-2 py-1 rounded">kasrt2025</code></span>
-					<button type="button" class="btn btn-sm btn-outline-light font-weight-bold ml-auto py-1 px-2" onclick="testSimulasiTap()" style="font-size: 11px; border-radius: 6px;">
-						🧪 Test Simulasi Tap
-					</button>
+				<!-- Chip Penghubung ESP32 -->
+				<div class="d-flex flex-wrap align-items-center" style="gap: 8px;">
+					<div class="iot-meta-chip">
+						<i class="fas fa-laptop text-primary"></i> IP: <strong>10.246.16.194</strong>
+					</div>
+					<div class="iot-meta-chip">
+						<i class="fas fa-link text-info"></i> Endpoint: <strong><?= base_url('smartrt/posyandu_rfid_tap'); ?></strong>
+					</div>
+					<div class="iot-meta-chip">
+						<i class="fas fa-key text-warning"></i> Key: <strong>kasrt2025</strong>
+					</div>
 				</div>
 			</div>
 
+			<!-- Sisi Kanan: Live Tap Radar Card -->
 			<div class="col-lg-5">
-				<div class="ktp-card-visual" id="lastTapBox">
-					<div class="d-flex justify-content-between align-items-start mb-2">
-						<span style="font-size: 11px; font-weight: 700; opacity: 0.8; letter-spacing: 1px;">
-							RADAR TAP e-KTP IBU TERAKHIR
+				<div class="radar-display-card" id="lastTapBox">
+					<div class="d-flex justify-content-between align-items-center mb-2">
+						<span style="font-size: 11px; font-weight: 800; color: #0284c7; letter-spacing: 0.8px; text-transform: uppercase;">
+							<i class="fas fa-satellite-dish mr-1"></i> Deteksi Tap Terakhir
 						</span>
-						<span class="badge badge-light text-dark font-weight-bold" id="lastTapStatusBadge" style="font-size: 11px;">
+						<span class="badge badge-light border text-dark font-weight-bold" id="lastTapStatusBadge" style="font-size: 11px;">
 							Standby
 						</span>
 					</div>
-					<div class="d-flex align-items-center gap-3">
-						<div style="font-size: 32px;" id="lastTapIcon">💳</div>
-						<div>
-							<h5 class="font-weight-bold text-white mb-0" id="lastTapNama">
+
+					<div class="d-flex align-items-center" style="gap: 12px;">
+						<div class="radar-avatar-circle" id="lastTapIcon">
+							💳
+						</div>
+						<div style="min-width: 0; flex: 1;">
+							<h6 class="font-weight-bold text-dark mb-0 text-truncate" id="lastTapNama">
 								Menunggu Tap Kartu...
-							</h5>
-							<small class="text-white-50" id="lastTapDetail">
-								Tempelkan e-KTP di alat reader
+							</h6>
+							<small class="text-muted d-block text-truncate" id="lastTapDetail" style="font-size: 12px;">
+								Tempelkan e-KTP di sensor RFID RC522
 							</small>
 						</div>
 					</div>
-					<div class="mt-2 pt-2 border-top border-white-50 d-flex justify-content-between align-items-center" style="font-size: 11px; opacity: 0.85;">
-						<span>UID Kartu: <strong class="font-monospace" id="lastTapUid">-</strong></span>
-						<span id="lastTapTime">-</span>
+
+					<div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center text-muted" style="font-size: 11.5px; border-color: rgba(186, 230, 253, 0.7) !important;">
+						<span>UID: <strong class="text-dark font-monospace" id="lastTapUid">-</strong></span>
+						<span id="lastTapTime" class="font-weight-bold">-</span>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- 4 Stat Cards Modern -->
+	<!-- 4 Compact Fintech KPI Cards -->
 	<div class="row mb-4">
-		<div class="col-md-3 col-sm-6 mb-3">
-			<div class="stat-box cyan">
-				<div class="glow-dot"></div>
-				<div class="stat-icon-wrap">👶</div>
-				<div class="stat-num"><?= $total_balita; ?></div>
-				<div class="stat-label">Total Balita Terdaftar</div>
+		<div class="col-lg-3 col-sm-6 mb-3">
+			<div class="kpi-compact-card cyan">
+				<div>
+					<div class="kpi-val"><?= $total_balita; ?></div>
+					<div class="kpi-tit">Total Balita</div>
+				</div>
+				<div class="kpi-ico">👶</div>
 			</div>
 		</div>
-		<div class="col-md-3 col-sm-6 mb-3">
-			<div class="stat-box emerald">
-				<div class="glow-dot"></div>
-				<div class="stat-icon-wrap">🪪</div>
-				<div class="stat-num"><?= $total_ktp_ibu; ?></div>
-				<div class="stat-label">e-KTP Ibu Terhubung</div>
+		<div class="col-lg-3 col-sm-6 mb-3">
+			<div class="kpi-compact-card emerald">
+				<div>
+					<div class="kpi-val"><?= $total_ktp_ibu; ?></div>
+					<div class="kpi-tit">e-KTP Terhubung</div>
+				</div>
+				<div class="kpi-ico">🪪</div>
 			</div>
 		</div>
-		<div class="col-md-3 col-sm-6 mb-3">
-			<div class="stat-box indigo">
-				<div class="glow-dot"></div>
-				<div class="stat-icon-wrap">✅</div>
-				<div class="stat-num" id="statHadirNum"><?= $total_hadir; ?></div>
-				<div class="stat-label">Balita Hadir (Sesi Ini)</div>
+		<div class="col-lg-3 col-sm-6 mb-3">
+			<div class="kpi-compact-card indigo">
+				<div>
+					<div class="kpi-val" id="statHadirNum"><?= $total_hadir; ?></div>
+					<div class="kpi-tit">Balita Hadir</div>
+				</div>
+				<div class="kpi-ico">✅</div>
 			</div>
 		</div>
-		<div class="col-md-3 col-sm-6 mb-3">
-			<div class="stat-box amber">
-				<div class="glow-dot"></div>
-				<div class="stat-icon-wrap">📅</div>
-				<div class="stat-num"><?= count($sesi_list); ?></div>
-				<div class="stat-label">Total Sesi Terjadwal</div>
+		<div class="col-lg-3 col-sm-6 mb-3">
+			<div class="kpi-compact-card amber">
+				<div>
+					<div class="kpi-val"><?= count($sesi_list); ?></div>
+					<div class="kpi-tit">Total Sesi</div>
+				</div>
+				<div class="kpi-ico">📅</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Navigation Tabs -->
-	<div class="modern-tab-nav">
+	<!-- Modern Navigation Tabs -->
+	<div class="posyandu-nav-tabs">
 		<a href="javascript:void(0)" class="nav-link-item active" onclick="switchTab('tabKehadiran', this)">
-			<span>📋</span> Kehadiran & Pemeriksaan
+			<span>📋</span> Kehadiran & KMS
 			<span class="badge badge-light text-dark ml-1" id="tabHadirBadge"><?= count($kehadiran_hari_ini); ?></span>
 		</a>
 		<a href="javascript:void(0)" class="nav-link-item" onclick="switchTab('tabBalita', this)">
@@ -365,32 +484,32 @@
 			<span>📅</span> Manajemen Sesi Posyandu
 		</a>
 		<a href="javascript:void(0)" class="nav-link-item" onclick="switchTab('tabEsp32', this)">
-			<span>⚡</span> Firmware & Wiring NodeMCU ESP32
+			<span>⚡</span> Firmware & Wiring ESP32
 		</a>
 	</div>
 
 	<!-- TAB 1: KEHADIRAN & PEMERIKSAAN SESI AKTIF -->
 	<div id="tabKehadiran" class="tab-content-section">
-		<div class="card border-0 shadow-sm" style="border-radius: 16px;">
-			<div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center">
+		<div class="content-card">
+			<div class="content-card-header">
 				<div>
 					<h5 class="font-weight-bold text-dark mb-0">
 						Kehadiran Balita & Data Tumbuh Kembang
 					</h5>
 					<small class="text-muted">
 						<?php if ($sesi_aktif): ?>
-							Sesi Aktif: <strong><?= htmlspecialchars($sesi_aktif->nama_sesi); ?></strong> (<?= date('d M Y', strtotime($sesi_aktif->tanggal)); ?>)
+							Sesi Aktif: <strong class="text-primary"><?= htmlspecialchars($sesi_aktif->nama_sesi); ?></strong> (<?= date('d M Y', strtotime($sesi_aktif->tanggal)); ?>)
 						<?php else: ?>
-							<span class="text-danger">Tidak ada sesi aktif saat ini</span>
+							<span class="text-danger font-weight-bold">Tidak ada sesi aktif saat ini</span>
 						<?php endif; ?>
 					</small>
 				</div>
-				<div class="mt-2 mt-md-0 d-flex gap-2">
-					<button onclick="fetchLiveStream()" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px;">
-						🔄 Refresh Data
+				<div class="d-flex" style="gap: 8px;">
+					<button onclick="fetchLiveStream()" class="btn btn-action-light btn-sm">
+						<i class="fas fa-sync-alt"></i> Refresh Data
 					</button>
-					<a href="#modalPairKtp" data-toggle="modal" class="btn btn-outline-info btn-sm font-weight-bold" style="border-radius: 8px;">
-						🪪 Hubungkan KTP Baru
+					<a href="#modalPairKtp" data-toggle="modal" class="btn btn-action-light btn-sm">
+						<i class="fas fa-id-card text-info"></i> Hubungkan KTP
 					</a>
 				</div>
 			</div>
@@ -431,7 +550,7 @@
 									<tr>
 										<td>
 											<div class="d-flex align-items-center">
-												<div style="width: 40px; height: 40px; border-radius: 10px; background: <?= $k->jenis_kelamin == 'L' ? '#e0f2fe' : '#fce7f3'; ?>; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 12px;">
+												<div style="width: 38px; height: 38px; border-radius: 10px; background: <?= $k->jenis_kelamin == 'L' ? '#e0f2fe' : '#fce7f3'; ?>; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 12px; flex-shrink: 0;">
 													<?= $k->jenis_kelamin == 'L' ? '👦' : '👧'; ?>
 												</div>
 												<div>
@@ -446,7 +565,7 @@
 											</div>
 										</td>
 										<td>
-											<span class="badge badge-light text-dark font-weight-bold" style="font-size: 12px;">
+											<span class="badge badge-light border text-dark font-weight-bold" style="font-size: 12px;">
 												<?= date('H:i', strtotime($k->jam_datang)); ?> WIB
 											</span>
 											<br>
@@ -467,13 +586,13 @@
 											<?php if ($k->status_gizi): ?>
 												<?php
 													$badge_cls = 'badge-success';
-													if ($k->status_gizi == 'Kurang') $badge_cls = 'badge-warning';
+													if ($k->status_gizi == 'Kurang') $badge_cls = 'badge-warning text-dark';
 													if ($k->status_gizi == 'Buruk')  $badge_cls = 'badge-danger';
 													if ($k->status_gizi == 'Lebih')  $badge_cls = 'badge-info';
 												?>
 												<span class="badge <?= $badge_cls; ?> px-2 py-1" style="font-size: 11px;"><?= $k->status_gizi; ?></span>
 											<?php else: ?>
-												<span class="badge badge-secondary px-2 py-1" style="font-size: 11px;">Belum Diukur</span>
+												<span class="badge badge-light border text-muted px-2 py-1" style="font-size: 11px;">Belum Diukur</span>
 											<?php endif; ?>
 										</td>
 										<td>
@@ -487,10 +606,10 @@
 										</td>
 										<td class="text-center">
 											<div class="btn-group">
-												<button type="button" class="btn btn-sm btn-primary" onclick="openModalPemeriksaan(<?= htmlspecialchars(json_encode($k)); ?>)" title="Isi Pengukuran Timbangan">
+												<button type="button" class="btn btn-sm btn-action-primary py-1 px-2" onclick="openModalPemeriksaan(<?= htmlspecialchars(json_encode($k)); ?>)" title="Isi Pengukuran Timbangan">
 													⚖️ Periksa
 												</button>
-												<a href="<?= base_url('smartrt/posyandu_cetak_kms/' . $k->balita_id); ?>" target="_blank" class="btn btn-sm btn-outline-secondary" title="Cetak KMS Balita">
+												<a href="<?= base_url('smartrt/posyandu_cetak_kms/' . $k->balita_id); ?>" target="_blank" class="btn btn-sm btn-action-light py-1 px-2" title="Cetak KMS Balita">
 													🖨️ KMS
 												</a>
 											</div>
@@ -507,14 +626,14 @@
 
 	<!-- TAB 2: DATA BALITA & E-KTP IBU -->
 	<div id="tabBalita" class="tab-content-section" style="display: none;">
-		<div class="card border-0 shadow-sm" style="border-radius: 16px;">
-			<div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+		<div class="content-card">
+			<div class="content-card-header">
 				<div>
 					<h5 class="font-weight-bold text-dark mb-0">Daftar Balita & Status e-KTP Ibu</h5>
 					<small class="text-muted">Total terdaftar: <strong><?= count($balita_list); ?> balita</strong></small>
 				</div>
-				<button class="btn btn-success btn-sm font-weight-bold px-3 py-2" data-toggle="modal" data-target="#modalTambahBalita" style="border-radius: 8px;">
-					➕ Daftarkan Balita Baru
+				<button class="btn btn-action-primary btn-sm" data-toggle="modal" data-target="#modalTambahBalita">
+					<i class="fas fa-plus-circle"></i> Daftarkan Balita Baru
 				</button>
 			</div>
 
@@ -547,7 +666,7 @@
 									<tr>
 										<td>
 											<div class="d-flex align-items-center">
-												<div style="width: 38px; height: 38px; border-radius: 10px; background: <?= $b->jenis_kelamin == 'L' ? '#e0f2fe' : '#fce7f3'; ?>; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-right: 12px;">
+												<div style="width: 38px; height: 38px; border-radius: 10px; background: <?= $b->jenis_kelamin == 'L' ? '#e0f2fe' : '#fce7f3'; ?>; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-right: 12px; flex-shrink: 0;">
 													<?= $b->jenis_kelamin == 'L' ? '👦' : '👧'; ?>
 												</div>
 												<div>
@@ -578,17 +697,17 @@
 												</span>
 												<br><small class="text-muted font-monospace"><?= htmlspecialchars($b->rfid_ktp_ibu); ?></small>
 											<?php else: ?>
-												<button class="btn btn-sm btn-outline-warning py-0 px-2" onclick="openPairModalWithWarga('<?= $b->warga_id; ?>', '<?= htmlspecialchars($b->nama_ortu); ?>')">
+												<button class="btn btn-sm btn-outline-warning py-1 px-2" onclick="openPairModalWithWarga('<?= $b->warga_id; ?>', '<?= htmlspecialchars($b->nama_ortu); ?>')">
 													⚠️ Belum Ada KTP (Pair)
 												</button>
 											<?php endif; ?>
 										</td>
 										<td class="text-center">
 											<div class="btn-group">
-												<a href="<?= base_url('smartrt/posyandu_cetak_kms/' . $b->id); ?>" target="_blank" class="btn btn-sm btn-outline-primary" title="Cetak Riwayat KMS">
+												<a href="<?= base_url('smartrt/posyandu_cetak_kms/' . $b->id); ?>" target="_blank" class="btn btn-sm btn-action-light py-1 px-2" title="Cetak Riwayat KMS">
 													🖨️ KMS
 												</a>
-												<a href="<?= base_url('smartrt/posyandu_balita_hapus/' . $b->id); ?>" onclick="return confirm('Hapus balita ini beserta riwayatnya?')" class="btn btn-sm btn-outline-danger" title="Hapus Balita">
+												<a href="<?= base_url('smartrt/posyandu_balita_hapus/' . $b->id); ?>" onclick="return confirm('Hapus balita ini beserta riwayatnya?')" class="btn btn-sm btn-outline-danger py-1 px-2" title="Hapus Balita">
 													🗑️
 												</a>
 											</div>
@@ -605,11 +724,11 @@
 
 	<!-- TAB 3: MANAJEMEN SESI POSYANDU -->
 	<div id="tabSesi" class="tab-content-section" style="display: none;">
-		<div class="card border-0 shadow-sm" style="border-radius: 16px;">
-			<div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+		<div class="content-card">
+			<div class="content-card-header">
 				<h5 class="font-weight-bold text-dark mb-0">Jadwal & Sesi Posyandu RT</h5>
-				<button class="btn btn-primary btn-sm font-weight-bold px-3 py-2" data-toggle="modal" data-target="#modalTambahSesi" style="border-radius: 8px;">
-					➕ Buat Jadwal Sesi Baru
+				<button class="btn btn-action-primary btn-sm" data-toggle="modal" data-target="#modalTambahSesi">
+					<i class="fas fa-plus-circle"></i> Buat Jadwal Sesi Baru
 				</button>
 			</div>
 
@@ -678,16 +797,18 @@
 
 	<!-- TAB 4: FIRMWARE & WIRING NODEMCU ESP32 + RC522 -->
 	<div id="tabEsp32" class="tab-content-section" style="display: none;">
-		<div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-			<div class="card-header bg-white py-3 border-bottom">
-				<h5 class="font-weight-bold text-dark mb-0">⚡ Skema Wiring Pin NodeMCU ESP32 ke RFID MFRC522 (RC522)</h5>
-				<small class="text-muted">Gunakan modul RFID MFRC522 13.56 MHz (Mendukung pembacaan UID e-KTP dan kartu Mifare).</small>
+		<div class="content-card mb-4">
+			<div class="content-card-header">
+				<div>
+					<h5 class="font-weight-bold text-dark mb-0">⚡ Skema Wiring Pin NodeMCU ESP32 ke RFID MFRC522 (RC522)</h5>
+					<small class="text-muted">Gunakan modul RFID MFRC522 13.56 MHz (Mendukung pembacaan UID e-KTP dan kartu Mifare).</small>
+				</div>
 			</div>
-			<div class="card-body">
+			<div class="card-body p-4">
 				<div class="row">
 					<div class="col-md-6 mb-3">
 						<div class="table-responsive">
-							<table class="table table-bordered table-sm">
+							<table class="table table-bordered table-sm mb-0">
 								<thead class="bg-light font-weight-bold">
 									<tr>
 										<th>Pin RC522 (RFID)</th>
@@ -752,13 +873,13 @@
 					</div>
 
 					<div class="col-md-6">
-						<div class="alert alert-info" style="border-radius: 12px;">
+						<div class="alert alert-info border-0 shadow-sm" style="border-radius: 12px; background: #f0f9ff; color: #0369a1;">
 							<h6 class="font-weight-bold"><i class="fas fa-info-circle mr-1"></i> Endpoint API Server:</h6>
 							<p class="mb-2" style="font-size: 13px;">ESP32 akan mengirimkan HTTP POST/GET ke:</p>
-							<code style="font-size: 13px; font-weight: bold; color: #0284c7; background: #fff; padding: 6px 10px; border-radius: 6px; display: block; margin-bottom: 10px;">
+							<code style="font-size: 12px; font-weight: bold; color: #0284c7; background: #fff; padding: 8px 12px; border-radius: 6px; display: block; margin-bottom: 10px; border: 1px solid #bae6fd;">
 								<?= base_url('smartrt/posyandu_rfid_tap'); ?>
 							</code>
-							<small class="text-muted d-block">
+							<small class="d-block" style="color: #475569;">
 								• <strong>API Key:</strong> <code>kasrt2025</code><br>
 								• <strong>Parameter:</strong> <code>uid=[HEX_UID]&api_key=kasrt2025</code><br>
 								• <strong>Metode:</strong> POST atau GET via WiFi HTTPClient
@@ -770,8 +891,8 @@
 		</div>
 
 		<!-- Arduino IDE Sketch Code -->
-		<div class="card border-0 shadow-sm" style="border-radius: 16px;">
-			<div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center" style="gap: 10px;">
+		<div class="content-card">
+			<div class="content-card-header">
 				<h5 class="font-weight-bold text-dark mb-0">💻 Source Code Arduino IDE (NodeMCU ESP32 + MFRC522)</h5>
 				<div class="d-flex flex-wrap" style="gap: 8px;">
 					<a href="<?= base_url('smartrt/download_firmware_ino'); ?>" class="btn btn-sm btn-success font-weight-bold shadow-sm" style="border-radius: 8px;">
@@ -809,7 +930,7 @@ const char* ssid     = "NAMA_WIFI_ANDA";
 const char* password = "PASSWORD_WIFI";
 
 // ── Konfigurasi Server E-KASRT ───────────────────────────────
-// Ganti dengan IP komputer lokal Anda (misal: 192.168.1.50) atau domain VPS
+// Ganti dengan IP komputer lokal Anda (misal: 10.246.16.194) atau domain VPS
 const char* serverUrl = "<?= base_url('smartrt/posyandu_rfid_tap'); ?>";
 const char* apiKey    = "kasrt2025";
 
@@ -1314,9 +1435,9 @@ document.getElementById('toggleAudioBtn').addEventListener('click', function() {
 // ── Tab Switcher ─────────────────────────────────────────────
 function switchTab(tabId, el) {
 	document.querySelectorAll('.tab-content-section').forEach(t => t.style.display = 'none');
-	document.querySelectorAll('.modern-tab-nav .nav-link-item').forEach(l => l.classList.remove('active'));
+	document.querySelectorAll('.posyandu-nav-tabs .nav-link-item').forEach(l => l.classList.remove('active'));
 	document.getElementById(tabId).style.display = 'block';
-	el.classList.add('active');
+	if (el) el.classList.add('active');
 }
 
 // ── Modal Pemeriksaan ────────────────────────────────────────
@@ -1437,10 +1558,10 @@ function fetchLiveStream() {
 					detailEl.innerText = 'Kartu sudah di-tap sebelumnya';
 				} else if (top.status === 'UNREGISTERED') {
 					statusBadge.className = 'badge badge-danger font-weight-bold';
-					statusBadge.innerText = '🔔 KTP Baru (Belum Terhubung)';
+					statusBadge.innerText = '🔔 KTP Baru (Belum Terdaftar)';
 					iconEl.innerText = '🪪';
-					namaEl.innerHTML = 'KTP Baru: <span class="font-monospace">' + top.uid + '</span>';
-					detailEl.innerHTML = '<a href="javascript:void(0)" onclick="openPairModalWithWarga(null, null, \'' + top.uid + '\')" class="text-warning font-weight-bold"><u>Klik di sini untuk hubungkan ke data Ibu</u></a>';
+					namaEl.innerHTML = 'KTP Baru: <span class="font-monospace text-primary">' + top.uid + '</span>';
+					detailEl.innerHTML = '<a href="javascript:void(0)" onclick="openPairModalWithWarga(null, null, \'' + top.uid + '\')" class="text-primary font-weight-bold"><u>Klik di sini untuk hubungkan ke data Ibu</u></a>';
 				} else {
 					statusBadge.className = 'badge badge-secondary';
 					statusBadge.innerText = top.status;
