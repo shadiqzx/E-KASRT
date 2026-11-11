@@ -1,327 +1,269 @@
-# 🏘️ E-KASRT — Sistem Informasi Warga Rukun Tetangga
+# 🏛️ E-KASRT — Sistem Informasi Keuangan & Smart RT Digital
 
-> Aplikasi pengelolaan administrasi RT yang modern dan terintegrasi, dibangun dengan **CodeIgniter 3** di atas arsitektur **MVC**.
+<p align="center">
+  <img src="https://img.shields.io/badge/Framework-Laravel%2011.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 11" />
+  <img src="https://img.shields.io/badge/PHP-8.2%20%7C%208.3-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2+" />
+  <img src="https://img.shields.io/badge/Database-MySQL%20%7C%20MariaDB-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
+  <img src="https://img.shields.io/badge/IoT%20Device-ESP32%20RFID%20RC522-00979D?style=for-the-badge&logo=arduino&logoColor=white" alt="ESP32 IoT" />
+  <img src="https://img.shields.io/badge/UI%20Design-Executive%20Glassmorphism-0284c7?style=for-the-badge" alt="Glassmorphism" />
+</p>
 
----
-
-## 📌 Deskripsi Proyek
-
-**E-KASRT** adalah sistem informasi manajemen RT (*Rukun Tetangga*) berbasis web yang mencakup seluruh aspek administrasi lingkungan — mulai dari keuangan, data warga, layanan surat, hingga kegiatan dan keamanan lingkungan.
-
-Sistem ini dirancang dengan pendekatan **multi-role** agar setiap pemangku kepentingan (Superadmin, RT, Bendahara, dan Warga) mendapatkan tampilan dan akses yang sesuai dengan tanggung jawabnya.
-
----
-
-## 🚀 Fitur Lengkap
-
-### 💰 Keuangan
-| Fitur | Deskripsi |
-|---|---|
-| **Kas Masuk** | Pencatatan seluruh pemasukan RT (iuran, donasi, dll.) |
-| **Kas Keluar** | Pencatatan seluruh pengeluaran RT |
-| **Laporan Keuangan** | Rekapitulasi saldo, debit/kredit per periode |
-
-### 🏠 Data Kependudukan
-| Fitur | Deskripsi |
-|---|---|
-| **Data Warga** | CRUD lengkap data warga (NIK, nama, TTL, alamat, JK) |
-| **Import CSV** | Impor data warga massal via file CSV |
-
-### 💳 Pembayaran Sampah
-| Fitur | Deskripsi |
-|---|---|
-| **Uang Sampah** | Pembayaran iuran sampah via QR Code QRIS atau tatap muka |
-| **Riwayat Pembayaran** | Warga dapat melihat status dan riwayat pembayaran sendiri |
-| **Kelola Tagihan** | Admin/RT dapat verifikasi dan setujui pembayaran |
-
-### 🏦 Ekonomi Warga
-| Fitur | Deskripsi |
-|---|---|
-| **Koperasi** | Pencatatan simpan-pinjam warga dengan status persetujuan |
-| **Bank Sampah** | Setoran sampah warga dikonversi ke poin (1 kg = 1.000 poin) |
-| **UMKM** | Direktori usaha warga dengan kategori dan kontak WhatsApp |
-
-### 📄 Layanan Administrasi
-| Fitur | Deskripsi |
-|---|---|
-| **Surat Menyurat** | Pengajuan surat pengantar RT secara online, dilengkapi notifikasi status |
-| **Posyandu** | Pencatatan tumbuh kembang balita (BB, TB, imunisasi) |
-| **Rukem** | Manajemen data rukun kematian & santunan |
-| **Aspirasi** | Kotak saran/keluhan warga, bisa dikirim secara anonim |
-
-### 🛡️ Keamanan & Kegiatan
-| Fitur | Deskripsi |
-|---|---|
-| **Jadwal Ronda** | Penjadwalan petugas ronda malam per hari |
-| **Agenda Kegiatan** | Penjadwalan kegiatan RT (kerja bakti, rapat, dll.) |
-| **Aset RT** | Inventaris barang/aset milik RT beserta kondisi dan lokasi |
-
-### ☁️ Sistem & Backup
-| Fitur | Deskripsi |
-|---|---|
-| **Backup Database** | Export database MySQL otomatis via mysqldump |
-| **Sinkronisasi GitHub** | Upload otomatis file proyek ke repository GitHub `shadiqzx/E-KASRT` menggunakan GitHub REST API (tanpa Git CLI) |
-| **Download Backup** | Unduh file `.sql` langsung dari browser |
+> **E-KASRT** adalah platform sistem informasi tata kelola lingkungan Rukun Tetangga (RT) modern berbasis **Laravel 11** dengan antarmuka **Executive Glassmorphism**, integrasi **IoT ESP32 RFID/e-KTP** untuk Posyandu Balita, serta sistem transparansi pembukuan kas lingkungan secara real-time.
 
 ---
 
-## 👥 Sistem Hak Akses (Role-Based Access Control)
+## 📌 Daftar Isi
+- [Keunggulan Utama](#-keunggulan-utama)
+- [Fitur Sistem Lengkap](#-fitur-sistem-lengkap)
+- [Integrasi IoT Smart Posyandu Balita](#-integrasi-iot-smart-posyandu-balita)
+- [Hierarki Hak Akses (RBAC)](#-hierarki-hak-akses-rbac)
+- [Struktur Database](#-struktur-database)
+- [Panduan Instalasi Lokal](#-panduan-instalasi-lokal)
+- [Peta Rute URL (Endpoint Matrix)](#-peta-rute-url-endpoint-matrix)
+- [Struktur Direktori Proyek](#-struktur-direktori-proyek)
+- [Deployment VPS & GitHub Actions](#-deployment-vps--github-actions)
 
-| Role ID | Nama Role | Akun Default | Akses |
-|---|---|---|---|
-| `1` | **Superadmin** | `admin` | Full akses: semua modul + kelola pengguna |
-| `2` | **RT** | `avika` | Full akses kecuali manajemen pengguna |
-| `3` | **Bendahara** | `audia` | Akses keuangan + laporan + layanan warga |
-| `4` | **Warga** | *(per KK)* | Layanan warga saja: bayar sampah, surat, aspirasi, dll. |
+---
 
-> **Catatan:** Superadmin, RT, dan Bendahara menggunakan sidebar navigasi yang sama (`header.php`) — perubahan menu otomatis berlaku untuk ketiganya.
+## ✨ Keunggulan Utama
+
+1. **Modern Executive Glassmorphism UI**:
+   - Efek *frosted glass* (`backdrop-filter: blur(24px)`), pencahayaan *ambient mesh orbs*, dan palet warna *Obsidian Slate* (`#090e1d` & `#0b1329`) yang mewah dan sejuk di mata.
+   - Tipografi berkelas menggunakan **Plus Jakarta Sans** (teks UI & heading) dan **JetBrains Mono** (angka nominal rupiah & kode transaksi).
+2. **Halaman Selamat Datang (Landing Page Portal)**:
+   - Portal publik informatif sebelum masuk ke dashboard, menyajikan ringkasan fitur, live stat kas RT, dan tautan pendaftaran warga baru.
+3. **Form Registrasi Warga Baru (Sign Up)**:
+   - Form pendaftaran mandiri warga dengan validasi NIK KTP (16 digit), nomor KK, dan pembuatan akun warga otomatis terintegrasi ke database kependudukan.
+4. **Smart IoT Posyandu Balita Digital**:
+   - Presensi balita otomatis menggunakan sensor **ESP32 + RFID RC-522** dengan kartu e-KTP / kartu RFID balita, didukung Web Serial API, KMS elektronik, radar animasi, dan audio feedback suara.
+5. **Transparansi Finansial Real-Time**:
+   - Pencatatan kas masuk, pengeluaran belanja lingkungan, mutasi antar-rekening bank/QRIS, generator kwitansi sah otomatis, dan ekspor laporan berkala.
+
+---
+
+## 🚀 Fitur Sistem Lengkap
+
+### 1. 💰 Manajemen Keuangan & Kas RT
+| Fitur | Deskripsi |
+|---|---|
+| **Dashboard Eksekutif** | 4 Kartu KPI fintech (Pemasukan, Pengeluaran, Saldo Kas Aktif, Total Warga), Chart.js Tren Kas 6 Bulan, dan Donut Rasio Alokasi Kas |
+| **Kas Masuk** | Pencatatan penerimaan dana kas (iuran warga, donasi, sumbangan, sewa aset) |
+| **Kas Keluar** | Realisasi pengeluaran belanja pemeliharaan lingkungan, honor keamanan, konsumsi rapat, dll. |
+| **Kwitansi Digital** | Generator bukti kwitansi transaksi otomatis dengan nomor sah dan format cetak resmi |
+| **Transfer Kas** | Mutasi dana kas antar-rekening RT (Rekening BCA RT, Bank BRI, Dompet Digital / QRIS RT) |
+| **Laporan Keuangan** | Rekapitulasi pembukuan kas berkala yang dapat disaring per rentang tanggal dan dicetak |
+
+### 2. 👥 Kependudukan & Layanan Warga
+| Fitur | Deskripsi |
+|---|---|
+| **Data Warga Terpadu** | Manajemen identitas kependudukan RT (NIK, No. KK, nama lengkap, jenis kelamin, alamat, no. rumah) |
+| **Iuran Warga** | Monitoring pembayaran iuran bulanan dan sampah per KK dengan metode tunai maupun transfer |
+| **Surat Pengantar Digital** | Pengajuan surat pengantar kelurahan/domisili secara online dengan penomoran otomatis |
+| **Pengurus RT** | Direktori profil struktural pengurus lingkungan RT beserta jabatan dan kontak |
+| **Profil & Data RT** | Pengaturan informasi RT, RW, kelurahan, kecamatan, nomor rekening, dan tarif iuran |
+
+### 3. 👶 Layanan Smart RT & Lingkungan
+| Fitur | Deskripsi |
+|---|---|
+| **Posyandu Balita IoT** | Presensi balita dengan tap e-KTP / RFID, tracking tumbuh kembang (BB, TB, Lingkar Kepala), status gizi WHO, dan cetak KMS Digital |
+| **Bank Sampah** | Tabungan sampah pilah warga yang dikonversi menjadi saldo simpanan kas RT bernilai ekonomis |
+| **Aspirasi Warga** | Kanal aduan, kritik, dan saran warga lingkungan yang transparan dan dapat dipantau statusnya |
+| **Inventaris Aset RT** | Pencatatan barang dan aset milik RT (tenda, kursi, sound system, terpal) serta riwayat peminjaman |
+
+---
+
+## 📡 Integrasi IoT Smart Posyandu Balita
+
+Sistem E-KASRT terhubung langsung dengan perangkat keras **ESP32 + RFID Reader RC-522** untuk mempercepat proses kehadiran balita di Posyandu:
+
+### Skema Pinout Wiring ESP32 ke MFRC522:
+```
+MFRC522 PIN      ESP32 GPIO
+────────────────────────────
+SDA (SS)   ───>  GPIO 5
+SCK        ───>  GPIO 18
+MOSI       ───>  GPIO 23
+MISO       ───>  GPIO 19
+RST        ───>  GPIO 22
+3.3V       ───>  3V3 (PERHATIAN: Jangan gunakan 5V!)
+GND        ───>  GND
+BUZZER     ───>  GPIO 4 (Opsional: Audio Feedback)
+LED HIJAU  ───>  GPIO 2 (Opsional: Indikator Berhasil)
+```
+
+### Cara Kerja Komunikasi:
+1. **Mode Direct Web Serial API**: Browser Chrome terhubung langsung ke ESP32 melalui kabel USB (baudrate `115200`), membaca UID kartu secara instan tanpa memerlukan server perantara.
+2. **Mode Wi-Fi HTTP POST**: ESP32 mengirimkan UID kartu melalui endpoint API `/smartrt/posyandu_rfid_tap` dengan otentikasi API Key aman.
+3. Firmware Arduino C++ siap pakai tersedia untuk diunduh langsung di panel Posyandu (`.ino` dan `.zip`).
+
+---
+
+## 👥 Hierarki Hak Akses (RBAC)
+
+| Role ID | Peran | Akun Default | Hak Akses |
+|:---:|:---:|:---:|:---|
+| `1` | **Superadmin** | `admin` / `admin` | Akses absolut: seluruh transaksi, modul Smart RT, pengaturan sistem, dan kelola akun pengguna |
+| `2` | **RT** | *(didaftarkan)* | Akses operasional pengurus RT: kas, warga, surat pengantar, dan posyandu |
+| `3` | **Bendahara** | *(didaftarkan)* | Akses pengelolaan keuangan: kas masuk, kas keluar, transfer rekening, dan laporan kas |
+| `4` | **Warga** | *(registrasi mandiri)* | Akses portal warga: melihat saldo kas transparan, riwayat iuran, dan pengajuan surat |
 
 ---
 
 ## 🗄️ Struktur Database
 
-```
-DATABASE: kasrt
-```
+Database: **`kasrt`** (MySQL / MariaDB)
 
 | Tabel | Deskripsi |
 |---|---|
-| `users` | Data akun pengguna sistem |
-| `user_role` | Master role: Superadmin, RT, Bendahara |
-| `data_warga` | Data kependudukan warga RT |
-| `data_kas` | Transaksi kas masuk & keluar |
-| `sampah_payment` | Data pembayaran iuran uang sampah |
-| `koperasi` | Transaksi simpan-pinjam koperasi warga |
-| `bank_sampah` | Data setoran sampah & poin warga |
-| `umkm` | Daftar usaha UMKM warga |
-| `surat` | Pengajuan dan status surat menyurat |
-| `posyandu` | Data pemeriksaan kesehatan balita |
-| `ronda` | Jadwal petugas ronda malam |
-| `kegiatan` | Agenda kegiatan RT |
-| `rukem` | Data rukun kematian & santunan |
-| `aspirasi` | Kotak aspirasi & saran warga |
-| `aset` | Inventaris aset/barang milik RT |
-| `tabel_kredit` | Catatan kredit keuangan RT |
+| `users` | Akun pengguna sistem (username, password hash, role_id, is_active) |
+| `user_role` | Data master hak akses (Superadmin, RT, Bendahara, Warga) |
+| `data_warga` | Master kependudukan (NIK, rfid_ktp, no_kk, nama, jekel, alamat, no_rumah) |
+| `data_kas` | Arus kas masuk dan pengeluaran lingkungan RT |
+| `transaksi_transfer` | Mutasi transfer kas antar-rekening RT dan dompet digital |
+| `posyandu_balita` | Data master balita dan nama orang tua |
+| `posyandu_sesi` | Sesi aktif kegiatan posyandu bulanan |
+| `posyandu_kehadiran` | Catatan kehadiran, penimbangan berat badan, dan pengukuran tinggi badan balita |
+| `posyandu_tap_log` | Riwayat log ketukan kartu RFID / e-KTP |
+| `surat` | Pengajuan surat pengantar dan status persetujuan |
+| `bank_sampah` | Setoran sampah anorganik dan konversi saldo warga |
+| `aspirasi` | Kotak saran dan masukan warga |
+| `aset` | Inventaris aset milik RT dan kondisi barang |
+| `iuran_payment` | Riwayat pembayaran iuran warga |
 
 ---
 
-## 🏗️ Arsitektur Proyek (Blueprint MVC)
+## 💻 Panduan Instalasi Lokal
+
+### Prasyarat Sistem:
+- PHP >= 8.2 (ekstensi: `pdo_mysql`, `mbstring`, `openssl`, `curl`)
+- Composer >= 2.x
+- MySQL >= 8.0 atau MariaDB >= 10.4
+- Web Browser modern (Google Chrome disarankan untuk Web Serial IoT)
+
+### Langkah Instalasi:
+
+1. **Clone Repositori**:
+   ```bash
+   git clone https://github.com/shadiqzx/E-KASRT.git
+   cd E-KASRT
+   ```
+
+2. **Install Dependensi Composer**:
+   ```bash
+   composer install
+   ```
+
+3. **Konfigurasi Environment**:
+   Salin file konfigurasi environment:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Konfigurasi Database di `.env`**:
+   Sesuaikan parameter database Anda:
+   ```ini
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=kasrt
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+5. **Import Database**:
+   Import file database `database/kasrt.sql` ke MySQL Anda via phpMyAdmin atau CLI:
+   ```bash
+   mysql -u root -p kasrt < database/kasrt.sql
+   ```
+
+6. **Jalankan Development Server**:
+   ```bash
+   php artisan serve --port=8000
+   ```
+   Akses aplikasi di browser: **`http://127.0.0.1:8000`**
+
+---
+
+## 🔗 Peta Rute URL (Endpoint Matrix)
+
+### Halaman Publik & Autentikasi:
+- `GET /` : Halaman Selamat Datang / Landing Page & Sekilas Fitur
+- `GET /login` : Halaman Login (Glassmorphism Split Layout)
+- `POST /login` : Proses Autentikasi Masuk
+- `GET /register` : Formulir Pendaftaran Akun Warga Baru
+- `POST /register` : Proses Registrasi Warga & Pembuatan Akun
+- `GET /logout` : Keluar dari Sistem
+
+### Panel Dashboard & Keuangan (Auth Required):
+- `GET /dashboard` : Dashboard Eksekutif & Chart Tren Arus Kas
+- `GET /kas-masuk` : Pencatatan Kas Masuk RT
+- `GET /kas-keluar` : Pencatatan Belanja Pengeluaran RT
+- `POST /kas/store` : Simpan Transaksi Kas Masuk / Keluar
+- `GET /kas/kwitansi/{id}` : Cetak Bukti Kwitansi Transaksi
+- `GET /kas/laporan` : Rekapitulasi Laporan Keuangan Berkala
+
+### Layanan Smart RT & IoT:
+- `GET /smartrt/posyandu` : Panel Kelola Posyandu Balita IoT & Radar Scan
+- `GET /smartrt/posyandu_cetak_kms/{id}` : Cetak KMS Balita
+- `GET /smartrt/transfer` : Kelola Transfer Rekening Kas RT
+- `GET /smartrt/iuran` : Rekap Iuran Warga & Status Tagihan
+- `GET /smartrt/banksampah` : Pembukuan Bank Sampah Lingkungan
+- `GET /smartrt/surat` : Layanan Pengajuan Surat Pengantar RT
+- `GET /smartrt/aspirasi` : Kotak Aspirasi & Masukan Warga
+- `GET /smartrt/aset` : Inventaris Aset & Peminjaman Barang RT
+- `GET /smartrt/backup` : Backup Database MySQL 1-Klik
+
+---
+
+## 📁 Struktur Direktori Proyek
 
 ```
 E-KASRT/
-├── application/
-│   ├── controllers/
-│   │   ├── Admin.php           # Dashboard & manajemen pengguna (Superadmin)
-│   │   ├── Auth.php            # Login, logout, ganti password
-│   │   ├── KasRT.php           # Kas masuk, kas keluar, laporan
-│   │   ├── SmartRT.php         # ★ Semua fitur baru (11 modul + backup)
-│   │   ├── Users.php           # Panel RT, Bendahara, Warga
-│   │   └── Warga.php           # CRUD data warga
-│   │
-│   ├── models/
-│   │   ├── M_auth.php          # Validasi login & kredensial
-│   │   └── M_kas.php           # CRUD kas, warga, laporan
-│   │
-│   ├── views/
-│   │   ├── include/
-│   │   │   ├── header.php      # ★ Sidebar kiri — Superadmin, RT, Bendahara
-│   │   │   ├── header_warga.php # Navbar atas — khusus Warga
-│   │   │   └── footer.php      # Footer + JS global
-│   │   │
-│   │   ├── admin/              # View halaman Admin (kas, laporan, warga)
-│   │   ├── bendahara/          # View halaman Bendahara
-│   │   ├── rt/                 # View halaman RT
-│   │   ├── warga/              # View halaman Warga
-│   │   ├── laporan/            # Template cetak laporan
-│   │   │
-│   │   ├── smartrt/            # ★ 23 view modul SmartRT
-│   │   │   ├── sampah.php / sampah_kelola.php
-│   │   │   ├── koperasi.php / koperasi_kelola.php
-│   │   │   ├── banksampah.php / banksampah_kelola.php
-│   │   │   ├── umkm.php / umkm_kelola.php
-│   │   │   ├── surat.php / surat_kelola.php
-│   │   │   ├── posyandu.php / posyandu_kelola.php
-│   │   │   ├── ronda.php / ronda_kelola.php
-│   │   │   ├── kegiatan.php / kegiatan_kelola.php
-│   │   │   ├── rukem.php / rukem_kelola.php
-│   │   │   ├── aspirasi.php / aspirasi_kelola.php
-│   │   │   ├── aset.php / aset_kelola.php
-│   │   │   └── backup.php
-│   │   │
-│   │   ├── index.php           # Halaman dashboard utama
-│   │   └── login.php           # Halaman login
-│   │
-│   └── config/
-│       ├── database.php        # Koneksi MySQL
-│       └── routes.php          # Routing URL
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── AuthController.php          # Login, Register Warga, Logout
+│   │   ├── DashboardController.php     # Perhitungan Saldo, Chart.js 6 Bulan
+│   │   ├── KasController.php           # Kas Masuk, Keluar, Kwitansi, Laporan
+│   │   ├── PosyanduController.php      # Posyandu Balita IoT & Web Serial
+│   │   ├── SmartRtController.php       # Iuran, Transfer, Surat, Bank Sampah, Aset
+│   │   ├── WargaController.php         # Manajemen Data Warga & CSV Import
+│   │   └── AdminUserController.php     # Manajemen Pengguna & Hak Akses
+│   └── Models/                         # Eloquent Models (User, DataKas, DataWarga, dll.)
 │
-├── assets/                     # CSS, JS, Font, Gambar
-├── database/
-│   ├── fitur_baru.sql          # Migrasi 11 tabel fitur baru
-│   ├── kasrt_backup.sql        # ★ Auto-generated backup
-│   └── .htaccess               # Proteksi akses publik ke folder ini
+├── database/                           # Skema Database & Backup SQL
+├── public/
+│   ├── assets/                         # Font, Icons, CSS tema, JS libraries
+│   │   └── css/mobile-fix.css          # Executive Glassmorphism & Modal Stacking Engine
+│   └── firmware_esp32/                 # Source code firmware ESP32 RFID (.ino & .zip)
 │
-├── system/                     # CodeIgniter 3 core (jangan diubah)
-├── .htaccess                   # URL rewriting (mod_rewrite)
-└── README.md                   # Dokumentasi ini
+├── resources/views/
+│   ├── layouts/app.blade.php           # Master layout Glassmorphism (Dark Slate Sidebar)
+│   ├── welcome.blade.php               # Halaman Selamat Datang & Sekilas Fitur Portal
+│   ├── auth/
+│   │   ├── login.blade.php             # Login Glassmorphism Split-Hero
+│   │   └── register.blade.php          # Pendaftaran Warga Baru
+│   ├── dashboard/index.blade.php       # Dashboard Eksekutif Arus Kas & Posyandu
+│   ├── kas/                            # View Kas Masuk, Keluar, Kwitansi, Laporan
+│   ├── warga/                          # View Data Kependudukan Warga
+│   ├── smartrt/                        # View Modul Smart RT (Posyandu, Iuran, Surat, dll.)
+│   └── admin/                          # View Manajemen Akun & Hak Akses
+│
+├── routes/web.php                      # Pendaftaran 70+ Endpoint URL Laravel
+└── README.md                           # Dokumentasi Resmi Proyek
 ```
 
 ---
 
-## 🔗 Peta URL Endpoint
+## 🚀 Deployment VPS & GitHub Actions
 
-### Publik
-| URL | Deskripsi |
-|---|---|
-| `GET /kasrt/auth` | Halaman login |
-| `POST /kasrt/auth/login` | Proses login |
-| `GET /kasrt/auth/logout` | Logout |
-
-### Admin / RT / Bendahara
-| URL | Deskripsi |
-|---|---|
-| `GET /kasrt/admin` | Dashboard utama |
-| `GET /kasrt/kasrt` | Kas masuk |
-| `GET /kasrt/kasrt/kasKeluar` | Kas keluar |
-| `GET /kasrt/kasrt/laporan` | Laporan keuangan |
-| `GET /kasrt/warga` | Data warga |
-| `GET /kasrt/admin/user` | Manajemen pengguna |
-
-### SmartRT (Modul Layanan)
-| URL | Deskripsi |
-|---|---|
-| `GET /kasrt/smartrt/sampah` | Uang sampah |
-| `GET /kasrt/smartrt/koperasi` | Koperasi |
-| `GET /kasrt/smartrt/banksampah` | Bank sampah |
-| `GET /kasrt/smartrt/umkm` | Direktori UMKM |
-| `GET /kasrt/smartrt/surat` | Surat menyurat |
-| `GET /kasrt/smartrt/posyandu` | Posyandu |
-| `GET /kasrt/smartrt/ronda` | Jadwal ronda |
-| `GET /kasrt/smartrt/kegiatan` | Agenda kegiatan |
-| `GET /kasrt/smartrt/rukem` | Rukun kematian |
-| `GET /kasrt/smartrt/aspirasi` | Kotak aspirasi |
-| `GET /kasrt/smartrt/aset` | Inventaris aset |
-| `GET /kasrt/smartrt/backup` | Halaman backup & GitHub sync |
-| `GET /kasrt/smartrt/backup_db` | Jalankan backup database |
-| `GET /kasrt/smartrt/backup_github` | Push ke GitHub |
-| `GET /kasrt/smartrt/backup_download` | Download file SQL |
+Repositori ini telah dikonfigurasi dengan alur kerja **CI/CD GitHub Actions** (`.github/workflows/deploy.yml`):
+- Setiap kali branch `main` menerima `push`, workflow secara otomatis melakukan deploy via SSH ke VPS Server Production (`43.157.230.29`), menjalankan `composer install`, clear cache, dan sinkronisasi file ke web root production.
 
 ---
 
-## ⚙️ Cara Instalasi (Pengembangan Lokal)
+## 📄 Lisensi & Kontributor
 
-### Prasyarat
-- **XAMPP** atau server lokal berbasis PHP 7.x+
-- **MariaDB / MySQL** (XAMPP default menggunakan MariaDB 10.x)
-- Browser modern (Chrome, Firefox, Edge)
-
-### Langkah Instalasi
-
-```bash
-# 1. Clone atau salin folder proyek ke htdocs XAMPP
-# contoh: D:\data app\htdocs\kasrt
-
-# 2. Buat database baru di phpMyAdmin
-#    Database name: kasrt
-
-# 3. Import tabel dasar
-#    (Jika file schema tersedia, import melalui phpMyAdmin)
-
-# 4. Import tabel fitur baru
-#    Import file: database/fitur_baru.sql
-
-# 5. Akses aplikasi
-#    http://localhost/kasrt
-```
-
-### Konfigurasi Database
-Edit file `application/config/database.php`:
-```php
-$db['default'] = [
-    'hostname' => 'localhost',
-    'username' => 'root',
-    'password' => '',         // sesuaikan password MySQL Anda
-    'database' => 'kasrt',
-    'port'     => 3306,       // default XAMPP: 3306 atau 3307
-    ...
-];
-```
-
-### Akun Default
-| Username | Password | Role |
-|---|---|---|
-| `admin` | `admin` | Superadmin |
-| `avika` | `avika` | RT |
-| `audia` | `audia` | Bendahara |
-
----
-
-## 📱 Panduan Akses Mobile (Android & iPhone) & Aplikasi APK
-
-E-KASRT telah mendukung penuh penggunaan di perangkat smartphone (Android & iPhone) baik sebagai **Web Mobile / PWA** maupun sebagai **Aplikasi Android Native (.APK)**.
-
-### 1. Akses Web Mobile via Wi-Fi Lokal
-Pastikan smartphone terhubung ke jaringan Wi-Fi yang sama dengan laptop/server:
-- **Alamat URL:** `http://[IP-KOMPUTER]/kasrt/` (contoh: `http://192.168.1.7/kasrt/`)
-- Konfigurasi `base_url` di `application/config/config.php` telah dibuat dinamis otomatis mengikuti IP atau domain pengakses.
-
-### 2. Pasang sebagai PWA (Progressive Web App - Tanpa Install File)
-- **iPhone (iOS Safari):** Buka URL web &rarr; Ketuk tombol **Share / Bagikan** &rarr; Pilih **"Tambahkan ke Layar Utama" (Add to Home Screen)**. Aplikasi akan terpasang di layar utama iPhone secara standalone.
-- **Android (Chrome):** Buka URL web &rarr; Ketuk ikon titik tiga di pojok kanan atas &rarr; Pilih **"Instal Aplikasi" / "Tambahkan ke Layar Utama"**.
-
-### 3. Proyek Aplikasi Android (.APK)
-Tersedia proyek Android Studio lengkap di folder:
-📁 `android_apk_ekasrt/`
-
-**Fitur Aplikasi Android:**
-- Tampilan fullscreen modern tanpa bilah navigasi browser.
-- Pull-to-refresh (tarik ke bawah untuk memuat ulang data).
-- File Chooser untuk upload foto bukti bayar sampah dan KTP dari galeri/kamera HP.
-- Integrasi WhatsApp (kontak RT langsung membuka aplikasi WhatsApp).
-- Layar Offline & tombol **"Ganti Alamat Server IP"** langsung di aplikasi jika IP server berubah tanpa perlu compile ulang kode.
-
-**Cara Build APK dengan Android Studio:**
-1. Buka **Android Studio** &rarr; Pilih **File > Open** &rarr; Pilih folder `android_apk_ekasrt`.
-2. Tunggu proses sync Gradle selesai.
-3. Klik menu **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-4. Klik notifikasi **locate** pada popup di pojok kanan bawah untuk mengambil file `.apk` yang siap di-install di smartphone Android warga.
-
----
-
-## ☁️ Sinkronisasi ke GitHub
-
-Fitur backup otomatis mendukung push ke repository **`shadiqzx/E-KASRT`** via GitHub REST API (tidak memerlukan Git CLI).
-
-**Cara aktivasi:**
-1. Buat **Personal Access Token** di [github.com/settings/tokens](https://github.com/settings/tokens/new) dengan scope `repo`
-2. Buka halaman: `http://localhost/kasrt/smartrt/backup`
-3. Masukkan token → klik **Simpan Token**
-4. Klik **Push ke GitHub** untuk upload semua file proyek
-
-> Token disimpan di `database/.gh_token` yang dilindungi `.htaccess` dari akses publik.
-
----
-
-## 🛠️ Teknologi yang Digunakan
-
-| Komponen | Teknologi |
-|---|---|
-| Backend Framework | CodeIgniter 3 (PHP) |
-| Database | MariaDB 10.4 / MySQL 5.7+ |
-| Frontend UI | Bootstrap 4.1, Font Awesome 5, Custom CSS |
-| Grafik | Chart.js |
-| AJAX/DOM | jQuery 3.x |
-| Pembayaran | QRIS (QR Code statis) |
-| GitHub Sync | GitHub REST API v3 (cURL/HTTPS) |
-
----
-
-## 📝 Catatan Pengembangan
-
-- Semua perubahan sidebar menu cukup dilakukan di **satu file**: `application/views/include/header.php` — perubahan otomatis berlaku untuk role Superadmin, RT, dan Bendahara.
-- Proteksi akses berbasis `role_id` diterapkan di level controller, bukan hanya di view.
-- File sensitif (token GitHub, backup SQL) dilindungi dari akses publik via `.htaccess` di folder `database/`.
-
----
-
-*Dikembangkan untuk kemajuan administrasi RT Indonesia 🇮🇩*
+- **Pengembang**: Syaifullah Asshadiq ([@shadiqzx](https://github.com/shadiqzx))
+- **Lisensi**: Open-source di bawah lisensi [MIT License](LICENSE).
+- Dibuat dengan bangga untuk kemajuan tata kelola lingkungan rukun tetangga di Indonesia. 🇮🇩
