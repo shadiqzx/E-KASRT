@@ -20,12 +20,21 @@ Route::match(['get', 'post'], '/auth/logout', [AuthController::class, 'logout'])
 
 // Public Welcome / Landing Page (Portal Selamat Datang & Sekilas Fitur E-KASRT)
 Route::get('/', function () {
-    $total_masuk  = (float) \App\Models\DataKas::where('jenis', 'Masuk')->sum('jumlah');
-    $total_keluar = (float) \App\Models\DataKas::where('jenis', 'Keluar')->sum('jumlah');
-    $saldo        = $total_masuk - $total_keluar;
-    $total_warga  = \App\Models\DataWarga::count();
-    $total_balita = \App\Models\PosyanduBalita::count();
-    $total_kk     = \App\Models\DataWarga::whereNotNull('no_kk')->where('no_kk', '!=', '')->distinct('no_kk')->count('no_kk') ?: 34;
+    try {
+        $total_masuk  = (float) \App\Models\DataKas::where('jenis', 'Masuk')->sum('jumlah');
+        $total_keluar = (float) \App\Models\DataKas::where('jenis', 'Keluar')->sum('jumlah');
+        $saldo        = $total_masuk - $total_keluar;
+        $total_warga  = \App\Models\DataWarga::count();
+        $total_balita = \App\Models\PosyanduBalita::count();
+        $total_kk     = \App\Models\DataWarga::whereNotNull('no_kk')->where('no_kk', '!=', '')->distinct('no_kk')->count('no_kk') ?: 34;
+    } catch (\Throwable $e) {
+        $total_masuk  = 0;
+        $total_keluar = 0;
+        $saldo        = 0;
+        $total_warga  = 0;
+        $total_balita = 0;
+        $total_kk     = 0;
+    }
 
     return view('welcome', compact('saldo', 'total_masuk', 'total_keluar', 'total_warga', 'total_balita', 'total_kk'));
 })->name('welcome');

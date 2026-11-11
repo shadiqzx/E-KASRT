@@ -1,4 +1,4 @@
-name: Auto Deploy to VPS
+name: CI & CD Deploy to VPS
 
 on:
   push:
@@ -6,24 +6,105 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: production_deploy
+  cancel-in-progress: false
+
 jobs:
-  deploy:
-    name: Deploy to VPS 43.157.230.29
+  ci:
+    name: Test & Build
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy via SSH to VPS
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
         with:
-          host: 43.157.230.29
-          username: ubuntu
-          password: ${{ secrets.SSH_PASSWORD || 'comet-92$-galaxy' }}
-          port: 22
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_sqlite, pdo_mysql, bcmath, curl, zip
+          coverage: none
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Copy .env.example to .env
+        run: cp .env.example .env
+
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Run Frontend Tests (if defined)
+        run: npm test --if-present
+
+      - name: Build Frontend Assets
+        run: npm run build
+
+      - name: Run Backend Tests
+        run: php artisan test --compact
+
+  deploy:
+    name: Deploy to VPS
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          APP_DIR_VAR: ${{ secrets.VPS_APP_DIR }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: APP_DIR_VAR
           script_stop: true
           script: |
-            echo "🚀 [Deploy] Memulai update repositori di VPS..."
-            cd /home/unique-monsters-kasrt/htdocs/e-kasrt.unique-monsters.my.id
-            sudo chown -R unique-monsters-kasrt:unique-monsters-kasrt /home/unique-monsters-kasrt/htdocs/e-kasrt.unique-monsters.my.id
-            sudo -u unique-monsters-kasrt git checkout application/cache/index.html application/logs/index.html 2>/dev/null || true
-            sudo -u unique-monsters-kasrt git pull origin main
-            echo "✅ [Deploy] Sukses! Versi terbaru sudah aktif di https://e-kasrt.unique-monsters.my.id/"
+            set -e
 
+            APP_DIR="${APP_DIR_VAR:-/home/unique-monsters-kasrt/htdocs/e-kasrt.unique-monsters.my.id}"
+            echo "🚀 [Deploy] Target folder aplikasi di VPS: $APP_DIR"
+
+            if [ ! -d "$APP_DIR" ]; then
+              echo "❌ Error: Direktori $APP_DIR tidak ditemukan di VPS!"
+              exit 1
+            fi
+
+            APP_OWNER="$(stat -c '%U' "$APP_DIR")"
+            CURRENT_USER="$(whoami)"
+            echo "👤 [Deploy] SSH User: $CURRENT_USER | App Owner: $APP_OWNER"
+
+            run_as_owner() {
+              if [ "$CURRENT_USER" = "$APP_OWNER" ]; then
+                bash -c "$1"
+              else
+                sudo -u "$APP_OWNER" env "PATH=$PATH:/usr/local/bin:/usr/bin" bash -c "$1"
+              fi
+            }
+
+            echo "📦 [Deploy] 1. Menyiapkan Git & Pull branch main..."
+            run_as_owner "cd '$APP_DIR' && git config core.fileMode false && git pull --ff-only origin main"
+
+            echo "🐘 [Deploy] 2. Install dependencies Composer produksi..."
+            run_as_owner "cd '$APP_DIR' && composer install --no-dev --optimize-autoloader --no-interaction"
+
+            echo "🗄️ [Deploy] 3. Menjalankan migrasi database..."
+            run_as_owner "cd '$APP_DIR' && php artisan migrate --force"
+
+            echo "🎨 [Deploy] 4. Install dependencies NPM & Build asset Vite..."
+            run_as_owner "cd '$APP_DIR' && npm ci --no-audit --no-fund && npm run build"
+
+            echo "⚡ [Deploy] 5. Refresh & Cache konfigurasi Laravel..."
+            run_as_owner "cd '$APP_DIR' && php artisan optimize:clear && php artisan config:cache && php artisan view:cache"
+
+            echo "✅ [Deploy] Sukses! Versi terbaru sudah aktif di https://e-kasrt.unique-monsters.my.id/"

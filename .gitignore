@@ -21,6 +21,10 @@
 /storage/*.key
 /storage/pail
 /vendor
+*.key
+*.pem
+id_rsa*
+id_ed25519*
 _ide_helper.php
 Homestead.json
 Homestead.yaml
