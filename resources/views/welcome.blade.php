@@ -1489,7 +1489,7 @@
         user-select: none;
         touch-action: none;
         cursor: grab;
-        will-change: transform;
+        will-change: left, top, transform;
         transform-origin: center center;
     }
     #kasbot-wrap:active { cursor: grabbing; }
@@ -1806,6 +1806,7 @@
         ══════════════════════════════════════════ */
         var px, py, vx, vy, rotation = 0, angVel = 0;
         var DAMPING = 0.995, BOUNCE = 0.72, ANG_DAMP = 0.97;
+        var physicsRunning = true; // ← BUG FIX: was missing → loop returned immediately
         var isDragging = false;
         var tapCount = 0, isSleeping = false;
         var sleepTimer = null, bubbleTimer = null, faceTimer = null;
@@ -1817,75 +1818,79 @@
         vy = (Math.random() - 0.5) * 2.5;
         angVel = (Math.random() - 0.5) * 0.6;
 
-        // Physics only controls POSITION on wrap; rotation on inner
-        // This separates physics transform from CSS animation transform
+        // KEY FIX: position via left/top (NOT transform) so wrap.style.transform
+        // is free for rotation ONLY — and inner is NEVER touched by JS inline style,
+        // so CSS animations on inner (.tap-burst, .squash-x, .spin) run without conflict.
         function applyTransform() {
-            wrap.style.transform  = 'translate(' + Math.round(px) + 'px,' + Math.round(py) + 'px)';
-            inner.style.transform = 'rotate(' + rotation.toFixed(2) + 'deg)';
+            wrap.style.left      = Math.round(px) + 'px';
+            wrap.style.top       = Math.round(py) + 'px';
+            wrap.style.transform = 'rotate(' + rotation.toFixed(2) + 'deg)';
+            // inner is NEVER set here — CSS animations own inner's transform
         }
         applyTransform();
 
         function physicsLoop() {
-            if (!physicsRunning || isDragging) {
-                requestAnimationFrame(physicsLoop);
-                return;
-            }
-
             var VW = window.innerWidth;
             var VH = window.innerHeight;
 
-            // Apply velocity
-            px += vx;
-            py += vy;
+            if (!isDragging) {
+                // Apply velocity
+                px += vx;
+                py += vy;
 
-            // Apply damping
-            vx *= DAMPING;
-            vy *= DAMPING;
-            angVel *= ANG_DAMP;
-            rotation += angVel;
+                // Apply damping
+                vx *= DAMPING;
+                vy *= DAMPING;
+                angVel *= ANG_DAMP;
+                rotation += angVel;
 
-            // Keep rotation tight (-25 to 25 deg) when slow
-            var speed = Math.sqrt(vx*vx + vy*vy);
-            if (speed < 1.5) {
-                // Gently drift rotation back to 0
-                rotation *= 0.98;
-                angVel  *= 0.95;
+                // Gently return rotation to 0 when nearly stopped
+                var speed = Math.sqrt(vx*vx + vy*vy);
+                if (speed < 1.2) {
+                    rotation *= 0.97;
+                    angVel  *= 0.93;
+                }
+
+                // Wall bounce
+                var hitX = false, hitY = false;
+                if (px <= 0) {
+                    px = 0;
+                    vx = Math.abs(vx) * BOUNCE + 0.5; // small extra kick to unstick
+                    angVel += (Math.random() - 0.5) * 2;
+                    hitX = true;
+                }
+                if (px >= VW - W) {
+                    px = VW - W;
+                    vx = -(Math.abs(vx) * BOUNCE + 0.5);
+                    angVel += (Math.random() - 0.5) * 2;
+                    hitX = true;
+                }
+                if (py <= 0) {
+                    py = 0;
+                    vy = Math.abs(vy) * BOUNCE + 0.5;
+                    angVel += (Math.random() - 0.5) * 2;
+                    hitY = true;
+                }
+                if (py >= VH - H) {
+                    py = VH - H;
+                    vy = -(Math.abs(vy) * BOUNCE + 0.5);
+                    angVel += (Math.random() - 0.5) * 2;
+                    hitY = true;
+                }
+
+                // Squash on wall hit — only when moving fast enough
+                if (hitX && Math.abs(vx) > 1.5) triggerAnim('squash-x', 350);
+                if (hitY && Math.abs(vy) > 1.5) triggerAnim('squash-y', 350);
+
+                // Auto-nudge if nearly stopped
+                if (speed < 0.12 && !isSleeping) {
+                    vx += (Math.random() - 0.5) * 1.2;
+                    vy += (Math.random() - 0.5) * 1.2;
+                }
+
+                applyTransform();
             }
 
-            // Wall bounce with squash
-            var hitX = false, hitY = false;
-            if (px <= 0) {
-                px = 0; vx = Math.abs(vx) * BOUNCE;
-                angVel += (Math.random() - 0.5) * 1.5;
-                hitX = true;
-            }
-            if (px >= VW - W) {
-                px = VW - W; vx = -Math.abs(vx) * BOUNCE;
-                angVel += (Math.random() - 0.5) * 1.5;
-                hitX = true;
-            }
-            if (py <= 0) {
-                py = 0; vy = Math.abs(vy) * BOUNCE;
-                angVel += (Math.random() - 0.5) * 1.5;
-                hitY = true;
-            }
-            if (py >= VH - H) {
-                py = VH - H; vy = -Math.abs(vy) * BOUNCE;
-                angVel += (Math.random() - 0.5) * 1.5;
-                hitY = true;
-            }
-
-            // Squash & stretch on wall hit
-            if (hitX) triggerAnim('squash-x', 350);
-            if (hitY) triggerAnim('squash-y', 350);
-
-            // If nearly stopped, give a little random nudge
-            if (speed < 0.15 && !isSleeping) {
-                vx += (Math.random() - 0.5) * 1.0;
-                vy += (Math.random() - 0.5) * 1.0;
-            }
-
-            applyTransform();
             requestAnimationFrame(physicsLoop);
         }
         requestAnimationFrame(physicsLoop);
