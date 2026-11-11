@@ -615,6 +615,74 @@
 </head>
 <body>
 
+    {{-- ===== FLASH NOTIFICATION TOAST ===== --}}
+    @if(session('success') || session('error') || session('warning'))
+    <div id="flash-toast" style="
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 99999;
+        min-width: 320px;
+        max-width: 420px;
+        background: rgba(2, 132, 199, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(2, 132, 199, 0.4);
+        border-radius: 14px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+        animation: toastSlideIn 0.4s cubic-bezier(.22,.68,0,1.2) both;
+    ">
+        @if(session('success'))
+        <div style="flex-shrink:0; width:36px; height:36px; border-radius:50%; background:rgba(52,211,153,0.2); border:1px solid rgba(52,211,153,0.5); display:flex; align-items:center; justify-content:center;">
+            <i class="fas fa-check" style="color:#34d399; font-size:14px;"></i>
+        </div>
+        <div style="flex:1; min-width:0;">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; color:#34d399; font-size:13px; margin-bottom:4px;">Berhasil</div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; color:rgba(255,255,255,0.85); font-size:13px; line-height:1.5;">{{ session('success') }}</div>
+        </div>
+        @elseif(session('error'))
+        <div style="flex-shrink:0; width:36px; height:36px; border-radius:50%; background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.5); display:flex; align-items:center; justify-content:center;">
+            <i class="fas fa-times" style="color:#ef4444; font-size:14px;"></i>
+        </div>
+        <div style="flex:1; min-width:0;">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; color:#ef4444; font-size:13px; margin-bottom:4px;">Gagal</div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; color:rgba(255,255,255,0.85); font-size:13px; line-height:1.5;">{{ session('error') }}</div>
+        </div>
+        @elseif(session('warning'))
+        <div style="flex-shrink:0; width:36px; height:36px; border-radius:50%; background:rgba(251,191,36,0.2); border:1px solid rgba(251,191,36,0.5); display:flex; align-items:center; justify-content:center;">
+            <i class="fas fa-exclamation" style="color:#fbbf24; font-size:14px;"></i>
+        </div>
+        <div style="flex:1; min-width:0;">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; color:#fbbf24; font-size:13px; margin-bottom:4px;">Peringatan</div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; color:rgba(255,255,255,0.85); font-size:13px; line-height:1.5;">{{ session('warning') }}</div>
+        </div>
+        @endif
+        <button onclick="document.getElementById('flash-toast').remove()" style="flex-shrink:0; background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.4); padding:4px; line-height:1; font-size:16px;" title="Tutup">&times;</button>
+    </div>
+    <style>
+        @keyframes toastSlideIn {
+            from { opacity: 0; transform: translateX(60px) scale(0.9); }
+            to   { opacity: 1; transform: translateX(0) scale(1); }
+        }
+    </style>
+    <script>
+        setTimeout(function() {
+            var t = document.getElementById('flash-toast');
+            if (t) {
+                t.style.transition = 'opacity 0.5s, transform 0.5s';
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(60px) scale(0.9)';
+                setTimeout(function() { t && t.remove(); }, 500);
+            }
+        }, 5000);
+    </script>
+    @endif
+    {{-- ===== END FLASH NOTIFICATION ===== --}}
+
     <!-- Ambient Glowing Orbs Background -->
     <div class="ambient-canvas">
         <div class="orb orb-1"></div>
