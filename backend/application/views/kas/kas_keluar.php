@@ -413,7 +413,7 @@
 </style>
 
 <div class="page-content--bgf7 kas-page-wrapper">
-	<div class="container-fluid" style="max-width: 1380px; margin: 0 auto; padding-top: 28px;">
+	<div class="container-fluid" style="max-width: 1380px; margin: 0 auto; padding-top: 85px;">
 
 		<!-- Flash Message Alert -->
 		<?php if ($this->session->flashdata('message')): ?>
@@ -783,113 +783,6 @@
 								</div>
 							</td>
 						</tr>
-
-						<!-- Modal Realistis Kwitansi Digital Kas Keluar -->
-						<div class="modal fade" id="receiptModal<?= $kel->idKas; ?>" tabindex="-1" role="dialog" aria-hidden="true">
-							<div class="modal-dialog modal-dialog-centered" role="document">
-								<div class="modal-content" style="border-radius: 18px; border: none; background: transparent;">
-									<div class="realistic-receipt">
-										<div class="d-flex justify-content-between align-items-start mb-3">
-											<div>
-												<span class="badge badge-danger px-2 py-1 font-weight-bold mb-1" style="font-size: 10.5px;">E-KASRT DIGITAL VOUCHER</span>
-												<h5 class="font-weight-bold mb-0 text-dark">BUKTI PENGELUARAN KAS</h5>
-												<small class="text-muted" style="font-family: 'JetBrains Mono';">ID: #<?= $kel->idKas; ?></small>
-											</div>
-											<div class="stamp-paid-seal--keluar">TERBAYAR</div>
-										</div>
-
-										<hr style="border-top: 2px dashed #e2e8f0;">
-
-										<table class="table table-sm table-borderless mb-2" style="font-size: 13.5px;">
-											<tr>
-												<td style="width: 140px; color: #64748b;">Tanggal Catat</td>
-												<td>: <strong><?= date('d F Y', strtotime($kel->tanggal)); ?></strong></td>
-											</tr>
-											<tr>
-												<td style="color: #64748b;">Keperluan</td>
-												<td>: <strong><?= htmlspecialchars($kel->keterangan); ?></strong></td>
-											</tr>
-											<tr>
-												<td style="color: #64748b;">Kategori</td>
-												<td>: <span class="badge badge-light border"><?= $cat_name; ?></span></td>
-											</tr>
-										</table>
-
-										<div class="p-3 my-2" style="background: #fff1f2; border-radius: 12px; border: 1.5px solid #fecdd3;">
-											<small class="text-muted d-block text-uppercase font-weight-bold" style="font-size: 11px;">Nominal Pengeluaran</small>
-											<h3 class="font-weight-bold text-danger mb-0" style="font-family: 'JetBrains Mono', monospace;">
-												- Rp <?= rupiah($kel->jumlah); ?>
-											</h3>
-										</div>
-
-										<div class="p-2 mb-3 text-muted" style="background: #f8fafc; border-radius: 8px; font-size: 12.5px;">
-											<span>Terbilang:</span><br>
-											<strong class="text-dark"><em>"<?= function_exists('terbilang') ? terbilang($kel->jumlah) : ''; ?> Rupiah"</em></strong>
-										</div>
-
-										<div class="d-flex justify-content-between align-items-center pt-2 border-top">
-											<a href="<?= base_url('kasRT/kwitansiKas/' . $kel->idKas); ?>" target="_blank" class="btn btn-danger btn-sm font-weight-bold px-3 py-2" style="border-radius: 8px;">
-												<i class="fas fa-print mr-1"></i> Cetak Dokumen
-											</a>
-											<button type="button" class="btn btn-secondary btn-sm px-3 py-2" style="border-radius: 8px;" data-dismiss="modal">
-												Tutup
-											</button>
-										</div>
-									</div>
-									<div class="receipt-sawtooth"></div>
-								</div>
-							</div>
-						</div>
-
-						<!-- Modal Edit Kas Keluar -->
-						<?php if ($user['role_id'] == 1 || $user['role_id'] == 3): ?>
-						<div class="modal fade" id="editModal<?= $kel->idKas; ?>" tabindex="-1" role="dialog" aria-hidden="true">
-							<div class="modal-dialog modal-dialog-centered" role="document">
-								<div class="modal-content" style="border-radius: 18px; border: none; overflow: hidden;">
-									<div class="modal-header text-white" style="background: linear-gradient(135deg, #7f1d1d, #dc2626);">
-										<h5 class="modal-title font-weight-bold">
-											<i class="fas fa-pen-square mr-2"></i>Edit Kas Keluar #<?= $kel->idKas; ?>
-										</h5>
-										<button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-									</div>
-									<div class="modal-body p-4">
-										<?= form_open('kasRT/editKas'); ?>
-											<input type="hidden" name="idKas" value="<?= $kel->idKas; ?>">
-											<input type="hidden" name="jenis" value="keluar">
-
-											<div class="form-group mb-3">
-												<label class="font-weight-bold" style="font-size: 13px;">Tanggal Transaksi</label>
-												<input class="form-control" type="date" name="tanggal" value="<?= $kel->tanggal; ?>" required style="border-radius: 9px;">
-											</div>
-
-											<div class="form-group mb-3">
-												<label class="font-weight-bold" style="font-size: 13px;">Keterangan / Keperluan Belanja</label>
-												<textarea class="form-control" name="keterangan" rows="2" required style="border-radius: 9px;"><?= htmlspecialchars($kel->keterangan); ?></textarea>
-											</div>
-
-											<div class="form-group mb-4">
-												<label class="font-weight-bold" style="font-size: 13px;">Nominal (Rp)</label>
-												<div class="input-group">
-													<div class="input-group-prepend">
-														<span class="input-group-text font-weight-bold" style="border-radius: 9px 0 0 9px; background: #fff1f2; color: #dc2626;">Rp</span>
-													</div>
-													<input class="form-control" type="number" name="jumlah" value="<?= $kel->jumlah; ?>" required style="border-radius: 0 9px 9px 0; font-weight: 700; font-size: 16px;">
-												</div>
-											</div>
-
-											<div class="d-flex justify-content-end" style="gap: 8px;">
-												<button type="button" class="btn btn-light px-3 py-2 font-weight-bold" data-dismiss="modal" style="border-radius: 8px;">Batal</button>
-												<button type="submit" class="btn btn-danger px-4 py-2 font-weight-bold shadow-sm" style="border-radius: 8px; background: #dc2626;">
-													<i class="fas fa-save mr-1"></i> Simpan Perubahan
-												</button>
-											</div>
-										</form>
-									</div>
-								</div>
-							</div>
-						</div>
-						<?php endif; ?>
-
 						<?php 
 							endforeach; 
 						else: 
@@ -922,6 +815,162 @@
 
 	</div>
 </div>
+
+<!-- Modals Detail Kwitansi & Edit Kas Keluar (Placed outside table to prevent z-index & rendering bugs) -->
+<?php 
+if (!empty($keluar)): 
+	foreach ($keluar as $kel): 
+		$ket_lower = strtolower($kel->keterangan);
+		$cat_icon = '🛒';
+		$cat_name = 'Operasional';
+		$cat_class = 'bg-light text-dark';
+
+		if (strpos($ket_lower, 'lampu') !== false || strpos($ket_lower, 'pju') !== false || strpos($ket_lower, 'jalan') !== false || strpos($ket_lower, 'perbaikan') !== false) {
+			$cat_icon = '💡';
+			$cat_name = 'Perbaikan';
+			$cat_class = 'text-warning bg-light border border-warning';
+		} else if (strpos($ket_lower, 'sampah') !== false || strpos($ket_lower, 'bersih') !== false) {
+			$cat_icon = '🧹';
+			$cat_name = 'Kebersihan';
+			$cat_class = 'text-info bg-light border border-info';
+		} else if (strpos($ket_lower, 'hansip') !== false || strpos($ket_lower, 'aman') !== false || strpos($ket_lower, 'ronda') !== false) {
+			$cat_icon = '👮';
+			$cat_name = 'Keamanan';
+			$cat_class = 'text-primary bg-light border border-primary';
+		} else if (strpos($ket_lower, 'atk') !== false || strpos($ket_lower, 'printer') !== false || strpos($ket_lower, 'kertas') !== false) {
+			$cat_icon = '📄';
+			$cat_name = 'ATK';
+			$cat_class = 'text-secondary bg-light border';
+		} else if (strpos($ket_lower, 'konsumsi') !== false || strpos($ket_lower, 'makan') !== false || strpos($ket_lower, 'snack') !== false) {
+			$cat_icon = '☕';
+			$cat_name = 'Konsumsi';
+			$cat_class = 'text-orange bg-light border border-orange';
+		} else if (strpos($ket_lower, 'santunan') !== false || strpos($ket_lower, 'duka') !== false || strpos($ket_lower, 'sosial') !== false) {
+			$cat_icon = '🏥';
+			$cat_name = 'Sosial';
+			$cat_class = 'text-danger bg-light border border-danger';
+		} else if (strpos($ket_lower, 'lomba') !== false || strpos($ket_lower, 'agustus') !== false) {
+			$cat_icon = '🎈';
+			$cat_name = 'Kegiatan';
+			$cat_class = 'text-purple bg-light border border-purple';
+		}
+?>
+
+<!-- Modal Realistis Kwitansi Digital Kas Keluar -->
+<div class="modal fade" id="receiptModal<?= $kel->idKas; ?>" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content" style="border-radius: 18px; border: none; background: transparent;">
+			<div class="realistic-receipt">
+				<div class="d-flex justify-content-between align-items-start mb-3">
+					<div>
+						<span class="badge badge-danger px-2 py-1 font-weight-bold mb-1" style="font-size: 10.5px;">E-KASRT DIGITAL VOUCHER</span>
+						<h5 class="font-weight-bold mb-0 text-dark">BUKTI PENGELUARAN KAS</h5>
+						<small class="text-muted" style="font-family: 'JetBrains Mono';">ID: #<?= $kel->idKas; ?></small>
+					</div>
+					<div class="d-flex align-items-center" style="gap: 12px;">
+						<div class="stamp-paid-seal--keluar">TERBAYAR</div>
+						<button type="button" class="close" data-dismiss="modal" onclick="$('#receiptModal<?= $kel->idKas; ?>').modal('hide');" aria-label="Close" style="font-size: 26px; line-height: 1; opacity: 0.6; cursor: pointer;">
+							&times;
+						</button>
+					</div>
+				</div>
+
+				<hr style="border-top: 2px dashed #e2e8f0;">
+
+				<table class="table table-sm table-borderless mb-2" style="font-size: 13.5px;">
+					<tr>
+						<td style="width: 140px; color: #64748b;">Tanggal Catat</td>
+						<td>: <strong><?= date('d F Y', strtotime($kel->tanggal)); ?></strong></td>
+					</tr>
+					<tr>
+						<td style="color: #64748b;">Keperluan</td>
+						<td>: <strong><?= htmlspecialchars($kel->keterangan); ?></strong></td>
+					</tr>
+					<tr>
+						<td style="color: #64748b;">Kategori</td>
+						<td>: <span class="badge badge-light border"><?= $cat_name; ?></span></td>
+					</tr>
+				</table>
+
+				<div class="p-3 my-2" style="background: #fff1f2; border-radius: 12px; border: 1.5px solid #fecdd3;">
+					<small class="text-muted d-block text-uppercase font-weight-bold" style="font-size: 11px;">Nominal Pengeluaran</small>
+					<h3 class="font-weight-bold text-danger mb-0" style="font-family: 'JetBrains Mono', monospace;">
+						- Rp <?= rupiah($kel->jumlah); ?>
+					</h3>
+				</div>
+
+				<div class="p-2 mb-3 text-muted" style="background: #f8fafc; border-radius: 8px; font-size: 12.5px;">
+					<span>Terbilang:</span><br>
+					<strong class="text-dark"><em>"<?= function_exists('terbilang') ? terbilang($kel->jumlah) : ''; ?> Rupiah"</em></strong>
+				</div>
+
+				<div class="d-flex justify-content-between align-items-center pt-2 border-top">
+					<a href="<?= base_url('kasRT/kwitansiKas/' . $kel->idKas); ?>" target="_blank" class="btn btn-danger btn-sm font-weight-bold px-3 py-2" style="border-radius: 8px;">
+						<i class="fas fa-print mr-1"></i> Cetak Dokumen
+					</a>
+					<button type="button" class="btn btn-secondary btn-sm px-3 py-2 font-weight-bold" style="border-radius: 8px;" data-dismiss="modal" onclick="$('#receiptModal<?= $kel->idKas; ?>').modal('hide');">
+						<i class="fas fa-times mr-1"></i> Tutup
+					</button>
+				</div>
+			</div>
+			<div class="receipt-sawtooth"></div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Edit Kas Keluar -->
+<?php if ($user['role_id'] == 1 || $user['role_id'] == 3): ?>
+<div class="modal fade" id="editModal<?= $kel->idKas; ?>" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content" style="border-radius: 18px; border: none; overflow: hidden;">
+			<div class="modal-header text-white" style="background: linear-gradient(135deg, #7f1d1d, #dc2626);">
+				<h5 class="modal-title font-weight-bold">
+					<i class="fas fa-pen-square mr-2"></i>Edit Kas Keluar #<?= $kel->idKas; ?>
+				</h5>
+				<button type="button" class="close text-white" data-dismiss="modal" onclick="$('#editModal<?= $kel->idKas; ?>').modal('hide');">&times;</button>
+			</div>
+			<div class="modal-body p-4">
+				<?= form_open('kasRT/editKas'); ?>
+					<input type="hidden" name="idKas" value="<?= $kel->idKas; ?>">
+					<input type="hidden" name="jenis" value="keluar">
+
+					<div class="form-group mb-3">
+						<label class="font-weight-bold" style="font-size: 13px;">Tanggal Transaksi</label>
+						<input class="form-control" type="date" name="tanggal" value="<?= $kel->tanggal; ?>" required style="border-radius: 9px;">
+					</div>
+
+					<div class="form-group mb-3">
+						<label class="font-weight-bold" style="font-size: 13px;">Keterangan / Keperluan Belanja</label>
+						<textarea class="form-control" name="keterangan" rows="2" required style="border-radius: 9px;"><?= htmlspecialchars($kel->keterangan); ?></textarea>
+					</div>
+
+					<div class="form-group mb-4">
+						<label class="font-weight-bold" style="font-size: 13px;">Nominal (Rp)</label>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text font-weight-bold" style="border-radius: 9px 0 0 9px; background: #fff1f2; color: #dc2626;">Rp</span>
+							</div>
+							<input class="form-control" type="number" name="jumlah" value="<?= $kel->jumlah; ?>" required style="border-radius: 0 9px 9px 0; font-weight: 700; font-size: 16px;">
+						</div>
+					</div>
+
+					<div class="d-flex justify-content-end" style="gap: 8px;">
+						<button type="button" class="btn btn-light px-3 py-2 font-weight-bold" data-dismiss="modal" onclick="$('#editModal<?= $kel->idKas; ?>').modal('hide');" style="border-radius: 8px;">Batal</button>
+						<button type="submit" class="btn btn-danger px-4 py-2 font-weight-bold shadow-sm" style="border-radius: 8px; background: #dc2626;">
+							<i class="fas fa-save mr-1"></i> Simpan Perubahan
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<?php endif; ?>
+
+<?php 
+	endforeach; 
+endif; 
+?>
 
 <!-- Modal Tambah Kas Keluar -->
 <?php if ($user['role_id'] == 1 || $user['role_id'] == 3): ?>

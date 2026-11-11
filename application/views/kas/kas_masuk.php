@@ -773,113 +773,6 @@
 								</div>
 							</td>
 						</tr>
-
-						<!-- Modal Realistis Kwitansi Digital -->
-						<div class="modal fade" id="receiptModal<?= $msk->idKas; ?>" tabindex="-1" role="dialog" aria-hidden="true">
-							<div class="modal-dialog modal-dialog-centered" role="document">
-								<div class="modal-content" style="border-radius: 18px; border: none; background: transparent;">
-									<div class="realistic-receipt">
-										<div class="d-flex justify-content-between align-items-start mb-3">
-											<div>
-												<span class="badge badge-success px-2 py-1 font-weight-bold mb-1" style="font-size: 10.5px;">E-KASRT DIGITAL VOUCHER</span>
-												<h5 class="font-weight-bold mb-0 text-dark">BUKTI KAS MASUK</h5>
-												<small class="text-muted" style="font-family: 'JetBrains Mono';">ID: #<?= $msk->idKas; ?></small>
-											</div>
-											<div class="stamp-paid-seal">LUNAS</div>
-										</div>
-
-										<hr style="border-top: 2px dashed #e2e8f0;">
-
-										<table class="table table-sm table-borderless mb-2" style="font-size: 13.5px;">
-											<tr>
-												<td style="width: 140px; color: #64748b;">Tanggal Catat</td>
-												<td>: <strong><?= date('d F Y', strtotime($msk->tanggal)); ?></strong></td>
-											</tr>
-											<tr>
-												<td style="color: #64748b;">Keterangan</td>
-												<td>: <strong><?= htmlspecialchars($msk->keterangan); ?></strong></td>
-											</tr>
-											<tr>
-												<td style="color: #64748b;">Kategori</td>
-												<td>: <span class="badge badge-light border"><?= $cat_name; ?></span></td>
-											</tr>
-										</table>
-
-										<div class="p-3 my-2" style="background: #ecfdf5; border-radius: 12px; border: 1.5px solid #a7f3d0;">
-											<small class="text-muted d-block text-uppercase font-weight-bold" style="font-size: 11px;">Nominal Penerimaan</small>
-											<h3 class="font-weight-bold text-success mb-0" style="font-family: 'JetBrains Mono', monospace;">
-												+ Rp <?= rupiah($msk->jumlah); ?>
-											</h3>
-										</div>
-
-										<div class="p-2 mb-3 text-muted" style="background: #f8fafc; border-radius: 8px; font-size: 12.5px;">
-											<span>Terbilang:</span><br>
-											<strong class="text-dark"><em>"<?= function_exists('terbilang') ? terbilang($msk->jumlah) : ''; ?> Rupiah"</em></strong>
-										</div>
-
-										<div class="d-flex justify-content-between align-items-center pt-2 border-top">
-											<a href="<?= base_url('kasRT/kwitansiKas/' . $msk->idKas); ?>" target="_blank" class="btn btn-primary btn-sm font-weight-bold px-3 py-2" style="border-radius: 8px;">
-												<i class="fas fa-print mr-1"></i> Cetak Dokumen
-											</a>
-											<button type="button" class="btn btn-secondary btn-sm px-3 py-2" style="border-radius: 8px;" data-dismiss="modal">
-												Tutup
-											</button>
-										</div>
-									</div>
-									<div class="receipt-sawtooth"></div>
-								</div>
-							</div>
-						</div>
-
-						<!-- Modal Edit Kas Masuk -->
-						<?php if ($user['role_id'] == 1 || $user['role_id'] == 3): ?>
-						<div class="modal fade" id="editModal<?= $msk->idKas; ?>" tabindex="-1" role="dialog" aria-hidden="true">
-							<div class="modal-dialog modal-dialog-centered" role="document">
-								<div class="modal-content" style="border-radius: 18px; border: none; overflow: hidden;">
-									<div class="modal-header text-white" style="background: linear-gradient(135deg, #064e3b, #059669);">
-										<h5 class="modal-title font-weight-bold">
-											<i class="fas fa-pen-square mr-2"></i>Edit Kas Masuk #<?= $msk->idKas; ?>
-										</h5>
-										<button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-									</div>
-									<div class="modal-body p-4">
-										<?= form_open('kasRT/editKas'); ?>
-											<input type="hidden" name="idKas" value="<?= $msk->idKas; ?>">
-											<input type="hidden" name="jenis" value="masuk">
-
-											<div class="form-group mb-3">
-												<label class="font-weight-bold" style="font-size: 13px;">Tanggal Transaksi</label>
-												<input class="form-control" type="date" name="tanggal" value="<?= $msk->tanggal; ?>" required style="border-radius: 9px;">
-											</div>
-
-											<div class="form-group mb-3">
-												<label class="font-weight-bold" style="font-size: 13px;">Keterangan / Sumber Dana</label>
-												<textarea class="form-control" name="keterangan" rows="2" required style="border-radius: 9px;"><?= htmlspecialchars($msk->keterangan); ?></textarea>
-											</div>
-
-											<div class="form-group mb-4">
-												<label class="font-weight-bold" style="font-size: 13px;">Nominal (Rp)</label>
-												<div class="input-group">
-													<div class="input-group-prepend">
-														<span class="input-group-text font-weight-bold" style="border-radius: 9px 0 0 9px; background: #ecfdf5; color: #059669;">Rp</span>
-													</div>
-													<input class="form-control" type="number" name="jumlah" value="<?= $msk->jumlah; ?>" required style="border-radius: 0 9px 9px 0; font-weight: 700; font-size: 16px;">
-												</div>
-											</div>
-
-											<div class="d-flex justify-content-end" style="gap: 8px;">
-												<button type="button" class="btn btn-light px-3 py-2 font-weight-bold" data-dismiss="modal" style="border-radius: 8px;">Batal</button>
-												<button type="submit" class="btn btn-success px-4 py-2 font-weight-bold shadow-sm" style="border-radius: 8px; background: #059669;">
-													<i class="fas fa-save mr-1"></i> Simpan Perubahan
-												</button>
-											</div>
-										</form>
-									</div>
-								</div>
-							</div>
-						</div>
-						<?php endif; ?>
-
 						<?php 
 							endforeach; 
 						else: 
@@ -912,6 +805,154 @@
 
 	</div>
 </div>
+
+<!-- Modals Detail Kwitansi & Edit Kas Masuk (Placed outside table to prevent z-index & rendering bugs) -->
+<?php 
+if (!empty($masuk)): 
+	foreach ($masuk as $msk): 
+		$ket_lower = strtolower($msk->keterangan);
+		$cat_icon = '💰';
+		$cat_name = 'Lainnya';
+		$cat_class = 'bg-light text-dark';
+
+		if (strpos($ket_lower, 'iuran') !== false) {
+			$cat_icon = '🏠';
+			$cat_name = 'Iuran Warga';
+			$cat_class = 'text-success bg-light border border-success';
+		} else if (strpos($ket_lower, 'donasi') !== false || strpos($ket_lower, 'sumbangan') !== false) {
+			$cat_icon = '🎁';
+			$cat_name = 'Donasi';
+			$cat_class = 'text-purple bg-light border border-purple';
+		} else if (strpos($ket_lower, 'sampah') !== false) {
+			$cat_icon = '🗑️';
+			$cat_name = 'Kas Sampah';
+			$cat_class = 'text-teal bg-light border border-teal';
+		} else if (strpos($ket_lower, 'sewa') !== false) {
+			$cat_icon = '🎪';
+			$cat_name = 'Sewa Fasilitas';
+			$cat_class = 'text-info bg-light border border-info';
+		} else if (strpos($ket_lower, 'lomba') !== false || strpos($ket_lower, 'agustus') !== false || strpos($ket_lower, 'acara') !== false) {
+			$cat_icon = '🎈';
+			$cat_name = 'Kegiatan';
+			$cat_class = 'text-warning bg-light border border-warning';
+		}
+?>
+
+<!-- Modal Realistis Kwitansi Digital -->
+<div class="modal fade" id="receiptModal<?= $msk->idKas; ?>" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content" style="border-radius: 18px; border: none; background: transparent;">
+			<div class="realistic-receipt">
+				<div class="d-flex justify-content-between align-items-start mb-3">
+					<div>
+						<span class="badge badge-success px-2 py-1 font-weight-bold mb-1" style="font-size: 10.5px;">E-KASRT DIGITAL VOUCHER</span>
+						<h5 class="font-weight-bold mb-0 text-dark">BUKTI KAS MASUK</h5>
+						<small class="text-muted" style="font-family: 'JetBrains Mono';">ID: #<?= $msk->idKas; ?></small>
+					</div>
+					<div class="d-flex align-items-center" style="gap: 12px;">
+						<div class="stamp-paid-seal">LUNAS</div>
+						<button type="button" class="close" data-dismiss="modal" onclick="$('#receiptModal<?= $msk->idKas; ?>').modal('hide');" aria-label="Close" style="font-size: 26px; line-height: 1; opacity: 0.6; cursor: pointer;">
+							&times;
+						</button>
+					</div>
+				</div>
+
+				<hr style="border-top: 2px dashed #e2e8f0;">
+
+				<table class="table table-sm table-borderless mb-2" style="font-size: 13.5px;">
+					<tr>
+						<td style="width: 140px; color: #64748b;">Tanggal Catat</td>
+						<td>: <strong><?= date('d F Y', strtotime($msk->tanggal)); ?></strong></td>
+					</tr>
+					<tr>
+						<td style="color: #64748b;">Keterangan</td>
+						<td>: <strong><?= htmlspecialchars($msk->keterangan); ?></strong></td>
+					</tr>
+					<tr>
+						<td style="color: #64748b;">Kategori</td>
+						<td>: <span class="badge badge-light border"><?= $cat_name; ?></span></td>
+					</tr>
+				</table>
+
+				<div class="p-3 my-2" style="background: #ecfdf5; border-radius: 12px; border: 1.5px solid #a7f3d0;">
+					<small class="text-muted d-block text-uppercase font-weight-bold" style="font-size: 11px;">Nominal Penerimaan</small>
+					<h3 class="font-weight-bold text-success mb-0" style="font-family: 'JetBrains Mono', monospace;">
+						+ Rp <?= rupiah($msk->jumlah); ?>
+					</h3>
+				</div>
+
+				<div class="p-2 mb-3 text-muted" style="background: #f8fafc; border-radius: 8px; font-size: 12.5px;">
+					<span>Terbilang:</span><br>
+					<strong class="text-dark"><em>"<?= function_exists('terbilang') ? terbilang($msk->jumlah) : ''; ?> Rupiah"</em></strong>
+				</div>
+
+				<div class="d-flex justify-content-between align-items-center pt-2 border-top">
+					<a href="<?= base_url('kasRT/kwitansiKas/' . $msk->idKas); ?>" target="_blank" class="btn btn-primary btn-sm font-weight-bold px-3 py-2" style="border-radius: 8px;">
+						<i class="fas fa-print mr-1"></i> Cetak Dokumen
+					</a>
+					<button type="button" class="btn btn-secondary btn-sm px-3 py-2 font-weight-bold" style="border-radius: 8px;" data-dismiss="modal" onclick="$('#receiptModal<?= $msk->idKas; ?>').modal('hide');">
+						<i class="fas fa-times mr-1"></i> Tutup
+					</button>
+				</div>
+			</div>
+			<div class="receipt-sawtooth"></div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Edit Kas Masuk -->
+<?php if ($user['role_id'] == 1 || $user['role_id'] == 3): ?>
+<div class="modal fade" id="editModal<?= $msk->idKas; ?>" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content" style="border-radius: 18px; border: none; overflow: hidden;">
+			<div class="modal-header text-white" style="background: linear-gradient(135deg, #064e3b, #059669);">
+				<h5 class="modal-title font-weight-bold">
+					<i class="fas fa-pen-square mr-2"></i>Edit Kas Masuk #<?= $msk->idKas; ?>
+				</h5>
+				<button type="button" class="close text-white" data-dismiss="modal" onclick="$('#editModal<?= $msk->idKas; ?>').modal('hide');">&times;</button>
+			</div>
+			<div class="modal-body p-4">
+				<?= form_open('kasRT/editKas'); ?>
+					<input type="hidden" name="idKas" value="<?= $msk->idKas; ?>">
+					<input type="hidden" name="jenis" value="masuk">
+
+					<div class="form-group mb-3">
+						<label class="font-weight-bold" style="font-size: 13px;">Tanggal Transaksi</label>
+						<input class="form-control" type="date" name="tanggal" value="<?= $msk->tanggal; ?>" required style="border-radius: 9px;">
+					</div>
+
+					<div class="form-group mb-3">
+						<label class="font-weight-bold" style="font-size: 13px;">Keterangan / Sumber Dana</label>
+						<textarea class="form-control" name="keterangan" rows="2" required style="border-radius: 9px;"><?= htmlspecialchars($msk->keterangan); ?></textarea>
+					</div>
+
+					<div class="form-group mb-4">
+						<label class="font-weight-bold" style="font-size: 13px;">Nominal (Rp)</label>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text font-weight-bold" style="border-radius: 9px 0 0 9px; background: #ecfdf5; color: #059669;">Rp</span>
+							</div>
+							<input class="form-control" type="number" name="jumlah" value="<?= $msk->jumlah; ?>" required style="border-radius: 0 9px 9px 0; font-weight: 700; font-size: 16px;">
+						</div>
+					</div>
+
+					<div class="d-flex justify-content-end" style="gap: 8px;">
+						<button type="button" class="btn btn-light px-3 py-2 font-weight-bold" data-dismiss="modal" onclick="$('#editModal<?= $msk->idKas; ?>').modal('hide');" style="border-radius: 8px;">Batal</button>
+						<button type="submit" class="btn btn-success px-4 py-2 font-weight-bold shadow-sm" style="border-radius: 8px; background: #059669;">
+							<i class="fas fa-save mr-1"></i> Simpan Perubahan
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<?php endif; ?>
+
+<?php 
+	endforeach; 
+endif; 
+?>
 
 <!-- Modal Tambah Kas Masuk -->
 <?php if ($user['role_id'] == 1 || $user['role_id'] == 3): ?>
