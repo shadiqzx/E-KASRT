@@ -13,8 +13,22 @@ use Illuminate\Support\Facades\Route;
 Route::match(['get', 'post'], '/auth', [AuthController::class, 'showLogin']);
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 Route::match(['get', 'post'], '/auth/logout', [AuthController::class, 'logout']);
+
+// Public Welcome / Landing Page (Portal Selamat Datang & Sekilas Fitur E-KASRT)
+Route::get('/', function () {
+    $total_masuk  = (float) \App\Models\DataKas::where('jenis', 'Masuk')->sum('jumlah');
+    $total_keluar = (float) \App\Models\DataKas::where('jenis', 'Keluar')->sum('jumlah');
+    $saldo        = $total_masuk - $total_keluar;
+    $total_warga  = \App\Models\DataWarga::count();
+    $total_balita = \App\Models\PosyanduBalita::count();
+    $total_kk     = \App\Models\DataWarga::whereNotNull('no_kk')->where('no_kk', '!=', '')->distinct('no_kk')->count('no_kk') ?: 34;
+
+    return view('welcome', compact('saldo', 'total_masuk', 'total_keluar', 'total_warga', 'total_balita', 'total_kk'));
+})->name('welcome');
 
 // ESP32 RFID IoT & Polling Endpoints (Public/API with API Key)
 Route::match(['get', 'post'], '/smartrt/posyandu_rfid_tap', [PosyanduController::class, 'rfidTap'])->name('posyandu.rfid_tap');
@@ -25,9 +39,6 @@ Route::get('/smartrt/posyandu_cetak_kms/{id}', [PosyanduController::class, 'ceta
 
 // Authenticated Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', function () {
-        return redirect()->route('dashboard');
-    });
     Route::get('/admin', function () {
         return redirect()->route('dashboard');
     });

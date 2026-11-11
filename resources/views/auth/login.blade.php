@@ -649,15 +649,26 @@
                     <i class="fas fa-arrow-right"></i>
                 </button>
 
+                <!-- Link to Register Warga Baru -->
+                <div class="text-center my-3" style="font-size: 13.5px; color: #cbd5e1;">
+                    Belum punya akun warga? 
+                    <a href="{{ route('register') }}" style="color: #38bdf8; font-weight: 700; text-decoration: none;">Daftar Akun Baru &rarr;</a>
+                </div>
+
                 <!-- Demo Quick Fill Pill -->
                 <div class="quick-fill-box" onclick="quickFillCredentials()" title="Klik untuk mengisi akun admin otomatis">
                     ⚡ Demo Cepat: Akun <code>admin</code> / Password: <code>admin</code>
                 </div>
 
-                <!-- Security Note -->
-                <div class="card-footer-note">
-                    <i class="fas fa-shield-alt text-info"></i>
-                    <span>Sistem Terenkripsi &bull; Transparan & Akuntabel</span>
+                <!-- Security Note & Back to Welcome -->
+                <div class="card-footer-note flex-column gap-1">
+                    <div>
+                        <i class="fas fa-shield-alt text-info"></i>
+                        <span>Sistem Terenkripsi &bull; Transparan & Akuntabel</span>
+                    </div>
+                    <a href="{{ route('welcome') }}" style="font-size: 12px; color: #64748b; text-decoration: none; margin-top: 6px;">
+                        <i class="fas fa-arrow-left mr-1"></i> Kembali ke Halaman Selamat Datang
+                    </a>
                 </div>
             </form>
         </div>
