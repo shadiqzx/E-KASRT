@@ -26,8 +26,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Main Theme & Mobile CSS with Cache Busting -->
-    <link href="{{ asset('assets/css/theme.css') }}?v=2.2" rel="stylesheet" media="all">
-    <link href="{{ asset('assets/css/mobile-fix.css') }}?v=2.2" rel="stylesheet" media="all">
+    <link href="{{ asset('assets/css/theme.css') }}?v=2.3" rel="stylesheet" media="all">
+    <link href="{{ asset('assets/css/mobile-fix.css') }}?v=2.3" rel="stylesheet" media="all">
 
     <style>
         :root {
@@ -188,6 +188,57 @@
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
             70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
             100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Universal Modal & Backdrop Stacking Fix */
+        .section__content {
+            position: static !important;
+            z-index: auto !important;
+        }
+        .main-content {
+            position: static !important;
+            z-index: auto !important;
+        }
+        .page-wrapper {
+            overflow: visible !important;
+        }
+        .modal-backdrop {
+            z-index: 1060 !important;
+            opacity: 0.65 !important;
+            background-color: #0b1329 !important;
+        }
+        .modal {
+            z-index: 1070 !important;
+        }
+        .modal-dialog {
+            z-index: 1075 !important;
+            position: relative !important;
+        }
+        .modal-content {
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* Mobile Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(11, 19, 41, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1025;
+        }
+        .sidebar-overlay.show,
+        .sidebar-overlay.sidebar-open {
+            display: block !important;
+        }
+        @media (min-width: 992px) {
+            .sidebar-overlay {
+                display: none !important;
+            }
         }
 
         @media (max-width: 991px) {
@@ -395,6 +446,12 @@
     <script src="{{ asset('assets/vendor/bootstrap-4.1/bootstrap.min.js') }}"></script>
 
     <script>
+        // Pindahkan modal ke <body> saat akan ditampilkan
+        // agar tidak tertindih oleh backdrop (.modal-backdrop) akibat CSS stacking context
+        $(document).on('show.bs.modal', '.modal', function () {
+            $(this).appendTo('body');
+        });
+
         function toggleSidebar() {
             var sb = document.getElementById('mainSidebar');
             var ov = document.getElementById('sidebarOverlay');
