@@ -1480,29 +1480,32 @@
 
     {{-- ===== KASBOT MASCOT ===== --}}
     <style>
-    /* ── KasBot Container ── */
+    /* ── KasBot Container — Zero Gravity ── */
     #kasbot-wrap {
         position: fixed;
-        bottom: 28px;
-        right: 28px;
+        top: 0;
+        left: 0;
         z-index: 10000;
         user-select: none;
         touch-action: none;
         cursor: grab;
+        will-change: transform;
+        transform-origin: center center;
     }
     #kasbot-wrap:active { cursor: grabbing; }
 
-    /* ── Speech Bubble ── */
+    /* ── Speech Bubble — dynamically positioned by JS ── */
     #kasbot-bubble {
         position: absolute;
         bottom: calc(100% + 14px);
-        right: 0;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px) scale(0.9);
         min-width: 180px;
         max-width: 240px;
         background: rgba(2,20,50,0.92);
         backdrop-filter: blur(16px);
         border: 1px solid rgba(56,189,248,0.5);
-        border-radius: 18px 18px 4px 18px;
+        border-radius: 18px 18px 18px 4px;
         padding: 10px 14px;
         font-family: 'Plus Jakarta Sans', sans-serif;
         font-size: 12.5px;
@@ -1511,7 +1514,6 @@
         line-height: 1.5;
         box-shadow: 0 8px 32px rgba(2,132,199,0.3);
         opacity: 0;
-        transform: translateY(10px) scale(0.9);
         transition: opacity 0.3s ease, transform 0.3s ease;
         pointer-events: none;
         text-align: center;
@@ -1519,13 +1521,13 @@
     }
     #kasbot-bubble.show {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateX(-50%) translateY(0) scale(1);
     }
     #kasbot-bubble::after {
         content: '';
         position: absolute;
         bottom: -8px;
-        right: 20px;
+        left: 20px;
         width: 14px; height: 14px;
         background: rgba(2,20,50,0.92);
         border-right: 1px solid rgba(56,189,248,0.5);
@@ -1562,59 +1564,54 @@
     }
 
     /* ── KasBot SVG Animations ── */
-    #kasbot-svg { display: block; filter: drop-shadow(0 12px 32px rgba(2,132,199,0.55)); }
+    #kasbot-svg { display: block; filter: drop-shadow(0 8px 24px rgba(2,132,199,0.6)); }
 
     /* Body breathe */
     @keyframes kbBreathe {
-        0%,100% { transform: scaleY(1) translateY(0); }
-        50%      { transform: scaleY(1.025) translateY(-2px); }
+        0%,100% { transform: scaleY(1); }
+        50%      { transform: scaleY(1.03); }
     }
-    #kb-body-group { transform-origin: center bottom; animation: kbBreathe 3s ease-in-out infinite; }
+    #kb-body-group { transform-origin: center center; animation: kbBreathe 3s ease-in-out infinite; }
 
     /* Antenna spark */
     @keyframes kbAntennaGlow {
         0%,100% { r: 4; opacity: 1; }
-        50%      { r: 6.5; opacity: 0.6; }
+        50%      { r: 7; opacity: 0.5; }
     }
     #kb-antenna-dot { animation: kbAntennaGlow 1.4s ease-in-out infinite; }
 
-    /* Float */
-    @keyframes kbFloat {
-        0%,100% { transform: translateY(0px); }
-        50%      { transform: translateY(-10px); }
+    /* Squash on wall hit */
+    @keyframes kbSquashX {
+        0%   { transform: scaleX(1)   scaleY(1); }
+        30%  { transform: scaleX(0.7) scaleY(1.2); }
+        60%  { transform: scaleX(1.1) scaleY(0.95); }
+        100% { transform: scaleX(1)   scaleY(1); }
     }
-    #kasbot-wrap.floating { animation: kbFloat 3.5s ease-in-out infinite; }
-
-    /* Jump */
-    @keyframes kbJump {
-        0%   { transform: translateY(0px) scale(1,1); }
-        20%  { transform: translateY(0px) scale(1.15,.85); }
-        40%  { transform: translateY(-38px) scale(0.9,1.1); }
-        65%  { transform: translateY(-48px) scale(0.92,1.08); }
-        80%  { transform: translateY(-8px) scale(1.05,.95); }
-        90%  { transform: translateY(0px) scale(1,1); }
-        95%  { transform: translateY(-4px) scale(1,1); }
-        100% { transform: translateY(0px) scale(1,1); }
+    @keyframes kbSquashY {
+        0%   { transform: scaleX(1)   scaleY(1); }
+        30%  { transform: scaleX(1.2) scaleY(0.7); }
+        60%  { transform: scaleX(0.95) scaleY(1.1); }
+        100% { transform: scaleX(1)   scaleY(1); }
     }
-    #kasbot-wrap.jump { animation: kbJump 0.65s cubic-bezier(.22,.68,0,1) both !important; }
+    #kasbot-wrap.squash-x { animation: kbSquashX 0.35s ease both !important; }
+    #kasbot-wrap.squash-y { animation: kbSquashY 0.35s ease both !important; }
 
-    /* Spin on double tap */
+    /* Tap burst */
+    @keyframes kbTapBurst {
+        0%   { transform: scale(1); }
+        30%  { transform: scale(1.25) rotate(8deg); }
+        60%  { transform: scale(0.9) rotate(-5deg); }
+        100% { transform: scale(1) rotate(0deg); }
+    }
+    #kasbot-wrap.tap-burst { animation: kbTapBurst 0.4s cubic-bezier(.22,.68,0,1.4) both !important; }
+
+    /* Spin */
     @keyframes kbSpin {
         from { transform: rotate(0deg) scale(1); }
         50%  { transform: rotate(180deg) scale(1.2); }
         to   { transform: rotate(360deg) scale(1); }
     }
     #kasbot-wrap.spin { animation: kbSpin 0.5s cubic-bezier(.22,.68,0,1) both !important; }
-
-    /* Shake on drag drop */
-    @keyframes kbShake {
-        0%,100% { transform: rotate(0deg); }
-        20%  { transform: rotate(-8deg); }
-        40%  { transform: rotate(8deg); }
-        60%  { transform: rotate(-6deg); }
-        80%  { transform: rotate(6deg); }
-    }
-    #kasbot-wrap.shake { animation: kbShake 0.4s ease both !important; }
 
     /* Sleep zZz */
     .kb-zzz {
@@ -1645,7 +1642,7 @@
     </style>
 
     <!-- KasBot Mascot HTML -->
-    <div id="kasbot-wrap" class="floating" title="Klik aku!">
+    <div id="kasbot-wrap" title="Klik aku!">
 
         <!-- Speech Bubble -->
         <div id="kasbot-bubble"></div>
@@ -1693,9 +1690,6 @@
 
             <!-- Body Group (breathing) -->
             <g id="kb-body-group">
-
-                <!-- Shadow ellipse -->
-                <ellipse cx="48" cy="118" rx="28" ry="5" fill="rgba(0,0,0,0.3)"/>
 
                 <!-- Legs -->
                 <rect x="26" y="96" width="14" height="20" rx="7" fill="url(#kbBodyGrad)" filter="url(#kbShadow)"/>
@@ -1793,38 +1787,126 @@
         var armL    = document.getElementById('kb-arm-l');
         var armR    = document.getElementById('kb-arm-r');
 
-        var tapCount   = 0;
-        var bubbleTimer = null;
-        var sleepTimer  = null;
-        var isSleeping  = false;
-        var isDragging  = false;
-        var dragStartX, dragStartY, origRight, origBottom;
+        var W = 96, H = 120; // robot size
 
-        /* ── MESSAGES ── */
-        var messages = [
-            '👋 Hai! Aku KasBot!\nMaskot E-KASRT mu!',
-            '📊 Kas RT transparan\nselalu terpantau!',
-            '🏠 Data warga RT\naman & terkelola!',
-            '💉 Posyandu Balita\npakai e-KTP lho!',
-            '📱 Semua bisa dipantau\ndari smartphone!',
-            '🔐 Data kamu aman\ndi server kami!',
-            '⚡ Real-time!\nLangsung update!',
-            '🎉 Hore! Klik lagi\naku suka di-tap!',
-            '😄 Terus klik aku~\nAku seneng!',
-            '🤖 Beep boop!\nAku robot keuangan!',
-            '💰 Iuran warga RT\nsudah tercatat!',
-            '🌟 E-KASRT terbaik\nse-RT!',
-        ];
+        /* ══════════════════════════════════════════
+           ZERO-GRAVITY PHYSICS ENGINE
+        ══════════════════════════════════════════ */
+        var px, py;       // position (top-left corner)
+        var vx, vy;       // velocity px/frame
+        var rotation = 0; // current tilt angle (deg)
+        var angVel   = 0; // angular velocity
+        var DAMPING  = 0.995;  // air friction (almost none = zero-g feel)
+        var BOUNCE   = 0.72;   // energy kept on bounce
+        var ANG_DAMP = 0.97;   // angular friction
+        var physicsRunning = true;
+        var isDragging = false;
+        var tapCount   = 0;
+        var isSleeping = false;
+        var sleepTimer = null;
+        var bubbleTimer = null;
         var msgIdx = 0;
 
-        var excitedMessages = [
-            '🤩 WOW kamu keren!\nUdah '+0+' kali tap!',
-            '😂 Hahaha!\nGeli deh di-tap terus!',
-            '🚀 Super! Ayo\ntap lagi 100x!',
-            '💫 Uwu~~ makasih\nperhatiannya!',
-        ];
+        // Start near centre of screen
+        px = window.innerWidth  / 2 - W / 2;
+        py = window.innerHeight / 2 - H / 2;
+        // Random initial velocity — slow gentle drift
+        vx = (Math.random() - 0.5) * 2.5;
+        vy = (Math.random() - 0.5) * 2.5;
+        angVel = (Math.random() - 0.5) * 0.6;
 
-        /* ── FACES ── */
+        function applyTransform() {
+            wrap.style.transform =
+                'translate(' + px + 'px,' + py + 'px) rotate(' + rotation + 'deg)';
+        }
+        applyTransform();
+
+        function physicsLoop() {
+            if (!physicsRunning || isDragging) {
+                requestAnimationFrame(physicsLoop);
+                return;
+            }
+
+            var VW = window.innerWidth;
+            var VH = window.innerHeight;
+
+            // Apply velocity
+            px += vx;
+            py += vy;
+
+            // Apply damping
+            vx *= DAMPING;
+            vy *= DAMPING;
+            angVel *= ANG_DAMP;
+            rotation += angVel;
+
+            // Keep rotation tight (-25 to 25 deg) when slow
+            var speed = Math.sqrt(vx*vx + vy*vy);
+            if (speed < 1.5) {
+                // Gently drift rotation back to 0
+                rotation *= 0.98;
+                angVel  *= 0.95;
+            }
+
+            // Wall bounce with squash
+            var hitX = false, hitY = false;
+            if (px <= 0) {
+                px = 0; vx = Math.abs(vx) * BOUNCE;
+                angVel += (Math.random() - 0.5) * 1.5;
+                hitX = true;
+            }
+            if (px >= VW - W) {
+                px = VW - W; vx = -Math.abs(vx) * BOUNCE;
+                angVel += (Math.random() - 0.5) * 1.5;
+                hitX = true;
+            }
+            if (py <= 0) {
+                py = 0; vy = Math.abs(vy) * BOUNCE;
+                angVel += (Math.random() - 0.5) * 1.5;
+                hitY = true;
+            }
+            if (py >= VH - H) {
+                py = VH - H; vy = -Math.abs(vy) * BOUNCE;
+                angVel += (Math.random() - 0.5) * 1.5;
+                hitY = true;
+            }
+
+            // Squash & stretch on wall hit
+            if (hitX) triggerAnim('squash-x', 350);
+            if (hitY) triggerAnim('squash-y', 350);
+
+            // If nearly stopped, give a little random nudge
+            if (speed < 0.15 && !isSleeping) {
+                vx += (Math.random() - 0.5) * 1.0;
+                vy += (Math.random() - 0.5) * 1.0;
+            }
+
+            applyTransform();
+            requestAnimationFrame(physicsLoop);
+        }
+        requestAnimationFrame(physicsLoop);
+
+        /* ── RESIZE ── */
+        window.addEventListener('resize', function() {
+            px = Math.min(px, window.innerWidth  - W);
+            py = Math.min(py, window.innerHeight - H);
+        }, { passive: true });
+
+        /* ── ANIMATION CLASS ── */
+        var animTimeout = null;
+        function triggerAnim(cls, ms) {
+            clearTimeout(animTimeout);
+            wrap.classList.remove('squash-x','squash-y','tap-burst','spin');
+            void wrap.offsetWidth; // reflow
+            wrap.classList.add(cls);
+            animTimeout = setTimeout(function() {
+                wrap.classList.remove(cls);
+            }, ms || 400);
+        }
+
+        /* ══════════════════════════════════════════
+           FACE SYSTEM
+        ══════════════════════════════════════════ */
         var FACE = {
             normal:    { mouth:'M 33 48 Q 48 56 63 48', eyes:'circle', iris:'#38bdf8' },
             happy:     { mouth:'M 30 46 Q 48 60 66 46', eyes:'circle', iris:'#34d399' },
@@ -1834,7 +1916,9 @@
             sleeping:  { mouth:'M 36 50 Q 48 54 60 50', eyes:'closed', iris:'#38bdf8' },
             love:      { mouth:'M 30 46 Q 48 60 66 46', eyes:'heart',  iris:'#f472b6' },
             cool:      { mouth:'M 33 48 Q 48 54 63 48', eyes:'sunglasses', iris:'#38bdf8' },
+            dizzy:     { mouth:'M 36 50 Q 48 56 60 50', eyes:'x',       iris:'#a78bfa' },
         };
+        var faceTimer = null;
 
         function setFace(name, duration) {
             var f = FACE[name] || FACE.normal;
@@ -1842,19 +1926,15 @@
             irisL.setAttribute('fill', f.iris);
             irisR.setAttribute('fill', f.iris);
 
-            // Blush
             var blushAmt = (name === 'happy' || name === 'excited' || name === 'love') ? 1 : 0;
             blushL.style.opacity = blushAmt;
             blushR.style.opacity = blushAmt;
 
-            // Eye shape
             var eyesEl = document.getElementById('kb-eyes');
             eyesEl.querySelectorAll('.kb-special-eye').forEach(function(e){ e.remove(); });
 
             if (f.eyes === 'closed') {
-                eyeL.style.opacity = '0';
-                eyeR.style.opacity = '0';
-                // Draw closed eye lines
+                eyeL.style.opacity = '0'; eyeR.style.opacity = '0';
                 ['l','r'].forEach(function(side) {
                     var cx = side === 'l' ? 31 : 65;
                     var ln = document.createElementNS('http://www.w3.org/2000/svg','line');
@@ -1886,6 +1966,17 @@
                     t.setAttribute('fill','#f472b6'); t.classList.add('kb-special-eye');
                     eyesEl.appendChild(t);
                 });
+            } else if (f.eyes === 'x') {
+                eyeL.style.opacity = '0'; eyeR.style.opacity = '0';
+                ['l','r'].forEach(function(side) {
+                    var cx = side === 'l' ? 31 : 65;
+                    var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+                    t.setAttribute('x', cx); t.setAttribute('y', 39);
+                    t.setAttribute('text-anchor','middle');
+                    t.setAttribute('font-size','18'); t.textContent = '✕';
+                    t.setAttribute('fill','#a78bfa'); t.classList.add('kb-special-eye');
+                    eyesEl.appendChild(t);
+                });
             } else if (f.eyes === 'sunglasses') {
                 eyeL.style.opacity = '0'; eyeR.style.opacity = '0';
                 var sg = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -1902,9 +1993,8 @@
                 irisL.setAttribute('r','6'); irisR.setAttribute('r','6');
             }
 
-            if (duration) {
-                setTimeout(function(){ setFace('normal'); }, duration);
-            }
+            clearTimeout(faceTimer);
+            if (duration) faceTimer = setTimeout(function(){ setFace('normal'); }, duration);
         }
 
         /* ── BLINK ── */
@@ -1914,23 +2004,15 @@
             eyeR.style.transform = 'scaleY(0.08)';
             eyeL.style.transformOrigin = 'center 34px';
             eyeR.style.transformOrigin = 'center 34px';
-            setTimeout(function() {
-                eyeL.style.transform = '';
-                eyeR.style.transform = '';
-            }, 120);
+            setTimeout(function() { eyeL.style.transform=''; eyeR.style.transform=''; }, 120);
         }
-        function schedBlink() {
-            var delay = 2000 + Math.random() * 4000;
-            setTimeout(function() { doBlink(); schedBlink(); }, delay);
-        }
+        function schedBlink() { setTimeout(function(){ doBlink(); schedBlink(); }, 2000+Math.random()*4000); }
         schedBlink();
 
         /* ── EYE FOLLOW CURSOR ── */
         document.addEventListener('mousemove', function(e) {
             if (isSleeping || isDragging) return;
-            var rect = wrap.getBoundingClientRect();
-            var cx = rect.left + rect.width/2;
-            var cy = rect.top  + rect.height/2;
+            var cx = px + W/2, cy = py + H*0.3;
             var angle = Math.atan2(e.clientY - cy, e.clientX - cx);
             var dist  = Math.min(3, Math.sqrt(Math.pow(e.clientX-cx,2)+Math.pow(e.clientY-cy,2)) / 80);
             var ox = Math.cos(angle)*dist, oy = Math.sin(angle)*dist;
@@ -1942,14 +2024,11 @@
 
         /* ── LED BLINK ── */
         var ledIdx = 0;
-        var leds = [led1, led2, led3];
+        var leds = [led1,led2,led3];
         var ledColors = [['#34d399','#1e3a8a','#1e3a8a'],['#1e3a8a','#38bdf8','#1e3a8a'],['#1e3a8a','#1e3a8a','#818cf8']];
         setInterval(function() {
-            if (isSleeping) {
-                leds.forEach(function(l){ l.setAttribute('fill','#1e3a8a'); });
-                return;
-            }
-            ledIdx = (ledIdx + 1) % 3;
+            if (isSleeping){ leds.forEach(function(l){ l.setAttribute('fill','#1e3a8a'); }); return; }
+            ledIdx = (ledIdx+1)%3;
             leds.forEach(function(l,i){ l.setAttribute('fill', ledColors[ledIdx][i]); });
         }, 500);
 
@@ -1957,85 +2036,68 @@
         function waveArms() {
             var t = 0;
             var iv = setInterval(function() {
-                var angle = Math.sin(t * 0.3) * 15;
-                armL.setAttribute('transform','rotate('+angle+',10,80)');
-                armR.setAttribute('transform','rotate('+(-angle)+',86,80)');
+                var a = Math.sin(t*0.3)*15;
+                armL.setAttribute('transform','rotate('+a+',10,80)');
+                armR.setAttribute('transform','rotate('+(-a)+',86,80)');
                 t++;
-                if (t > 40) { clearInterval(iv); armL.removeAttribute('transform'); armR.removeAttribute('transform'); }
+                if (t > 40){ clearInterval(iv); armL.removeAttribute('transform'); armR.removeAttribute('transform'); }
             }, 30);
         }
 
-        /* ── SHOW BUBBLE ── */
+        /* ── BUBBLE ── */
         function showBubble(text, duration) {
             clearTimeout(bubbleTimer);
             bubble.textContent = text;
             bubble.classList.add('show');
-            bubbleTimer = setTimeout(function() {
-                bubble.classList.remove('show');
-            }, duration || 3500);
+            bubbleTimer = setTimeout(function(){ bubble.classList.remove('show'); }, duration || 3500);
         }
 
         /* ── SLEEP ── */
         function goSleep() {
             if (isSleeping) return;
             isSleeping = true;
+            // Slow down to gentle drift
+            vx *= 0.1; vy *= 0.1; angVel *= 0.05;
             setFace('sleeping');
             zzzWrap.classList.add('show');
-            wrap.classList.remove('floating');
-            wrap.style.animation = 'none';
             showBubble('Zzzz... 😴', 99999);
         }
         function wakeUp() {
             if (!isSleeping) return;
             isSleeping = false;
             zzzWrap.classList.remove('show');
-            setFace('happy', 1500);
-            wrap.classList.add('floating');
-            wrap.style.animation = '';
+            setFace('happy', 1800);
+            // Burst awake
+            vx = (Math.random()-0.5) * 5;
+            vy = (Math.random()-0.5) * 5;
+            angVel = (Math.random()-0.5) * 2;
             showBubble('Yawn~ 😪 Aku\nketiduran!', 2500);
             resetSleepTimer();
         }
         function resetSleepTimer() {
             clearTimeout(sleepTimer);
-            if (!isSleeping) {
-                sleepTimer = setTimeout(goSleep, 25000); // sleep after 25s idle
-            }
+            if (!isSleeping) sleepTimer = setTimeout(goSleep, 25000);
         }
         resetSleepTimer();
 
-        /* ── PLAY ANIM CLASS ── */
-        function playAnim(cls, ms) {
-            wrap.classList.remove('floating','jump','spin','shake');
-            wrap.style.animation = '';
-            wrap.classList.add(cls);
-            setTimeout(function() {
-                wrap.classList.remove(cls);
-                wrap.classList.add('floating');
-                wrap.style.animation = '';
-            }, ms || 700);
-        }
-
-        /* ── IDLE RANDOM BEHAVIORS ── */
-        function randomIdle() {
-            if (isSleeping) return;
-            var r = Math.random();
-            if (r < 0.25) {
-                // Look around
-                setFace('normal');
-                var angle = (Math.random()-0.5)*20;
-                irisL.setAttribute('cx', 31+angle/5);
-                irisR.setAttribute('cx', 65+angle/5);
-                setTimeout(function(){
-                    irisL.setAttribute('cx', 31);
-                    irisR.setAttribute('cx', 65);
-                }, 1200);
-            } else if (r < 0.4) {
-                setFace('cool', 1500);
-            } else if (r < 0.5) {
-                waveArms();
-            }
-        }
-        setInterval(randomIdle, 7000);
+        /* ── MESSAGES ── */
+        var messages = [
+            '👋 Hai! Aku KasBot!\nMaskot E-KASRT mu!',
+            '📊 Kas RT transparan\nselalu terpantau!',
+            '🏠 Data warga RT\naman & terkelola!',
+            '💉 Posyandu Balita\npakai e-KTP lho!',
+            '📱 Semua bisa dipantau\ndari smartphone!',
+            '🔐 Data kamu aman\ndi server kami!',
+            '⚡ Real-time!\nLangsung update!',
+            '🎉 Hore! Klik lagi\naku suka di-tap!',
+            '😄 Terus klik aku~\nAku seneng!',
+            '🤖 Beep boop!\nAku robot keuangan!',
+            '💰 Iuran warga RT\nsudah tercatat!',
+            '🌟 E-KASRT terbaik\nse-RT!',
+            '🚀 Lagi terbang\nke mana ya?',
+            '🌊 Weeee~\nTidak ada gravitasi!',
+            '💫 Aku bebas\nmelayang! Hehe~',
+        ];
 
         /* ── TAP HANDLER ── */
         var lastTap = 0;
@@ -2046,74 +2108,87 @@
 
             resetSleepTimer();
             tapCount++;
-
-            // Update counter
             counter.textContent = tapCount;
             counter.classList.add('show');
 
-            // Determine reaction based on tap count
+            // Tap gives a random velocity kick
+            var kickX = (Math.random()-0.5) * 8;
+            var kickY = (Math.random()-0.5) * 8;
+            vx += kickX; vy += kickY;
+            angVel += (Math.random()-0.5) * 3;
+
+            triggerAnim('tap-burst', 400);
+
             if (tapCount === 1) {
                 setFace('happy', 2000);
                 showBubble(messages[msgIdx % messages.length]);
                 msgIdx++;
-                playAnim('jump', 700);
                 waveArms();
             } else if (tapCount % 10 === 0) {
                 setFace('excited', 2500);
-                var exMsg = excitedMessages[Math.floor(Math.random()*excitedMessages.length)];
-                showBubble(exMsg.replace('0', tapCount));
-                playAnim('spin', 500);
-                blushL.style.opacity = '1'; blushR.style.opacity = '1';
+                showBubble('🤩 WOW! Udah '+tapCount+'x tap!\nKamu keren banget!');
+                triggerAnim('spin', 500);
+                blushL.style.opacity='1'; blushR.style.opacity='1';
+                // Spin wildly
+                angVel += (Math.random()>0.5?1:-1)*5;
+                vx = (Math.random()-0.5)*12; vy = (Math.random()-0.5)*12;
             } else if (tapCount % 5 === 0) {
                 setFace('love', 2000);
                 showBubble('💕 Makasih udah\nsayang sama aku!');
-                playAnim('jump', 700);
             } else {
-                var faces = ['happy','surprised','excited','cool'];
+                var faces = ['happy','surprised','excited','cool','dizzy'];
                 setFace(faces[tapCount % faces.length], 1800);
                 showBubble(messages[msgIdx % messages.length]);
                 msgIdx++;
-                playAnim('jump', 650);
             }
 
-            // Double tap → spin
+            // Double tap → spin + turbo
             var now = Date.now();
             if (now - lastTap < 350) {
-                playAnim('spin', 500);
-                setFace('excited', 1500);
-                showBubble('🌀 Pusing!!\nTapi seneng~');
+                triggerAnim('spin', 500);
+                setFace('dizzy', 1500);
+                showBubble('🌀 TURBO MODE!\nBeep boop~');
+                vx = (Math.random()>0.5?1:-1) * 10;
+                vy = (Math.random()>0.5?1:-1) * 10;
+                angVel = (Math.random()-0.5) * 8;
             }
             lastTap = now;
         }
-
         wrap.addEventListener('click',      onTap);
         wrap.addEventListener('touchstart', onTap, { passive: false });
 
-        /* ── DRAG ── */
-        var startX, startY, startRight, startBottom;
-
-        function getRight()  { return parseInt(wrap.style.right  || '28', 10); }
-        function getBottom() { return parseInt(wrap.style.bottom || '28', 10); }
+        /* ── DRAG WITH THROW ── */
+        var dragPrevX, dragPrevY, dragPrevTime;
+        var dragVX = 0, dragVY = 0;
 
         function onDragStart(e) {
+            if (e.type === 'touchstart' && e.touches.length !== 1) return;
             isDragging = false;
             var touch = e.touches ? e.touches[0] : e;
-            startX = touch.clientX;
-            startY = touch.clientY;
-            startRight  = getRight();
-            startBottom = getBottom();
+            var startX = touch.clientX, startY = touch.clientY;
+            var startPX = px, startPY = py;
+            dragPrevX = startX; dragPrevY = startY;
+            dragPrevTime = Date.now();
+            dragVX = 0; dragVY = 0;
             wrap.style.cursor = 'grabbing';
-            wrap.classList.remove('floating');
-            wrap.style.animation = 'none';
 
-            function onMove(e2) {
-                var t2 = e2.touches ? e2.touches[0] : e2;
+            function onMove(ev) {
+                var t2 = ev.touches ? ev.touches[0] : ev;
                 var dx = t2.clientX - startX;
                 var dy = t2.clientY - startY;
-                if (Math.abs(dx) > 6 || Math.abs(dy) > 6) isDragging = true;
+                if (!isDragging && (Math.abs(dx)>5 || Math.abs(dy)>5)) isDragging = true;
                 if (!isDragging) return;
-                wrap.style.right  = Math.max(0, Math.min(window.innerWidth  - 96,  startRight  - dx)) + 'px';
-                wrap.style.bottom = Math.max(0, Math.min(window.innerHeight - 120, startBottom + dy)) + 'px';
+
+                var now = Date.now();
+                var dt  = Math.max(1, now - dragPrevTime);
+                dragVX = (t2.clientX - dragPrevX) / dt * 16;
+                dragVY = (t2.clientY - dragPrevY) / dt * 16;
+                dragPrevX = t2.clientX; dragPrevY = t2.clientY;
+                dragPrevTime = now;
+
+                px = Math.max(0, Math.min(window.innerWidth  - W,  startPX + dx));
+                py = Math.max(0, Math.min(window.innerHeight - H,  startPY + dy));
+                applyTransform();
             }
             function onEnd() {
                 wrap.style.cursor = 'grab';
@@ -2122,30 +2197,43 @@
                 document.removeEventListener('touchmove', onMove);
                 document.removeEventListener('touchend',  onEnd);
                 if (isDragging) {
-                    wrap.classList.add('floating');
-                    wrap.style.animation = '';
-                    playAnim('shake', 400);
+                    // Throw: inherit drag velocity
+                    vx = dragVX; vy = dragVY;
+                    angVel = dragVX * 0.3;
                     setFace('surprised', 1500);
-                    showBubble('😲 Wah!\nAku dipindahin!');
+                    showBubble('😲 Wuuush!\nAku dilempar!');
                 }
-                setTimeout(function(){ isDragging = false; }, 100);
+                setTimeout(function(){ isDragging = false; }, 80);
             }
             document.addEventListener('mousemove', onMove, { passive: true });
             document.addEventListener('mouseup',   onEnd);
             document.addEventListener('touchmove', onMove, { passive: true });
             document.addEventListener('touchend',  onEnd);
         }
-
         wrap.addEventListener('mousedown',  onDragStart);
         wrap.addEventListener('touchstart', onDragStart, { passive: true });
+
+        /* ── IDLE RANDOM ── */
+        function randomIdle() {
+            if (isSleeping) return;
+            var r = Math.random();
+            if      (r < 0.2) { setFace('cool', 1500); }
+            else if (r < 0.35){ waveArms(); }
+            else if (r < 0.5) {
+                // Random gentle nudge
+                vx += (Math.random()-0.5) * 1.5;
+                vy += (Math.random()-0.5) * 1.5;
+            }
+        }
+        setInterval(randomIdle, 7000);
 
         /* ── GREET on load ── */
         setTimeout(function() {
             setFace('happy', 3000);
-            showBubble('👋 Hai! Aku KasBot!\nMascot E-KASRT~\nTap aku dong!', 4000);
+            showBubble('👋 Hai! Aku KasBot!\nAku bebas melayang~\nTap aku dong! 🤖', 4500);
             waveArms();
             resetSleepTimer();
-        }, 1200);
+        }, 1000);
 
     })();
     </script>
