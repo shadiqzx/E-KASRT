@@ -1290,6 +1290,37 @@
         <p class="mb-0">
             Dikelola oleh Pengurus Lingkungan RT &bull; Berbasis Laravel 11 &amp; ESP32 IoT &bull; &copy; {{ date('Y') }} Hak Cipta Dilindungi.
         </p>
+        <div style="margin-top:14px; display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;">
+            <span style="font-size:12px; color:#475569; font-weight:600; letter-spacing:0.5px;">Developer:</span>
+            <a href="https://www.instagram.com/poelnextdoor" target="_blank" rel="noopener"
+               style="display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:30px;
+                      background:linear-gradient(135deg,rgba(225,48,108,0.15),rgba(131,58,180,0.15));
+                      border:1px solid rgba(225,48,108,0.35);color:#f9a8d4;
+                      font-size:12.5px;font-weight:700;text-decoration:none;
+                      transition:all 0.25s;font-family:'Plus Jakarta Sans',sans-serif;"
+               onmouseover="this.style.background='linear-gradient(135deg,rgba(225,48,108,0.28),rgba(131,58,180,0.28))';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(225,48,108,0.3)'"
+               onmouseout="this.style.background='linear-gradient(135deg,rgba(225,48,108,0.15),rgba(131,58,180,0.15))';this.style.transform='';this.style.boxShadow=''">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="2" width="20" height="20" rx="6" stroke="#f9a8d4" stroke-width="2"/>
+                    <circle cx="12" cy="12" r="4" stroke="#f9a8d4" stroke-width="2"/>
+                    <circle cx="17.5" cy="6.5" r="1.3" fill="#f9a8d4"/>
+                </svg>
+                @poelnextdoor
+            </a>
+            <a href="https://www.tiktok.com/@poelnextdoor" target="_blank" rel="noopener"
+               style="display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:30px;
+                      background:rgba(45,212,191,0.1);
+                      border:1px solid rgba(45,212,191,0.35);color:#5eead4;
+                      font-size:12.5px;font-weight:700;text-decoration:none;
+                      transition:all 0.25s;font-family:'Plus Jakarta Sans',sans-serif;"
+               onmouseover="this.style.background='rgba(45,212,191,0.22)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(45,212,191,0.3)'"
+               onmouseout="this.style.background='rgba(45,212,191,0.1)';this.style.transform='';this.style.boxShadow=''">
+                <svg width="13" height="15" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.59 7.69a5.83 5.83 0 0 1-3.77-4.25V3h-3.45v14.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.48a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.84a8.17 8.17 0 0 0 4.78 1.52V7.89a4.85 4.85 0 0 1-1.01-.2z" fill="#5eead4"/>
+                </svg>
+                @poelnextdoor
+            </a>
+        </div>
     </footer>
 
     {{-- ===== ANIMATION ENGINE ===== --}}
