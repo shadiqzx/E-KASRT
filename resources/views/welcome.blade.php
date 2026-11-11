@@ -1478,5 +1478,678 @@
     </script>
     {{-- ===== END ANIMATION ENGINE ===== --}}
 
+    {{-- ===== KASBOT MASCOT ===== --}}
+    <style>
+    /* ── KasBot Container ── */
+    #kasbot-wrap {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        z-index: 10000;
+        user-select: none;
+        touch-action: none;
+        cursor: grab;
+    }
+    #kasbot-wrap:active { cursor: grabbing; }
+
+    /* ── Speech Bubble ── */
+    #kasbot-bubble {
+        position: absolute;
+        bottom: calc(100% + 14px);
+        right: 0;
+        min-width: 180px;
+        max-width: 240px;
+        background: rgba(2,20,50,0.92);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(56,189,248,0.5);
+        border-radius: 18px 18px 4px 18px;
+        padding: 10px 14px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #e0f2fe;
+        line-height: 1.5;
+        box-shadow: 0 8px 32px rgba(2,132,199,0.3);
+        opacity: 0;
+        transform: translateY(10px) scale(0.9);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+        text-align: center;
+        white-space: pre-line;
+    }
+    #kasbot-bubble.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    #kasbot-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        right: 20px;
+        width: 14px; height: 14px;
+        background: rgba(2,20,50,0.92);
+        border-right: 1px solid rgba(56,189,248,0.5);
+        border-bottom: 1px solid rgba(56,189,248,0.5);
+        transform: rotate(45deg);
+        border-radius: 0 0 3px 0;
+    }
+
+    /* ── Tap Counter Badge ── */
+    #kasbot-counter {
+        position: absolute;
+        top: -6px;
+        left: -6px;
+        min-width: 22px;
+        height: 22px;
+        border-radius: 11px;
+        background: linear-gradient(135deg,#ef4444,#f97316);
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+        box-shadow: 0 3px 12px rgba(239,68,68,0.5);
+        opacity: 0;
+        transform: scale(0);
+        transition: all 0.25s cubic-bezier(.22,.68,0,1.4);
+    }
+    #kasbot-counter.show {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* ── KasBot SVG Animations ── */
+    #kasbot-svg { display: block; filter: drop-shadow(0 12px 32px rgba(2,132,199,0.55)); }
+
+    /* Body breathe */
+    @keyframes kbBreathe {
+        0%,100% { transform: scaleY(1) translateY(0); }
+        50%      { transform: scaleY(1.025) translateY(-2px); }
+    }
+    #kb-body-group { transform-origin: center bottom; animation: kbBreathe 3s ease-in-out infinite; }
+
+    /* Antenna spark */
+    @keyframes kbAntennaGlow {
+        0%,100% { r: 4; opacity: 1; }
+        50%      { r: 6.5; opacity: 0.6; }
+    }
+    #kb-antenna-dot { animation: kbAntennaGlow 1.4s ease-in-out infinite; }
+
+    /* Float */
+    @keyframes kbFloat {
+        0%,100% { transform: translateY(0px); }
+        50%      { transform: translateY(-10px); }
+    }
+    #kasbot-wrap.floating { animation: kbFloat 3.5s ease-in-out infinite; }
+
+    /* Jump */
+    @keyframes kbJump {
+        0%   { transform: translateY(0px) scale(1,1); }
+        20%  { transform: translateY(0px) scale(1.15,.85); }
+        40%  { transform: translateY(-38px) scale(0.9,1.1); }
+        65%  { transform: translateY(-48px) scale(0.92,1.08); }
+        80%  { transform: translateY(-8px) scale(1.05,.95); }
+        90%  { transform: translateY(0px) scale(1,1); }
+        95%  { transform: translateY(-4px) scale(1,1); }
+        100% { transform: translateY(0px) scale(1,1); }
+    }
+    #kasbot-wrap.jump { animation: kbJump 0.65s cubic-bezier(.22,.68,0,1) both !important; }
+
+    /* Spin on double tap */
+    @keyframes kbSpin {
+        from { transform: rotate(0deg) scale(1); }
+        50%  { transform: rotate(180deg) scale(1.2); }
+        to   { transform: rotate(360deg) scale(1); }
+    }
+    #kasbot-wrap.spin { animation: kbSpin 0.5s cubic-bezier(.22,.68,0,1) both !important; }
+
+    /* Shake on drag drop */
+    @keyframes kbShake {
+        0%,100% { transform: rotate(0deg); }
+        20%  { transform: rotate(-8deg); }
+        40%  { transform: rotate(8deg); }
+        60%  { transform: rotate(-6deg); }
+        80%  { transform: rotate(6deg); }
+    }
+    #kasbot-wrap.shake { animation: kbShake 0.4s ease both !important; }
+
+    /* Sleep zZz */
+    .kb-zzz {
+        position: absolute;
+        font-size: 14px;
+        font-weight: 900;
+        color: #38bdf8;
+        opacity: 0;
+        pointer-events: none;
+        animation: kbZzz 2s ease-in-out infinite;
+    }
+    .kb-zzz:nth-child(2) { animation-delay: 0.6s; font-size: 11px; }
+    .kb-zzz:nth-child(3) { animation-delay: 1.2s; font-size: 9px; }
+    @keyframes kbZzz {
+        0%   { opacity:0; transform: translate(0,0) scale(0.5); }
+        30%  { opacity:1; }
+        100% { opacity:0; transform: translate(14px,-28px) scale(1.1); }
+    }
+    #kb-zzz-wrap {
+        position: absolute;
+        top: -10px; right: -4px;
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+    #kb-zzz-wrap.show { display: flex; }
+    </style>
+
+    <!-- KasBot Mascot HTML -->
+    <div id="kasbot-wrap" class="floating" title="Klik aku!">
+
+        <!-- Speech Bubble -->
+        <div id="kasbot-bubble"></div>
+
+        <!-- Tap Counter -->
+        <div id="kasbot-counter">0</div>
+
+        <!-- Sleep ZZz -->
+        <div id="kb-zzz-wrap">
+            <span class="kb-zzz" style="margin-left:4px">Z</span>
+            <span class="kb-zzz" style="margin-left:10px">z</span>
+            <span class="kb-zzz" style="margin-left:16px">z</span>
+        </div>
+
+        <!-- SVG Robot -->
+        <svg id="kasbot-svg" width="96" height="120" viewBox="0 0 96 120" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="kbBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%"   stop-color="#0ea5e9"/>
+                    <stop offset="100%" stop-color="#2563eb"/>
+                </linearGradient>
+                <linearGradient id="kbHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%"   stop-color="#38bdf8"/>
+                    <stop offset="100%" stop-color="#0284c7"/>
+                </linearGradient>
+                <linearGradient id="kbFaceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%"   stop-color="#0f172a" stop-opacity="0.9"/>
+                    <stop offset="100%" stop-color="#020617" stop-opacity="0.95"/>
+                </linearGradient>
+                <radialGradient id="kbGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%"  stop-color="#38bdf8" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+                </radialGradient>
+                <filter id="kbShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0284c7" flood-opacity="0.5"/>
+                </filter>
+                <filter id="kbGlowF">
+                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <clipPath id="kbFaceClip">
+                    <rect x="14" y="14" width="68" height="58" rx="16"/>
+                </clipPath>
+            </defs>
+
+            <!-- Body Group (breathing) -->
+            <g id="kb-body-group">
+
+                <!-- Shadow ellipse -->
+                <ellipse cx="48" cy="118" rx="28" ry="5" fill="rgba(0,0,0,0.3)"/>
+
+                <!-- Legs -->
+                <rect x="26" y="96" width="14" height="20" rx="7" fill="url(#kbBodyGrad)" filter="url(#kbShadow)"/>
+                <rect x="56" y="96" width="14" height="20" rx="7" fill="url(#kbBodyGrad)" filter="url(#kbShadow)"/>
+                <!-- Feet -->
+                <ellipse cx="33" cy="115" rx="10" ry="5" fill="#1d4ed8"/>
+                <ellipse cx="63" cy="115" rx="10" ry="5" fill="#1d4ed8"/>
+
+                <!-- Body -->
+                <rect x="18" y="62" width="60" height="40" rx="16" fill="url(#kbBodyGrad)" filter="url(#kbShadow)"/>
+                <!-- Body glass shine -->
+                <rect x="22" y="66" width="52" height="14" rx="8" fill="rgba(255,255,255,0.12)"/>
+                <!-- Chest panel -->
+                <rect x="30" y="80" width="36" height="16" rx="8" fill="rgba(0,0,0,0.3)" stroke="rgba(56,189,248,0.5)" stroke-width="1"/>
+                <!-- Chest LEDs -->
+                <circle cx="38" cy="88" r="4" fill="#34d399" id="kb-led1"/>
+                <circle cx="48" cy="88" r="4" fill="#38bdf8" id="kb-led2"/>
+                <circle cx="58" cy="88" r="4" fill="#818cf8" id="kb-led3"/>
+
+                <!-- Arms -->
+                <rect x="2"  y="68" width="16" height="28" rx="8" fill="url(#kbBodyGrad)" filter="url(#kbShadow)" id="kb-arm-l"/>
+                <rect x="78" y="68" width="16" height="28" rx="8" fill="url(#kbBodyGrad)" filter="url(#kbShadow)" id="kb-arm-r"/>
+                <!-- Hands -->
+                <circle cx="10"  cy="96" r="8" fill="#1e40af"/>
+                <circle cx="86" cy="96" r="8" fill="#1e40af"/>
+
+                <!-- Neck -->
+                <rect x="38" y="56" width="20" height="12" rx="6" fill="#1e40af"/>
+
+                <!-- Head -->
+                <rect x="10" y="8" width="76" height="52" rx="20" fill="url(#kbHeadGrad)" filter="url(#kbShadow)"/>
+                <!-- Head glass shine -->
+                <rect x="14" y="11" width="58" height="12" rx="8" fill="rgba(255,255,255,0.18)"/>
+
+                <!-- Face screen -->
+                <rect x="14" y="18" width="68" height="38" rx="13" fill="url(#kbFaceGrad)" stroke="rgba(56,189,248,0.6)" stroke-width="1.5"/>
+
+                <!-- Eyes (default: open circles) -->
+                <g id="kb-eyes">
+                    <!-- Left Eye -->
+                    <g id="kb-eye-l">
+                        <circle cx="31" cy="34" r="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                        <circle cx="31" cy="34" r="6"  fill="#38bdf8" id="kb-iris-l"/>
+                        <circle cx="31" cy="34" r="3"  fill="#0f172a"/>
+                        <circle cx="34" cy="31" r="2"  fill="white" opacity="0.8"/>
+                        <circle cx="28" cy="37" r="1.2" fill="white" opacity="0.4"/>
+                    </g>
+                    <!-- Right Eye -->
+                    <g id="kb-eye-r">
+                        <circle cx="65" cy="34" r="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                        <circle cx="65" cy="34" r="6"  fill="#38bdf8" id="kb-iris-r"/>
+                        <circle cx="65" cy="34" r="3"  fill="#0f172a"/>
+                        <circle cx="68" cy="31" r="2"  fill="white" opacity="0.8"/>
+                        <circle cx="62" cy="37" r="1.2" fill="white" opacity="0.4"/>
+                    </g>
+                </g>
+
+                <!-- Mouth (default smile) -->
+                <g id="kb-mouth">
+                    <path id="kb-mouth-path" d="M 33 48 Q 48 56 63 48" stroke="#34d399" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                </g>
+
+                <!-- Cheeks blush -->
+                <ellipse id="kb-blush-l" cx="20" cy="40" rx="7" ry="4" fill="rgba(251,113,133,0.35)" opacity="0"/>
+                <ellipse id="kb-blush-r" cx="76" cy="40" rx="7" ry="4" fill="rgba(251,113,133,0.35)" opacity="0"/>
+
+                <!-- Antenna -->
+                <line x1="48" y1="8" x2="48" y2="0" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+                <circle id="kb-antenna-dot" cx="48" cy="-2" r="4" fill="#38bdf8" filter="url(#kbGlowF)"/>
+
+                <!-- Ear bolts -->
+                <circle cx="10" cy="30" r="5" fill="#1e40af" stroke="rgba(56,189,248,0.6)" stroke-width="1"/>
+                <circle cx="86" cy="30" r="5" fill="#1e40af" stroke="rgba(56,189,248,0.6)" stroke-width="1"/>
+
+            </g><!-- /body-group -->
+        </svg>
+    </div>
+
+    <script>
+    (function() {
+        var wrap    = document.getElementById('kasbot-wrap');
+        var bubble  = document.getElementById('kasbot-bubble');
+        var counter = document.getElementById('kasbot-counter');
+        var zzzWrap = document.getElementById('kb-zzz-wrap');
+        var eyeL    = document.getElementById('kb-eye-l');
+        var eyeR    = document.getElementById('kb-eye-r');
+        var mouth   = document.getElementById('kb-mouth-path');
+        var blushL  = document.getElementById('kb-blush-l');
+        var blushR  = document.getElementById('kb-blush-r');
+        var irisL   = document.getElementById('kb-iris-l');
+        var irisR   = document.getElementById('kb-iris-r');
+        var led1    = document.getElementById('kb-led1');
+        var led2    = document.getElementById('kb-led2');
+        var led3    = document.getElementById('kb-led3');
+        var armL    = document.getElementById('kb-arm-l');
+        var armR    = document.getElementById('kb-arm-r');
+
+        var tapCount   = 0;
+        var bubbleTimer = null;
+        var sleepTimer  = null;
+        var isSleeping  = false;
+        var isDragging  = false;
+        var dragStartX, dragStartY, origRight, origBottom;
+
+        /* ── MESSAGES ── */
+        var messages = [
+            '👋 Hai! Aku KasBot!\nMaskot E-KASRT mu!',
+            '📊 Kas RT transparan\nselalu terpantau!',
+            '🏠 Data warga RT\naman & terkelola!',
+            '💉 Posyandu Balita\npakai e-KTP lho!',
+            '📱 Semua bisa dipantau\ndari smartphone!',
+            '🔐 Data kamu aman\ndi server kami!',
+            '⚡ Real-time!\nLangsung update!',
+            '🎉 Hore! Klik lagi\naku suka di-tap!',
+            '😄 Terus klik aku~\nAku seneng!',
+            '🤖 Beep boop!\nAku robot keuangan!',
+            '💰 Iuran warga RT\nsudah tercatat!',
+            '🌟 E-KASRT terbaik\nse-RT!',
+        ];
+        var msgIdx = 0;
+
+        var excitedMessages = [
+            '🤩 WOW kamu keren!\nUdah '+0+' kali tap!',
+            '😂 Hahaha!\nGeli deh di-tap terus!',
+            '🚀 Super! Ayo\ntap lagi 100x!',
+            '💫 Uwu~~ makasih\nperhatiannya!',
+        ];
+
+        /* ── FACES ── */
+        var FACE = {
+            normal:    { mouth:'M 33 48 Q 48 56 63 48', eyes:'circle', iris:'#38bdf8' },
+            happy:     { mouth:'M 30 46 Q 48 60 66 46', eyes:'circle', iris:'#34d399' },
+            excited:   { mouth:'M 30 46 Q 48 62 66 46', eyes:'star',   iris:'#fbbf24' },
+            surprised: { mouth:'M 40 50 Q 48 56 56 50', eyes:'big',    iris:'#f472b6' },
+            sad:       { mouth:'M 33 54 Q 48 46 63 54', eyes:'circle', iris:'#94a3b8' },
+            sleeping:  { mouth:'M 36 50 Q 48 54 60 50', eyes:'closed', iris:'#38bdf8' },
+            love:      { mouth:'M 30 46 Q 48 60 66 46', eyes:'heart',  iris:'#f472b6' },
+            cool:      { mouth:'M 33 48 Q 48 54 63 48', eyes:'sunglasses', iris:'#38bdf8' },
+        };
+
+        function setFace(name, duration) {
+            var f = FACE[name] || FACE.normal;
+            mouth.setAttribute('d', f.mouth);
+            irisL.setAttribute('fill', f.iris);
+            irisR.setAttribute('fill', f.iris);
+
+            // Blush
+            var blushAmt = (name === 'happy' || name === 'excited' || name === 'love') ? 1 : 0;
+            blushL.style.opacity = blushAmt;
+            blushR.style.opacity = blushAmt;
+
+            // Eye shape
+            var eyesEl = document.getElementById('kb-eyes');
+            eyesEl.querySelectorAll('.kb-special-eye').forEach(function(e){ e.remove(); });
+
+            if (f.eyes === 'closed') {
+                eyeL.style.opacity = '0';
+                eyeR.style.opacity = '0';
+                // Draw closed eye lines
+                ['l','r'].forEach(function(side) {
+                    var cx = side === 'l' ? 31 : 65;
+                    var ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+                    ln.setAttribute('x1', cx-9); ln.setAttribute('y1', 34);
+                    ln.setAttribute('x2', cx+9); ln.setAttribute('y2', 34);
+                    ln.setAttribute('stroke','#38bdf8'); ln.setAttribute('stroke-width','3');
+                    ln.setAttribute('stroke-linecap','round'); ln.classList.add('kb-special-eye');
+                    eyesEl.appendChild(ln);
+                });
+            } else if (f.eyes === 'star') {
+                eyeL.style.opacity = '0'; eyeR.style.opacity = '0';
+                ['l','r'].forEach(function(side) {
+                    var cx = side === 'l' ? 31 : 65;
+                    var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+                    t.setAttribute('x', cx); t.setAttribute('y', 39);
+                    t.setAttribute('text-anchor','middle');
+                    t.setAttribute('font-size','18'); t.textContent = '★';
+                    t.setAttribute('fill','#fbbf24'); t.classList.add('kb-special-eye');
+                    eyesEl.appendChild(t);
+                });
+            } else if (f.eyes === 'heart') {
+                eyeL.style.opacity = '0'; eyeR.style.opacity = '0';
+                ['l','r'].forEach(function(side) {
+                    var cx = side === 'l' ? 31 : 65;
+                    var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+                    t.setAttribute('x', cx); t.setAttribute('y', 39);
+                    t.setAttribute('text-anchor','middle');
+                    t.setAttribute('font-size','16'); t.textContent = '♥';
+                    t.setAttribute('fill','#f472b6'); t.classList.add('kb-special-eye');
+                    eyesEl.appendChild(t);
+                });
+            } else if (f.eyes === 'sunglasses') {
+                eyeL.style.opacity = '0'; eyeR.style.opacity = '0';
+                var sg = document.createElementNS('http://www.w3.org/2000/svg','text');
+                sg.setAttribute('x', 48); sg.setAttribute('y', 39);
+                sg.setAttribute('text-anchor','middle');
+                sg.setAttribute('font-size','20'); sg.textContent = '😎';
+                sg.classList.add('kb-special-eye');
+                eyesEl.appendChild(sg);
+            } else if (f.eyes === 'big') {
+                eyeL.style.opacity = '1'; eyeR.style.opacity = '1';
+                irisL.setAttribute('r','8'); irisR.setAttribute('r','8');
+            } else {
+                eyeL.style.opacity = '1'; eyeR.style.opacity = '1';
+                irisL.setAttribute('r','6'); irisR.setAttribute('r','6');
+            }
+
+            if (duration) {
+                setTimeout(function(){ setFace('normal'); }, duration);
+            }
+        }
+
+        /* ── BLINK ── */
+        function doBlink() {
+            if (isSleeping) return;
+            eyeL.style.transform = 'scaleY(0.08)';
+            eyeR.style.transform = 'scaleY(0.08)';
+            eyeL.style.transformOrigin = 'center 34px';
+            eyeR.style.transformOrigin = 'center 34px';
+            setTimeout(function() {
+                eyeL.style.transform = '';
+                eyeR.style.transform = '';
+            }, 120);
+        }
+        function schedBlink() {
+            var delay = 2000 + Math.random() * 4000;
+            setTimeout(function() { doBlink(); schedBlink(); }, delay);
+        }
+        schedBlink();
+
+        /* ── EYE FOLLOW CURSOR ── */
+        document.addEventListener('mousemove', function(e) {
+            if (isSleeping || isDragging) return;
+            var rect = wrap.getBoundingClientRect();
+            var cx = rect.left + rect.width/2;
+            var cy = rect.top  + rect.height/2;
+            var angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+            var dist  = Math.min(3, Math.sqrt(Math.pow(e.clientX-cx,2)+Math.pow(e.clientY-cy,2)) / 80);
+            var ox = Math.cos(angle)*dist, oy = Math.sin(angle)*dist;
+            irisL.setAttribute('cx', 31+ox);
+            irisL.setAttribute('cy', 34+oy);
+            irisR.setAttribute('cx', 65+ox);
+            irisR.setAttribute('cy', 34+oy);
+        }, { passive: true });
+
+        /* ── LED BLINK ── */
+        var ledIdx = 0;
+        var leds = [led1, led2, led3];
+        var ledColors = [['#34d399','#1e3a8a','#1e3a8a'],['#1e3a8a','#38bdf8','#1e3a8a'],['#1e3a8a','#1e3a8a','#818cf8']];
+        setInterval(function() {
+            if (isSleeping) {
+                leds.forEach(function(l){ l.setAttribute('fill','#1e3a8a'); });
+                return;
+            }
+            ledIdx = (ledIdx + 1) % 3;
+            leds.forEach(function(l,i){ l.setAttribute('fill', ledColors[ledIdx][i]); });
+        }, 500);
+
+        /* ── ARM WAVE ── */
+        function waveArms() {
+            var t = 0;
+            var iv = setInterval(function() {
+                var angle = Math.sin(t * 0.3) * 15;
+                armL.setAttribute('transform','rotate('+angle+',10,80)');
+                armR.setAttribute('transform','rotate('+(-angle)+',86,80)');
+                t++;
+                if (t > 40) { clearInterval(iv); armL.removeAttribute('transform'); armR.removeAttribute('transform'); }
+            }, 30);
+        }
+
+        /* ── SHOW BUBBLE ── */
+        function showBubble(text, duration) {
+            clearTimeout(bubbleTimer);
+            bubble.textContent = text;
+            bubble.classList.add('show');
+            bubbleTimer = setTimeout(function() {
+                bubble.classList.remove('show');
+            }, duration || 3500);
+        }
+
+        /* ── SLEEP ── */
+        function goSleep() {
+            if (isSleeping) return;
+            isSleeping = true;
+            setFace('sleeping');
+            zzzWrap.classList.add('show');
+            wrap.classList.remove('floating');
+            wrap.style.animation = 'none';
+            showBubble('Zzzz... 😴', 99999);
+        }
+        function wakeUp() {
+            if (!isSleeping) return;
+            isSleeping = false;
+            zzzWrap.classList.remove('show');
+            setFace('happy', 1500);
+            wrap.classList.add('floating');
+            wrap.style.animation = '';
+            showBubble('Yawn~ 😪 Aku\nketiduran!', 2500);
+            resetSleepTimer();
+        }
+        function resetSleepTimer() {
+            clearTimeout(sleepTimer);
+            if (!isSleeping) {
+                sleepTimer = setTimeout(goSleep, 25000); // sleep after 25s idle
+            }
+        }
+        resetSleepTimer();
+
+        /* ── PLAY ANIM CLASS ── */
+        function playAnim(cls, ms) {
+            wrap.classList.remove('floating','jump','spin','shake');
+            wrap.style.animation = '';
+            wrap.classList.add(cls);
+            setTimeout(function() {
+                wrap.classList.remove(cls);
+                wrap.classList.add('floating');
+                wrap.style.animation = '';
+            }, ms || 700);
+        }
+
+        /* ── IDLE RANDOM BEHAVIORS ── */
+        function randomIdle() {
+            if (isSleeping) return;
+            var r = Math.random();
+            if (r < 0.25) {
+                // Look around
+                setFace('normal');
+                var angle = (Math.random()-0.5)*20;
+                irisL.setAttribute('cx', 31+angle/5);
+                irisR.setAttribute('cx', 65+angle/5);
+                setTimeout(function(){
+                    irisL.setAttribute('cx', 31);
+                    irisR.setAttribute('cx', 65);
+                }, 1200);
+            } else if (r < 0.4) {
+                setFace('cool', 1500);
+            } else if (r < 0.5) {
+                waveArms();
+            }
+        }
+        setInterval(randomIdle, 7000);
+
+        /* ── TAP HANDLER ── */
+        var lastTap = 0;
+        function onTap(e) {
+            e.preventDefault();
+            if (isDragging) return;
+            if (isSleeping) { wakeUp(); return; }
+
+            resetSleepTimer();
+            tapCount++;
+
+            // Update counter
+            counter.textContent = tapCount;
+            counter.classList.add('show');
+
+            // Determine reaction based on tap count
+            if (tapCount === 1) {
+                setFace('happy', 2000);
+                showBubble(messages[msgIdx % messages.length]);
+                msgIdx++;
+                playAnim('jump', 700);
+                waveArms();
+            } else if (tapCount % 10 === 0) {
+                setFace('excited', 2500);
+                var exMsg = excitedMessages[Math.floor(Math.random()*excitedMessages.length)];
+                showBubble(exMsg.replace('0', tapCount));
+                playAnim('spin', 500);
+                blushL.style.opacity = '1'; blushR.style.opacity = '1';
+            } else if (tapCount % 5 === 0) {
+                setFace('love', 2000);
+                showBubble('💕 Makasih udah\nsayang sama aku!');
+                playAnim('jump', 700);
+            } else {
+                var faces = ['happy','surprised','excited','cool'];
+                setFace(faces[tapCount % faces.length], 1800);
+                showBubble(messages[msgIdx % messages.length]);
+                msgIdx++;
+                playAnim('jump', 650);
+            }
+
+            // Double tap → spin
+            var now = Date.now();
+            if (now - lastTap < 350) {
+                playAnim('spin', 500);
+                setFace('excited', 1500);
+                showBubble('🌀 Pusing!!\nTapi seneng~');
+            }
+            lastTap = now;
+        }
+
+        wrap.addEventListener('click',      onTap);
+        wrap.addEventListener('touchstart', onTap, { passive: false });
+
+        /* ── DRAG ── */
+        var startX, startY, startRight, startBottom;
+
+        function getRight()  { return parseInt(wrap.style.right  || '28', 10); }
+        function getBottom() { return parseInt(wrap.style.bottom || '28', 10); }
+
+        function onDragStart(e) {
+            isDragging = false;
+            var touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            startRight  = getRight();
+            startBottom = getBottom();
+            wrap.style.cursor = 'grabbing';
+            wrap.classList.remove('floating');
+            wrap.style.animation = 'none';
+
+            function onMove(e2) {
+                var t2 = e2.touches ? e2.touches[0] : e2;
+                var dx = t2.clientX - startX;
+                var dy = t2.clientY - startY;
+                if (Math.abs(dx) > 6 || Math.abs(dy) > 6) isDragging = true;
+                if (!isDragging) return;
+                wrap.style.right  = Math.max(0, Math.min(window.innerWidth  - 96,  startRight  - dx)) + 'px';
+                wrap.style.bottom = Math.max(0, Math.min(window.innerHeight - 120, startBottom + dy)) + 'px';
+            }
+            function onEnd() {
+                wrap.style.cursor = 'grab';
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup',   onEnd);
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('touchend',  onEnd);
+                if (isDragging) {
+                    wrap.classList.add('floating');
+                    wrap.style.animation = '';
+                    playAnim('shake', 400);
+                    setFace('surprised', 1500);
+                    showBubble('😲 Wah!\nAku dipindahin!');
+                }
+                setTimeout(function(){ isDragging = false; }, 100);
+            }
+            document.addEventListener('mousemove', onMove, { passive: true });
+            document.addEventListener('mouseup',   onEnd);
+            document.addEventListener('touchmove', onMove, { passive: true });
+            document.addEventListener('touchend',  onEnd);
+        }
+
+        wrap.addEventListener('mousedown',  onDragStart);
+        wrap.addEventListener('touchstart', onDragStart, { passive: true });
+
+        /* ── GREET on load ── */
+        setTimeout(function() {
+            setFace('happy', 3000);
+            showBubble('👋 Hai! Aku KasBot!\nMascot E-KASRT~\nTap aku dong!', 4000);
+            waveArms();
+            resetSleepTimer();
+        }, 1200);
+
+    })();
+    </script>
+    {{-- ===== END KASBOT MASCOT ===== --}}
+
 </body>
 </html>
