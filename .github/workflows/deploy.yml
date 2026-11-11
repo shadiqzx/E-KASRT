@@ -1,0 +1,29 @@
+name: Auto Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to VPS 43.157.230.29
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 43.157.230.29
+          username: ubuntu
+          password: ${{ secrets.SSH_PASSWORD || 'comet-92$-galaxy' }}
+          port: 22
+          script_stop: true
+          script: |
+            echo "🚀 [Deploy] Memulai update repositori di VPS..."
+            cd /home/unique-monsters-kasrt/htdocs/e-kasrt.unique-monsters.my.id
+            sudo chown -R unique-monsters-kasrt:unique-monsters-kasrt /home/unique-monsters-kasrt/htdocs/e-kasrt.unique-monsters.my.id
+            sudo -u unique-monsters-kasrt git checkout application/cache/index.html application/logs/index.html 2>/dev/null || true
+            sudo -u unique-monsters-kasrt git pull origin main
+            echo "✅ [Deploy] Sukses! Versi terbaru sudah aktif di https://e-kasrt.unique-monsters.my.id/"
+
