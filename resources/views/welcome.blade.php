@@ -1563,6 +1563,13 @@
         transform: scale(1);
     }
 
+    /* ── KasBot Inner (animation target, isolated from physics) ── */
+    #kasbot-inner {
+        display: block;
+        transform-origin: center center;
+        will-change: transform;
+    }
+
     /* ── KasBot SVG Animations ── */
     #kasbot-svg { display: block; filter: drop-shadow(0 8px 24px rgba(2,132,199,0.6)); }
 
@@ -1580,38 +1587,39 @@
     }
     #kb-antenna-dot { animation: kbAntennaGlow 1.4s ease-in-out infinite; }
 
-    /* Squash on wall hit */
+    /* Squash on wall hit — applied to #kasbot-inner */
     @keyframes kbSquashX {
-        0%   { transform: scaleX(1)   scaleY(1); }
-        30%  { transform: scaleX(0.7) scaleY(1.2); }
-        60%  { transform: scaleX(1.1) scaleY(0.95); }
-        100% { transform: scaleX(1)   scaleY(1); }
+        0%   { transform: scaleX(1)    scaleY(1); }
+        30%  { transform: scaleX(0.65) scaleY(1.25); }
+        65%  { transform: scaleX(1.1)  scaleY(0.93); }
+        100% { transform: scaleX(1)    scaleY(1); }
     }
     @keyframes kbSquashY {
-        0%   { transform: scaleX(1)   scaleY(1); }
-        30%  { transform: scaleX(1.2) scaleY(0.7); }
-        60%  { transform: scaleX(0.95) scaleY(1.1); }
-        100% { transform: scaleX(1)   scaleY(1); }
+        0%   { transform: scaleX(1)    scaleY(1); }
+        30%  { transform: scaleX(1.25) scaleY(0.65); }
+        65%  { transform: scaleX(0.93) scaleY(1.1); }
+        100% { transform: scaleX(1)    scaleY(1); }
     }
-    #kasbot-wrap.squash-x { animation: kbSquashX 0.35s ease both !important; }
-    #kasbot-wrap.squash-y { animation: kbSquashY 0.35s ease both !important; }
+    #kasbot-inner.squash-x { animation: kbSquashX 0.35s cubic-bezier(.22,.68,0,1.2) both; }
+    #kasbot-inner.squash-y { animation: kbSquashY 0.35s cubic-bezier(.22,.68,0,1.2) both; }
 
-    /* Tap burst */
+    /* Tap burst — applied to #kasbot-inner */
     @keyframes kbTapBurst {
-        0%   { transform: scale(1); }
-        30%  { transform: scale(1.25) rotate(8deg); }
-        60%  { transform: scale(0.9) rotate(-5deg); }
+        0%   { transform: scale(1) rotate(0deg); }
+        25%  { transform: scale(1.3) rotate(6deg); }
+        60%  { transform: scale(0.88) rotate(-4deg); }
+        85%  { transform: scale(1.05) rotate(1deg); }
         100% { transform: scale(1) rotate(0deg); }
     }
-    #kasbot-wrap.tap-burst { animation: kbTapBurst 0.4s cubic-bezier(.22,.68,0,1.4) both !important; }
+    #kasbot-inner.tap-burst { animation: kbTapBurst 0.45s cubic-bezier(.22,.68,0,1.4) both; }
 
-    /* Spin */
+    /* Spin — applied to #kasbot-inner */
     @keyframes kbSpin {
         from { transform: rotate(0deg) scale(1); }
         50%  { transform: rotate(180deg) scale(1.2); }
         to   { transform: rotate(360deg) scale(1); }
     }
-    #kasbot-wrap.spin { animation: kbSpin 0.5s cubic-bezier(.22,.68,0,1) both !important; }
+    #kasbot-inner.spin { animation: kbSpin 0.5s cubic-bezier(.22,.68,0,1) both; }
 
     /* Sleep zZz */
     .kb-zzz {
@@ -1657,6 +1665,8 @@
             <span class="kb-zzz" style="margin-left:16px">z</span>
         </div>
 
+        <!-- Inner wrapper — isolates CSS tap animations from physics transform -->
+        <div id="kasbot-inner">
         <!-- SVG Robot -->
         <svg id="kasbot-svg" width="96" height="120" viewBox="0 0 96 120" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -1766,11 +1776,13 @@
 
             </g><!-- /body-group -->
         </svg>
+        </div><!-- /#kasbot-inner -->
     </div>
 
     <script>
     (function() {
         var wrap    = document.getElementById('kasbot-wrap');
+        var inner   = document.getElementById('kasbot-inner'); // ← CSS animation target
         var bubble  = document.getElementById('kasbot-bubble');
         var counter = document.getElementById('kasbot-counter');
         var zzzWrap = document.getElementById('kb-zzz-wrap');
@@ -1787,37 +1799,29 @@
         var armL    = document.getElementById('kb-arm-l');
         var armR    = document.getElementById('kb-arm-r');
 
-        var W = 96, H = 120; // robot size
+        var W = 96, H = 120;
 
         /* ══════════════════════════════════════════
            ZERO-GRAVITY PHYSICS ENGINE
         ══════════════════════════════════════════ */
-        var px, py;       // position (top-left corner)
-        var vx, vy;       // velocity px/frame
-        var rotation = 0; // current tilt angle (deg)
-        var angVel   = 0; // angular velocity
-        var DAMPING  = 0.995;  // air friction (almost none = zero-g feel)
-        var BOUNCE   = 0.72;   // energy kept on bounce
-        var ANG_DAMP = 0.97;   // angular friction
-        var physicsRunning = true;
+        var px, py, vx, vy, rotation = 0, angVel = 0;
+        var DAMPING = 0.995, BOUNCE = 0.72, ANG_DAMP = 0.97;
         var isDragging = false;
-        var tapCount   = 0;
-        var isSleeping = false;
-        var sleepTimer = null;
-        var bubbleTimer = null;
+        var tapCount = 0, isSleeping = false;
+        var sleepTimer = null, bubbleTimer = null, faceTimer = null;
         var msgIdx = 0;
 
-        // Start near centre of screen
         px = window.innerWidth  / 2 - W / 2;
         py = window.innerHeight / 2 - H / 2;
-        // Random initial velocity — slow gentle drift
         vx = (Math.random() - 0.5) * 2.5;
         vy = (Math.random() - 0.5) * 2.5;
         angVel = (Math.random() - 0.5) * 0.6;
 
+        // Physics only controls POSITION on wrap; rotation on inner
+        // This separates physics transform from CSS animation transform
         function applyTransform() {
-            wrap.style.transform =
-                'translate(' + px + 'px,' + py + 'px) rotate(' + rotation + 'deg)';
+            wrap.style.transform  = 'translate(' + Math.round(px) + 'px,' + Math.round(py) + 'px)';
+            inner.style.transform = 'rotate(' + rotation.toFixed(2) + 'deg)';
         }
         applyTransform();
 
@@ -1892,15 +1896,16 @@
             py = Math.min(py, window.innerHeight - H);
         }, { passive: true });
 
-        /* ── ANIMATION CLASS ── */
+        /* ── ANIMATION CLASS — target inner to avoid physics conflict ── */
         var animTimeout = null;
         function triggerAnim(cls, ms) {
+            if (!inner) return;
             clearTimeout(animTimeout);
-            wrap.classList.remove('squash-x','squash-y','tap-burst','spin');
-            void wrap.offsetWidth; // reflow
-            wrap.classList.add(cls);
+            inner.classList.remove('squash-x','squash-y','tap-burst','spin');
+            void inner.offsetWidth; // force reflow so animation restarts
+            inner.classList.add(cls);
             animTimeout = setTimeout(function() {
-                wrap.classList.remove(cls);
+                inner.classList.remove(cls);
             }, ms || 400);
         }
 
@@ -2099,25 +2104,35 @@
             '💫 Aku bebas\nmelayang! Hehe~',
         ];
 
-        /* ── TAP HANDLER ── */
+        /* ── TAP HANDLER — single unified event, no double-fire ── */
         var lastTap = 0;
+        var tapPending = false; // guard against duplicate events
+
         function onTap(e) {
-            e.preventDefault();
+            // Only fire on primary pointer; ignore if drag happened
             if (isDragging) return;
             if (isSleeping) { wakeUp(); return; }
+
+            // Prevent duplicate: touchstart sets tapPending, click checks it
+            if (e.type === 'touchstart') {
+                tapPending = true;
+                setTimeout(function(){ tapPending = false; }, 500);
+            } else if (e.type === 'click') {
+                if (tapPending) { tapPending = false; return; } // already handled by touchstart
+            }
+            e.preventDefault();
 
             resetSleepTimer();
             tapCount++;
             counter.textContent = tapCount;
             counter.classList.add('show');
 
-            // Tap gives a random velocity kick
-            var kickX = (Math.random()-0.5) * 8;
-            var kickY = (Math.random()-0.5) * 8;
-            vx += kickX; vy += kickY;
+            // Velocity kick
+            vx += (Math.random()-0.5) * 8;
+            vy += (Math.random()-0.5) * 8;
             angVel += (Math.random()-0.5) * 3;
 
-            triggerAnim('tap-burst', 400);
+            triggerAnim('tap-burst', 450);
 
             if (tapCount === 1) {
                 setFace('happy', 2000);
@@ -2129,9 +2144,8 @@
                 showBubble('🤩 WOW! Udah '+tapCount+'x tap!\nKamu keren banget!');
                 triggerAnim('spin', 500);
                 blushL.style.opacity='1'; blushR.style.opacity='1';
-                // Spin wildly
                 angVel += (Math.random()>0.5?1:-1)*5;
-                vx = (Math.random()-0.5)*12; vy = (Math.random()-0.5)*12;
+                vx = (Math.random()-0.5)*14; vy = (Math.random()-0.5)*14;
             } else if (tapCount % 5 === 0) {
                 setFace('love', 2000);
                 showBubble('💕 Makasih udah\nsayang sama aku!');
@@ -2142,18 +2156,21 @@
                 msgIdx++;
             }
 
-            // Double tap → spin + turbo
+            // Double tap → turbo spin
             var now = Date.now();
-            if (now - lastTap < 350) {
+            if (now - lastTap < 380) {
                 triggerAnim('spin', 500);
                 setFace('dizzy', 1500);
                 showBubble('🌀 TURBO MODE!\nBeep boop~');
-                vx = (Math.random()>0.5?1:-1) * 10;
-                vy = (Math.random()>0.5?1:-1) * 10;
-                angVel = (Math.random()-0.5) * 8;
+                vx = (Math.random()>0.5?1:-1)*12;
+                vy = (Math.random()>0.5?1:-1)*12;
+                angVel = (Math.random()-0.5)*10;
             }
             lastTap = now;
         }
+
+        // Both listeners needed for desktop(click) and mobile(touchstart)
+        // tapPending flag prevents double-fire on devices that send both
         wrap.addEventListener('click',      onTap);
         wrap.addEventListener('touchstart', onTap, { passive: false });
 
@@ -2202,6 +2219,7 @@
                     angVel = dragVX * 0.3;
                     setFace('surprised', 1500);
                     showBubble('😲 Wuuush!\nAku dilempar!');
+                    triggerAnim('squash-x', 350);
                 }
                 setTimeout(function(){ isDragging = false; }, 80);
             }
