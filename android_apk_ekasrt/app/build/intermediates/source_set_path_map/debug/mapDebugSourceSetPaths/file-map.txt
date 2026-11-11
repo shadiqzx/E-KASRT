@@ -1,0 +1,35 @@
+com.ekasrt.app-annotation-experimental-1.3.0-0 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\1297836ebf8f2c90a670643981262331\transformed\annotation-experimental-1.3.0\res
+com.ekasrt.app-transition-1.2.0-1 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\135e68a3400dc202611353cce44e181f\transformed\transition-1.2.0\res
+com.ekasrt.app-lifecycle-runtime-2.6.1-2 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\15425c8b318a12a65db06bd59b2bde6d\transformed\lifecycle-runtime-2.6.1\res
+com.ekasrt.app-constraintlayout-2.0.1-3 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\5cf0f6358cedc8d129c772eed0a0a9cc\transformed\constraintlayout-2.0.1\res
+com.ekasrt.app-material-1.11.0-4 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\6e4ab9b452958ab170722072d2cf0712\transformed\material-1.11.0\res
+com.ekasrt.app-core-1.9.0-5 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\767119b2ec5f5e6cb61cb804d9595f74\transformed\core-1.9.0\res
+com.ekasrt.app-appcompat-resources-1.6.1-6 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\82e2cb267baff4c8d3ac426c67a28005\transformed\appcompat-resources-1.6.1\res
+com.ekasrt.app-core-ktx-1.9.0-7 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\879e5c1c535edce67a52972031e649a4\transformed\core-ktx-1.9.0\res
+com.ekasrt.app-lifecycle-viewmodel-2.6.1-8 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\8a75b9a3e35cda3cc4fb7706d71c338c\transformed\lifecycle-viewmodel-2.6.1\res
+com.ekasrt.app-activity-1.8.0-9 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\8e88921b5f7f385434c46705b5d964ee\transformed\activity-1.8.0\res
+com.ekasrt.app-cardview-1.0.0-10 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\96e08c63c745f59c37bd3b75a295686f\transformed\cardview-1.0.0\res
+com.ekasrt.app-fragment-1.3.6-11 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\9ec99279493ad83418127ed43a0448aa\transformed\fragment-1.3.6\res
+com.ekasrt.app-startup-runtime-1.1.1-12 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\a0c0cd70a4966bb3f44043d21212205f\transformed\startup-runtime-1.1.1\res
+com.ekasrt.app-emoji2-1.2.0-13 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\acc319a9080c84f143949c59217304b4\transformed\emoji2-1.2.0\res
+com.ekasrt.app-appcompat-1.6.1-14 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\adc105cd46595442176852c23d9d01f4\transformed\appcompat-1.6.1\res
+com.ekasrt.app-lifecycle-viewmodel-savedstate-2.6.1-15 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\b9592c9dd5afc4650099ddc4657ba62e\transformed\lifecycle-viewmodel-savedstate-2.6.1\res
+com.ekasrt.app-core-runtime-2.2.0-16 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\bb3e7fd711eff4e660642e244f19a9ba\transformed\core-runtime-2.2.0\res
+com.ekasrt.app-profileinstaller-1.3.0-17 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\ca09235eefd43a134a6772924d0e2b0a\transformed\profileinstaller-1.3.0\res
+com.ekasrt.app-recyclerview-1.1.0-18 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\ca94df7a385b121e0a96e1da335b8ace\transformed\recyclerview-1.1.0\res
+com.ekasrt.app-coordinatorlayout-1.1.0-19 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\ce0aa344303f7b23b079921223d9e8eb\transformed\coordinatorlayout-1.1.0\res
+com.ekasrt.app-viewpager2-1.0.0-20 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\d5b4abeaa7edc32f7e362e1d97492d37\transformed\viewpager2-1.0.0\res
+com.ekasrt.app-swiperefreshlayout-1.1.0-21 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\e32ba5a43c76e50bfcce638f729a2687\transformed\swiperefreshlayout-1.1.0\res
+com.ekasrt.app-lifecycle-process-2.6.1-22 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\e6152f8c3c32a29f74e41dfe5498f68c\transformed\lifecycle-process-2.6.1\res
+com.ekasrt.app-emoji2-views-helper-1.2.0-23 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\e9e8d4344632856180400042d2455547\transformed\emoji2-views-helper-1.2.0\res
+com.ekasrt.app-lifecycle-livedata-core-2.6.1-24 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\edf0fc25a751512bc28d21bcea98ecda\transformed\lifecycle-livedata-core-2.6.1\res
+com.ekasrt.app-savedstate-1.2.1-25 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\f383c7a93b9001bd314f1839189d8413\transformed\savedstate-1.2.1\res
+com.ekasrt.app-lifecycle-livedata-2.6.1-26 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\f7ef9699d6889405852e20933f61a1fc\transformed\lifecycle-livedata-2.6.1\res
+com.ekasrt.app-drawerlayout-1.1.1-27 C:\Users\Asus TUF A15\.gradle\caches\9.7.1\transforms\f83b59e89d21c0d4b2a5ef0432c0fbe0\transformed\drawerlayout-1.1.1\res
+com.ekasrt.app-pngs-28 D:\Repository\E-KASRT-main\android_apk_ekasrt\app\build\generated\res\pngs\debug
+com.ekasrt.app-resValues-29 D:\Repository\E-KASRT-main\android_apk_ekasrt\app\build\generated\res\resValues\debug
+com.ekasrt.app-packageDebugResources-30 D:\Repository\E-KASRT-main\android_apk_ekasrt\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.ekasrt.app-packageDebugResources-31 D:\Repository\E-KASRT-main\android_apk_ekasrt\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.ekasrt.app-debug-32 D:\Repository\E-KASRT-main\android_apk_ekasrt\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.ekasrt.app-debug-33 D:\Repository\E-KASRT-main\android_apk_ekasrt\app\src\debug\res
+com.ekasrt.app-main-34 D:\Repository\E-KASRT-main\android_apk_ekasrt\app\src\main\res

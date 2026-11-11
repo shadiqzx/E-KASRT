@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.ekasrt.app-mergeDebugResources-30:/values-w320dp-land-v13/values-w320dp-land-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Asus TUF A15\\.gradle\\caches\\9.7.1\\transforms\\6e4ab9b452958ab170722072d2cf0712\\transformed\\material-1.11.0\\res\\values-w320dp-land-v13\\values-w320dp-land-v13.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,110",
+                        "endColumns": "54,61",
+                        "endOffsets": "105,167"
+                    }
+                }
+            ]
+        }
+    ]
+}

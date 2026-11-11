@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#F8FAFC</color>
+    <color name="black">#FF000000</color>
+    <color name="purple_dark">#6D28D9</color>
+    <color name="purple_primary">#7C3AED</color>
+    <color name="teal_accent">#10B981</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">E-KASRT</string>
+    <string name="btn_change_ip">Ganti Alamat Server IP</string>
+    <string name="btn_retry">Coba Lagi</string>
+    <string name="default_web_url">http://192.168.1.7/kasrt/</string>
+    <string name="offline_message">Tidak dapat terhubung ke server E-KASRT. Pastikan smartphone Anda dan komputer server terhubung ke jaringan Wi-Fi yang sama.</string>
+    <string name="offline_title">Koneksi Terputus</string>
+    <style name="Theme.EKASRT" parent="Theme.MaterialComponents.Light.NoActionBar">
+        
+        <item name="colorPrimary">@color/purple_primary</item>
+        <item name="colorPrimaryVariant">@color/purple_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <item name="colorSecondary">@color/teal_accent</item>
+        
+        <item name="android:statusBarColor">@color/purple_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
