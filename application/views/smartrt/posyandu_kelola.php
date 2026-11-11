@@ -1239,15 +1239,37 @@ void loop() {
 let audioCtx = null;
 let soundEnabled = true;
 
-function playChime(success = true) {
-	if (!soundEnabled) return;
+function unlockAudio() {
 	try {
 		if (!audioCtx) {
 			audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 		}
-		if (audioCtx.state === 'suspended') {
+		if (audioCtx && audioCtx.state === 'suspended') {
 			audioCtx.resume();
 		}
+	} catch (e) { console.log(e); }
+}
+['click', 'keydown', 'touchstart'].forEach(evt => document.addEventListener(evt, unlockAudio, { once: false }));
+
+function speakVoice(text) {
+	if (!soundEnabled || !('speechSynthesis' in window)) return;
+	try {
+		window.speechSynthesis.cancel();
+		const u = new SpeechSynthesisUtterance(text);
+		u.lang = 'id-ID';
+		u.rate = 1.05;
+		u.pitch = 1.0;
+		window.speechSynthesis.speak(u);
+	} catch (e) {
+		console.log(e);
+	}
+}
+
+function playChime(success = true) {
+	if (!soundEnabled) return;
+	try {
+		unlockAudio();
+		if (!audioCtx) return;
 
 		const now = audioCtx.currentTime;
 		const osc = audioCtx.createOscillator();
@@ -1256,23 +1278,23 @@ function playChime(success = true) {
 		gain.connect(audioCtx.destination);
 
 		if (success) {
-			// Nada gembira naik (chime dua nada)
+			// Nada gembira naik (chime dua nada ting-tong ceria)
 			osc.type = 'sine';
-			osc.frequency.setValueAtTime(587.33, now); // D5
-			osc.frequency.setValueAtTime(880.00, now + 0.12); // A5
-			gain.gain.setValueAtTime(0.3, now);
+			osc.frequency.setValueAtTime(659.25, now); // E5
+			osc.frequency.setValueAtTime(987.77, now + 0.12); // B5
+			gain.gain.setValueAtTime(0.4, now);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+			osc.start(now);
+			osc.stop(now + 0.5);
+		} else {
+			// Nada peringatan (tut-tut)
+			osc.type = 'triangle';
+			osc.frequency.setValueAtTime(440.00, now); // A4
+			osc.frequency.setValueAtTime(349.23, now + 0.14); // F4
+			gain.gain.setValueAtTime(0.35, now);
 			gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
 			osc.start(now);
 			osc.stop(now + 0.4);
-		} else {
-			// Nada warning
-			osc.type = 'triangle';
-			osc.frequency.setValueAtTime(329.63, now); // E4
-			osc.frequency.setValueAtTime(261.63, now + 0.15); // C4
-			gain.gain.setValueAtTime(0.25, now);
-			gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-			osc.start(now);
-			osc.stop(now + 0.35);
 		}
 	} catch (e) {
 		console.log('Audio disabled or not allowed yet:', e);
@@ -1280,9 +1302,13 @@ function playChime(success = true) {
 }
 
 document.getElementById('toggleAudioBtn').addEventListener('click', function() {
+	unlockAudio();
 	soundEnabled = !soundEnabled;
 	this.innerText = soundEnabled ? '🔊 Audio: ON' : '🔇 Audio: OFF';
-	if (soundEnabled) playChime(true);
+	if (soundEnabled) {
+		playChime(true);
+		speakVoice("Suara audio aktif");
+	}
 });
 
 // ── Tab Switcher ─────────────────────────────────────────────
@@ -1328,10 +1354,11 @@ function calcStatusGizi() {
 // ── Quick Pairing Helpers ────────────────────────────────────
 let currentLastUid = '';
 
-function openPairModalWithWarga(wargaId, namaWarga) {
+function openPairModalWithWarga(wargaId, namaWarga, uid) {
 	$('#modalPairKtp').modal('show');
 	if (wargaId) document.getElementById('pairWargaId').value = wargaId;
-	if (currentLastUid) document.getElementById('pairRfidUid').value = currentLastUid;
+	if (uid) document.getElementById('pairRfidUid').value = uid;
+	else if (currentLastUid) document.getElementById('pairRfidUid').value = currentLastUid;
 }
 
 function pasteLastUid() {
@@ -1370,13 +1397,18 @@ function fetchLiveStream() {
 				// Jika ada tap baru yang belum pernah diproses
 				if (top.id > lastSeenTapId) {
 					if (lastSeenTapId !== 0) {
-						// Bunyikan nada
-						if (top.status === 'SUCCESS') playChime(true);
-						else playChime(false);
-
-						// Auto-reload tabel kehadiran jika ada kehadiran baru
+						// Bunyikan nada & Suara
 						if (top.status === 'SUCCESS') {
-							setTimeout(() => { window.location.reload(); }, 1200);
+							playChime(true);
+							speakVoice("Selamat datang! " + (top.keterangan || "Kehadiran balita tercatat."));
+							setTimeout(() => { window.location.reload(); }, 2000);
+						} else if (top.status === 'ALREADY_CHECKED') {
+							playChime(false);
+							speakVoice(top.keterangan || "Kartu ini sudah tercatat hadir.");
+						} else if (top.status === 'UNREGISTERED') {
+							playChime(false);
+							speakVoice("Kartu e-KTP baru terdeteksi dengan nomor " + top.uid + ". Silakan pilih nama warga pemilik kartu.");
+							openPairModalWithWarga(null, null, top.uid);
 						}
 					}
 					lastSeenTapId = top.id;
@@ -1408,7 +1440,7 @@ function fetchLiveStream() {
 					statusBadge.innerText = '🔔 KTP Baru (Belum Terhubung)';
 					iconEl.innerText = '🪪';
 					namaEl.innerHTML = 'KTP Baru: <span class="font-monospace">' + top.uid + '</span>';
-					detailEl.innerHTML = '<a href="javascript:void(0)" onclick="openPairModalWithWarga()" class="text-warning font-weight-bold"><u>Klik di sini untuk hubungkan ke data Ibu</u></a>';
+					detailEl.innerHTML = '<a href="javascript:void(0)" onclick="openPairModalWithWarga(null, null, \'' + top.uid + '\')" class="text-warning font-weight-bold"><u>Klik di sini untuk hubungkan ke data Ibu</u></a>';
 				} else {
 					statusBadge.className = 'badge badge-secondary';
 					statusBadge.innerText = top.status;
@@ -1422,7 +1454,8 @@ function fetchLiveStream() {
 }
 
 function testSimulasiTap() {
-	var uid = prompt("🧪 TEST SIMULASI TAP e-KTP / RFID\n\nMasukkan UID Kartu yang ingin ditest:\n(Gunakan UID contoh atau nomor acak seperti 99AA88BB)", "99AA88BB");
+	unlockAudio();
+	var uid = prompt("🧪 TEST SIMULASI TAP e-KTP / RFID\n\nMasukkan nomor kartu UID yang ingin ditest:\n(Misal: 99AA88BB atau coba nomor baru acak seperti 11223344)", "99AA88BB");
 	if (!uid) return;
 	fetch("<?= base_url('smartrt/posyandu_rfid_tap'); ?>", {
 		method: "POST",
@@ -1431,10 +1464,26 @@ function testSimulasiTap() {
 	})
 	.then(r => r.json())
 	.then(res => {
-		alert("✅ Respon Server E-KASRT:\n\nStatus: " + res.status + "\nPesan: " + res.message);
+		unlockAudio();
+		if (res.status === 'success') {
+			playChime(true);
+			speakVoice("Selamat datang! " + res.message);
+		} else if (res.status === 'already_checked') {
+			playChime(false);
+			speakVoice(res.message);
+		} else if (res.status === 'unregistered') {
+			playChime(false);
+			speakVoice("Kartu e-KTP baru belum terdaftar. Menampilkan jendela pendaftaran warga.");
+			openPairModalWithWarga(null, null, uid.trim().toUpperCase());
+		} else {
+			playChime(false);
+			speakVoice(res.message);
+		}
 		fetchLiveStream();
 	})
-	.catch(err => alert("❌ Gagal mengirim: " + err));
+	.catch(err => {
+		alert("❌ Gagal mengirim: " + err);
+	});
 }
 
 // Jalankan polling setiap 2.5 detik

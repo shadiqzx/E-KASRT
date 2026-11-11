@@ -738,17 +738,53 @@ class SmartRT extends CI_Controller
 		// Update di data_warga
 		$this->db->where('idWarga', $warga_id)->update('data_warga', ['rfid_ktp' => $uid]);
 
-		// Update status tap log jika ada
-		$this->db->where('uid', $uid)->update('posyandu_tap_log', [
-			'status'   => 'SUCCESS',
-			'warga_id' => $warga_id,
-			'keterangan' => 'KTP berhasil dihubungkan ke warga'
-		]);
-
 		$warga = $this->db->get_where('data_warga', ['idWarga' => $warga_id])->row();
 		$nama_warga = $warga ? $warga->nama : 'Warga';
 
-		$this->session->set_flashdata('message', '<div class="alert alert-success"><strong>Berhasil!</strong> e-KTP (' . $uid . ') berhasil dihubungkan dengan <strong>' . htmlspecialchars($nama_warga) . '</strong>.</div>');
+		// Otomatis hadirkan balita milik warga ini jika ada sesi aktif
+		$sesi_aktif = $this->db->get_where('posyandu_sesi', ['status' => 'Aktif'])->row();
+		$anak_hadir = [];
+		if ($sesi_aktif) {
+			$balitas = $this->db->get_where('posyandu_balita', ['warga_id' => $warga_id])->result();
+			$now = date('Y-m-d H:i:s');
+			foreach ($balitas as $b) {
+				$sudah = $this->db->get_where('posyandu_kehadiran', [
+					'sesi_id'   => $sesi_aktif->id,
+					'balita_id' => $b->id
+				])->row();
+				if (!$sudah) {
+					$this->db->insert('posyandu_kehadiran', [
+						'sesi_id'      => $sesi_aktif->id,
+						'balita_id'    => $b->id,
+						'jam_datang'   => $now,
+						'metode_absen' => 'RFID',
+						'rfid_uid'     => $uid
+					]);
+					$anak_hadir[] = $b->nama_anak;
+				}
+			}
+		}
+
+		// Update status tap log menjadi SUCCESS
+		$ket_log = 'Ibu ' . $nama_warga . ' tap KTP';
+		if (!empty($anak_hadir)) {
+			$ket_log .= ' -> Balita: ' . implode(', ', $anak_hadir) . ' hadir';
+		} else {
+			$ket_log .= ' berhasil dihubungkan ke sistem';
+		}
+
+		$this->db->where('uid', $uid)->update('posyandu_tap_log', [
+			'status'     => 'SUCCESS',
+			'warga_id'   => $warga_id,
+			'keterangan' => $ket_log
+		]);
+
+		$pesan = '<strong>Berhasil!</strong> e-KTP (' . $uid . ') berhasil dihubungkan dengan <strong>' . htmlspecialchars($nama_warga) . '</strong>.';
+		if (!empty($anak_hadir)) {
+			$pesan .= ' Balita <strong>' . implode(', ', $anak_hadir) . '</strong> otomatis dicatat hadir!';
+		}
+
+		$this->session->set_flashdata('message', '<div class="alert alert-success">' . $pesan . '</div>');
 		redirect('smartrt/posyandu');
 	}
 

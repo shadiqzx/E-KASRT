@@ -50,13 +50,8 @@ const char* ssid     = "NAMA_WIFI_ANDA";
 const char* password = "PASSWORD_WIFI_ANDA";
 
 // URL Endpoint Server E-KASRT
-// Jika Server di Komputer Lokal (XAMPP / Laragon):
-// Ganti 192.168.1.10 dengan IP lokal Komputer/Laptop Anda (cek via 'ipconfig' di CMD).
-// Pastikan ESP32 dan Laptop terhubung ke WiFi / Hotspot yang SAMA!
-//
-// Jika Server di VPS / Hosting Publik:
-// Contoh: "http://43.157.230.29/kasrt/smartrt/posyandu_rfid_tap" atau nama domain Anda.
-const char* serverUrl = "http://192.168.1.10/kasrt/smartrt/posyandu_rfid_tap";
+// Terisi otomatis dengan IP laptop Anda: 10.246.16.194
+const char* serverUrl = "http://10.246.16.194/kasrt/smartrt/posyandu_rfid_tap";
 
 // API Key Pengaman Sistem E-KASRT (Wajib cocok dengan backend di SmartRT.php)
 const char* apiKey    = "kasrt2025";
@@ -69,6 +64,7 @@ const char* apiKey    = "kasrt2025";
 #define BUZZER_PIN  4   // Buzzer Aktif / Pasif
 #define LED_GREEN   15  // LED Hijau (Absen Berhasil)
 #define LED_RED     13  // LED Merah (Gagal / Belum Terdaftar)
+#define ONBOARD_LED 2   // LED Biru Bawaan Fisik di Papan ESP32 (Indikator Status & Tap)
 
 // Objek RFID MFRC522
 MFRC522 rfc(SS_PIN, RST_PIN);
@@ -124,8 +120,10 @@ void setup() {
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
+  pinMode(ONBOARD_LED, OUTPUT);
   digitalWrite(LED_GREEN, LOW);
   digitalWrite(LED_RED, LOW);
+  digitalWrite(ONBOARD_LED, LOW);
 
   // Inisialisasi Bus SPI & Modul RC522
   SPI.begin();
@@ -137,7 +135,7 @@ void setup() {
   Serial.print("[RC522] Versi Chip: 0x");
   Serial.println(v, HEX);
   if (v == 0x00 || v == 0xFF) {
-    Serial.println("⚠️ [PERINGATAN] RC522 tidak terdeteksi! Periksa kembali kabel wiring.");
+    Serial.println("⚠️ [PERINGATAN] RC522 tidak terdeteksi! Periksa kembali kabel wiring & pastikan jarum pin sudah disolder.");
     soundWarning();
   } else {
     Serial.println("✅ [RC522] Modul terdeteksi & siap membaca kartu!");
@@ -151,12 +149,14 @@ void setup() {
 
   int attempt = 0;
   while (WiFi.status() != WL_CONNECTED && attempt < 30) {
+    digitalWrite(ONBOARD_LED, !digitalRead(ONBOARD_LED)); // Kedip cepat saat mencoba konek WiFi
     delay(500);
     Serial.print(".");
     attempt++;
   }
 
   if (WiFi.status() == WL_CONNECTED) {
+    digitalWrite(ONBOARD_LED, HIGH); // LED Biru menyala SOLID = WiFi Siap & Online
     Serial.println("\n✅ [WiFi] Berhasil Terhubung!");
     Serial.print("   IP ESP32   : ");
     Serial.println(WiFi.localIP());
@@ -164,6 +164,7 @@ void setup() {
     Serial.println(serverUrl);
     soundStartup();
   } else {
+    digitalWrite(ONBOARD_LED, LOW);
     Serial.println("\n❌ [WiFi] Gagal terhubung ke WiFi! Periksa SSID & Password.");
     soundWarning();
   }
@@ -215,6 +216,14 @@ void loop() {
 
   lastUid = uid;
   lastTapTime = millis();
+
+  // Tanda Visual: Kedipkan LED Biru Bawaan Board ESP32 3x saat kartu terdeteksi
+  for (int i = 0; i < 3; i++) {
+    digitalWrite(ONBOARD_LED, LOW);
+    delay(60);
+    digitalWrite(ONBOARD_LED, HIGH);
+    delay(60);
+  }
 
   Serial.println("\n[TAP TERDETEKSI] 💳 Kartu Ditempelkan!");
   Serial.print("  > Tipe Kartu : ");
