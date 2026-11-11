@@ -73,16 +73,17 @@
             </thead>
             <tbody>
                 @forelse($transfer_list as $t)
+                @php $isMasuk = (strtolower(trim($t->jenis)) === 'masuk'); @endphp
                 <tr>
                     <td>{{ date('d M Y H:i', strtotime($t->created_at)) }}</td>
                     <td><strong>{{ $t->warga->nama ?? '-' }}</strong></td>
                     <td>
-                        <span class="badge {{ $t->jenis === 'Masuk' ? 'badge-success' : 'badge-danger' }} px-2 py-1">
-                            {{ $t->jenis }}
+                        <span class="badge {{ $isMasuk ? 'badge-success' : 'badge-danger' }} px-2 py-1">
+                            {{ ucfirst($t->jenis) }}
                         </span>
                     </td>
-                    <td class="font-weight-bold {{ $t->jenis === 'Masuk' ? 'text-success' : 'text-danger' }}" style="font-family: 'JetBrains Mono';">
-                        {{ $t->jenis === 'Masuk' ? '+' : '-' }} Rp {{ rupiah($t->jumlah) }}
+                    <td class="font-weight-bold {{ $isMasuk ? 'text-success' : 'text-danger' }}" style="font-family: 'JetBrains Mono';">
+                        {{ $isMasuk ? '+' : '-' }} Rp {{ rupiah($t->jumlah) }}
                     </td>
                     <td>{{ $t->keterangan }}</td>
                     <td><span class="badge badge-light border">{{ $t->metode }}</span></td>
@@ -163,3 +164,4 @@
     </div>
 </div>
 @endsection
+

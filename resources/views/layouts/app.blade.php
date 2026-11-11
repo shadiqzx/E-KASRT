@@ -8,6 +8,11 @@
     <title>KAS-RT | @yield('title', 'Sistem Informasi RT')</title>
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/favicon.png') }}">
 
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Fontfaces & Icons CSS -->
     <link href="{{ asset('assets/css/font-face.css') }}" rel="stylesheet" media="all">
     <link href="{{ asset('assets/vendor/font-awesome-4.7/css/font-awesome.min.css') }}" rel="stylesheet" media="all">
@@ -17,35 +22,180 @@
     <!-- Bootstrap CSS -->
     <link href="{{ asset('assets/vendor/bootstrap-4.1/bootstrap.min.css') }}" rel="stylesheet" media="all">
 
-    <!-- Main Theme & Mobile CSS -->
-    <link href="{{ asset('assets/css/theme.css') }}" rel="stylesheet" media="all">
-    <link href="{{ asset('assets/css/mobile-fix.css') }}" rel="stylesheet" media="all">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Main Theme & Mobile CSS with Cache Busting -->
+    <link href="{{ asset('assets/css/theme.css') }}?v=2.2" rel="stylesheet" media="all">
+    <link href="{{ asset('assets/css/mobile-fix.css') }}?v=2.2" rel="stylesheet" media="all">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+        :root {
+            --app-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --mono-font: 'JetBrains Mono', monospace;
+            --sidebar-bg: #0b1329;
+            --sidebar-text: #94a3b8;
+            --primary-accent: #0284c7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #f8fafc;
+            font-family: var(--app-font) !important;
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.07) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(244, 63, 94, 0.04) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: #0f172a;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
+            margin: 0;
+            padding: 0;
         }
+
+        .font-mono {
+            font-family: var(--mono-font) !important;
+        }
+
         .page-wrapper {
-            background: #f8fafc;
+            background: transparent;
+            min-height: 100vh;
         }
+
+        /* Modern Executive Dark Slate Sidebar */
+        .menu-sidebar {
+            background: linear-gradient(180deg, #090e1d 0%, #0b1329 100%) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.12);
+            width: 270px;
+        }
+        .menu-sidebar .logo {
+            background: transparent !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 22px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-text {
+            font-weight: 800;
+            color: #ffffff;
+            font-size: 17px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            font-family: var(--app-font);
+        }
+        .logo-text span {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .menu-category {
+            padding: 16px 24px 6px;
+            font-size: 10.5px;
+            font-weight: 800;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-family: var(--app-font);
+        }
+        .navbar-sidebar .navbar__list li a {
+            padding: 11px 18px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #94a3b8;
+            border-radius: 12px;
+            margin: 3px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            font-family: var(--app-font);
+        }
+        .navbar-sidebar .navbar__list li a i {
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
+        }
+        .navbar-sidebar .navbar__list li a:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(3px);
+        }
+        .navbar-sidebar .navbar__list li.active a,
+        .menu-sidebar .navbar__list li.active > a {
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+            font-weight: 700;
+        }
+        .navbar-sidebar .navbar__list li.active a i,
+        .menu-sidebar .navbar__list li.active a i {
+            color: #ffffff !important;
+        }
+
+        /* Modern Frosted Glass Top Navbar */
         .header-desktop {
             position: fixed;
             top: 0;
             right: 0;
-            left: 280px;
-            height: 75px;
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
+            left: 270px;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.82) !important;
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.85);
             z-index: 99;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03);
             display: flex;
             align-items: center;
         }
+
+        .page-container {
+            padding-left: 270px;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphic Components Helpers */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(226, 232, 240, 0.6);
+            border-radius: 20px;
+        }
+
+        .pulse-live-green {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulseLiveGreen 2s infinite;
+        }
+        @keyframes pulseLiveGreen {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
         @media (max-width: 991px) {
             .header-desktop {
                 left: 0;
+            }
+            .page-container {
+                padding-left: 0;
             }
         }
     </style>
@@ -60,12 +210,14 @@
         <!-- ASIDE SIDEBAR -->
         <aside class="menu-sidebar" id="mainSidebar">
             <div class="logo">
-                <img src="{{ asset('assets/icon-home.png') }}" width="36" alt="E-KasRT" style="filter: brightness(0) invert(1); flex-shrink:0;" />
+                <div style="width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4); flex-shrink: 0;">
+                    <i class="fas fa-home text-white font-size-18"></i>
+                </div>
                 <div class="logo-text">
                     KAS RT
                     <span>Keuangan & Smart RT</span>
                 </div>
-                <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Tutup menu">&times;</button>
+                <button class="sidebar-close-btn d-lg-none ml-auto btn btn-sm btn-link text-white" onclick="closeSidebar()" aria-label="Tutup menu">&times;</button>
             </div>
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
@@ -128,7 +280,7 @@
                         </li>
                         <li class="{{ request()->routeIs('smartrt.banksampah*') ? 'active' : '' }}">
                             <a href="{{ route('smartrt.banksampah') }}">
-                                <i class="fas fa-recycle text-teal" style="color: #0d9488;"></i> Bank Sampah
+                                <i class="fas fa-recycle" style="color: #0d9488;"></i> Bank Sampah
                             </a>
                         </li>
                         <li class="{{ request()->routeIs('smartrt.surat*') ? 'active' : '' }}">
@@ -138,7 +290,7 @@
                         </li>
                         <li class="{{ request()->routeIs('smartrt.aspirasi*') ? 'active' : '' }}">
                             <a href="{{ route('smartrt.aspirasi') }}">
-                                <i class="fas fa-comments text-purple" style="color: #8b5cf6;"></i> Aspirasi Warga
+                                <i class="fas fa-comments" style="color: #8b5cf6;"></i> Aspirasi Warga
                             </a>
                         </li>
                         <li class="{{ request()->routeIs('smartrt.aset*') ? 'active' : '' }}">
@@ -173,50 +325,59 @@
             <!-- TOP NAVBAR -->
             <header class="header-desktop px-4 d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-light d-lg-none mr-3" onclick="toggleSidebar()">
+                    <button class="btn btn-light d-lg-none mr-3 shadow-sm border" onclick="toggleSidebar()" style="border-radius: 8px;">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <span class="font-weight-bold text-dark d-none d-sm-inline" style="font-size: 15px;">
-                        Sistem Informasi E-KASRT <span class="badge badge-primary ml-1">Laravel 11</span>
-                    </span>
+                    <div class="d-flex align-items-center" style="gap: 10px;">
+                        <div class="pulse-live-green d-none d-sm-block"></div>
+                        <span class="font-weight-bold text-dark d-none d-sm-inline" style="font-size: 15px; letter-spacing: -0.3px;">
+                            Sistem Informasi E-KASRT
+                        </span>
+                        <span class="badge badge-primary px-2 py-1 font-weight-bold d-none d-md-inline" style="border-radius: 6px; font-size: 11px; background: #0284c7;">
+                            Laravel 11 &bull; Live
+                        </span>
+                    </div>
                 </div>
 
-                <div class="account-wrap d-flex align-items-center" style="gap: 15px;">
+                <div class="account-wrap d-flex align-items-center" style="gap: 14px;">
                     <div class="text-right d-none d-sm-block">
-                        <div class="font-weight-bold text-dark" style="font-size: 13.5px;">
+                        <div class="font-weight-bold text-dark" style="font-size: 13.5px; line-height: 1.2;">
                             {{ Auth::user()->user ?? 'Administrator' }}
                         </div>
-                        <small class="text-muted text-uppercase" style="font-size: 11px;">
-                            {{ Auth::user()->role->role ?? 'Admin' }}
+                        <small class="text-muted text-uppercase" style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px;">
+                            {{ Auth::user()->role->role ?? 'SUPERADMIN' }}
                         </small>
                     </div>
-                    <img src="{{ asset('assets/avatar.png') }}" class="rounded-circle border" width="40" height="40" alt="Avatar">
-                    <a href="{{ route('logout') }}" class="btn btn-outline-danger btn-sm font-weight-bold ml-2" title="Keluar">
+                    <div style="position: relative;">
+                        <img src="{{ asset('assets/avatar.png') }}" class="rounded-circle border" width="40" height="40" alt="Avatar" style="box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <span style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #10b981; border: 2px solid #fff; border-radius: 50%;"></span>
+                    </div>
+                    <a href="{{ route('logout') }}" class="btn btn-outline-danger btn-sm font-weight-bold ml-1" title="Keluar dari Sistem" style="border-radius: 8px;">
                         <i class="fas fa-sign-out-alt"></i>
                     </a>
                 </div>
             </header>
 
             <!-- MAIN CONTENT -->
-            <div class="main-content" style="padding-top: 85px;">
+            <div class="main-content" style="padding-top: 92px;">
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
                         <!-- Flash Message Alerts -->
                         @if(session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 12px;">
-                                {!! session('success') !!}
+                            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 14px; border: 1px solid #a7f3d0; background: #ecfdf5; color: #065f46;">
+                                <i class="fas fa-check-circle mr-2"></i> {!! session('success') !!}
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                             </div>
                         @endif
                         @if(session('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: 12px;">
-                                {!! session('error') !!}
+                            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 14px; border: 1px solid #fecdd3; background: #fff1f2; color: #9f1239;">
+                                <i class="fas fa-exclamation-circle mr-2"></i> {!! session('error') !!}
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                             </div>
                         @endif
                         @if(session('warning'))
-                            <div class="alert alert-warning alert-dismissible fade show text-dark" role="alert" style="border-radius: 12px;">
-                                {!! session('warning') !!}
+                            <div class="alert alert-warning alert-dismissible fade show shadow-sm text-dark" role="alert" style="border-radius: 14px; border: 1px solid #fde68a; background: #fffbeb; color: #92400e;">
+                                <i class="fas fa-info-circle mr-2"></i> {!! session('warning') !!}
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                             </div>
                         @endif
@@ -237,13 +398,13 @@
         function toggleSidebar() {
             var sb = document.getElementById('mainSidebar');
             var ov = document.getElementById('sidebarOverlay');
-            if (sb) sb.classList.toggle('show');
+            if (sb) sb.classList.toggle('sidebar-open');
             if (ov) ov.classList.toggle('show');
         }
         function closeSidebar() {
             var sb = document.getElementById('mainSidebar');
             var ov = document.getElementById('sidebarOverlay');
-            if (sb) sb.classList.remove('show');
+            if (sb) sb.classList.remove('sidebar-open');
             if (ov) ov.classList.remove('show');
         }
     </script>
@@ -251,4 +412,3 @@
 </body>
 
 </html>
-

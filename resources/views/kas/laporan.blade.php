@@ -102,16 +102,17 @@
             </thead>
             <tbody>
                 @forelse($kas_list as $k)
+                @php $isMasuk = (strtolower(trim($k->jenis)) === 'masuk'); @endphp
                 <tr>
                     <td>{{ date('d M Y', strtotime($k->tanggal)) }}</td>
                     <td><strong>{{ $k->keterangan }}</strong></td>
                     <td>
-                        <span class="badge {{ $k->jenis === 'Masuk' ? 'badge-success' : 'badge-danger' }} px-2 py-1">
-                            {{ $k->jenis }}
+                        <span class="badge {{ $isMasuk ? 'badge-success' : 'badge-danger' }} px-2 py-1">
+                            {{ ucfirst($k->jenis) }}
                         </span>
                     </td>
-                    <td class="text-right font-weight-bold {{ $k->jenis === 'Masuk' ? 'text-success' : 'text-danger' }}" style="font-family: 'JetBrains Mono';">
-                        {{ $k->jenis === 'Masuk' ? '+' : '-' }} Rp {{ rupiah($k->jumlah) }}
+                    <td class="text-right font-weight-bold {{ $isMasuk ? 'text-success' : 'text-danger' }}" style="font-family: 'JetBrains Mono';">
+                        {{ $isMasuk ? '+' : '-' }} Rp {{ rupiah($k->jumlah) }}
                     </td>
                 </tr>
                 @empty
@@ -124,3 +125,4 @@
     </div>
 </div>
 @endsection
+

@@ -1,240 +1,184 @@
 /*
- * mobile-fix.css — Override theme.css untuk tampilan desktop yang benar
- * Tampilan mobile ditangani oleh index_mobile.php (halaman terpisah)
- * Load SETELAH theme.css
+ * mobile-fix.css — Executive Glassmorphism & Layout Engine for E-KASRT
+ * Dark Obsidian Sidebar + Frosted Glass Layout
  */
 
 /* ================================================================
-   DESKTOP FIXES — Override konflik dari theme.css
+   1. DESKTOP SIDEBAR — Obsidian Slate Glassmorphism
    ================================================================ */
-
-/* Sidebar */
 .menu-sidebar {
-    background-color: #03A9F4 !important;
-    width: 260px !important;
+    background: linear-gradient(180deg, #090e1d 0%, #0b1329 100%) !important;
+    width: 270px !important;
     position: fixed !important;
-    top: 0 !important; left: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
     height: 100vh !important;
     z-index: 1050 !important;
     overflow-y: auto !important;
     transform: translateX(0) !important;
-    transition: transform 0.3s ease !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.25) !important;
 }
-.logo {
-    background-color: #03A9F4 !important;
-    padding: 14px 16px !important;
-    display: flex !important;
-    align-items: center !important;
-    min-height: 60px;
-}
-.logo-text { color: #fff !important; font-size: 17px !important; font-weight: 700 !important; margin-left: 10px !important; }
-.logo-text span { display: block; font-size: 11px !important; color: #B3E5FC !important; }
 
-.menu-sidebar .navbar__list { padding: 6px 0 !important; margin: 0 !important; list-style: none !important; }
-.menu-sidebar .navbar__list li { list-style: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
-.menu-sidebar .navbar__list li a {
-    color: #E1F5FE !important;
-    padding: 10px 16px !important;
+.logo {
+    background: transparent !important;
+    padding: 20px 22px !important;
     display: flex !important;
     align-items: center !important;
-    border-radius: 8px !important;
-    margin: 2px 10px !important;
-    font-size: 14px !important;
-    transition: background 0.2s !important;
+    min-height: 72px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+.logo-text {
+    color: #ffffff !important;
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    margin-left: 12px !important;
+    letter-spacing: -0.5px !important;
+    line-height: 1.2 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+.logo-text span {
+    display: block !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    color: #38bdf8 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+}
+
+.menu-sidebar .navbar__list {
+    padding: 12px 0 !important;
+    margin: 0 !important;
+    list-style: none !important;
+}
+
+.menu-sidebar .navbar__list li {
+    list-style: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.menu-sidebar .navbar__list li a {
+    color: #94a3b8 !important;
+    padding: 11px 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    border-radius: 12px !important;
+    margin: 3px 14px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     border: none !important;
     text-decoration: none !important;
-    white-space: nowrap;
+    white-space: nowrap !important;
+    gap: 12px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
-.menu-sidebar .navbar__list li a:hover,
-.menu-sidebar .navbar__list li.active > a {
-    background-color: #0288D1 !important;
-    color: #fff !important;
+
+.menu-sidebar .navbar__list li a:hover {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+    color: #ffffff !important;
+    transform: translateX(3px) !important;
 }
-.menu-sidebar .navbar__list li a i { margin-right: 12px !important; width: 18px !important; text-align: center; flex-shrink: 0; }
-.menu-category {
-    color: #B3E5FC !important;
-    font-size: 10px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    margin: 14px 18px 3px !important;
+
+.menu-sidebar .navbar__list li.active > a,
+.navbar-sidebar .navbar__list li.active a {
+    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35) !important;
     font-weight: 700 !important;
 }
 
-/* Page Container: geser kanan sebesar lebar sidebar */
+.menu-sidebar .navbar__list li a i {
+    font-size: 15px !important;
+    width: 20px !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+}
+
+.menu-sidebar .navbar__list li.active a i {
+    color: #ffffff !important;
+}
+
+.menu-category {
+    color: #64748b !important;
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin: 18px 24px 6px !important;
+    font-weight: 800 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* ================================================================
+   2. PAGE CONTAINER & TOPBAR — Frosted Glassmorphism
+   ================================================================ */
 .page-container {
-    padding-left: 260px !important;
+    padding-left: 270px !important;
     background: transparent !important;
     position: static !important;
     top: auto !important;
+    min-height: 100vh !important;
 }
 
-/* Header Desktop: fixed, mulai dari tepi sidebar */
 .header-desktop {
-    background: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04) !important;
     position: fixed !important;
     top: 0 !important;
-    left: 260px !important;
+    left: 270px !important;
     right: 0 !important;
-    height: 60px !important;
+    height: 72px !important;
     z-index: 900 !important;
     display: flex !important;
     align-items: center !important;
     border: none !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
 }
+
 .header-desktop .section__content {
     position: static !important;
     transform: none !important;
-    top: auto !important; left: auto !important; right: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
     width: 100% !important;
     overflow: visible !important;
-    padding: 0 16px !important;
+    padding: 0 28px !important;
 }
-.header-desktop .container-fluid { padding: 0 !important; }
+
+.header-desktop .container-fluid {
+    padding: 0 !important;
+}
+
 .header-wrap {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
-    height: 60px;
+    height: 72px !important;
     border: none !important;
 }
 
-/* Main Content: offset untuk fixed header */
-.main-content { padding-top: 60px !important; min-height: 100vh; }
-.section__content--p30 { padding: 0 20px !important; }
-
-/* Background */
-body { background-color: #F8F9FA !important; overflow-x: hidden; }
-.page-wrapper { background: #F8F9FA !important; overflow: visible !important; padding-bottom: 40px !important; }
+.main-content {
+    padding-top: 96px !important;
+    padding-bottom: 50px !important;
+    min-height: 100vh !important;
+}
 
 /* ================================================================
-   TOP CARDS
+   3. MOBILE RESPONSIVE DRAWER & OVERLAY
    ================================================================ */
-.top-cards-container {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 14px !important;
-    margin-bottom: 20px !important;
-}
-.top-card {
-    background: #fff !important;
-    border-radius: 12px !important;
-    padding: 14px !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
-    display: flex !important;
-    align-items: center !important;
-    min-width: 0;
-    overflow: hidden;
-}
-.top-card-icon {
-    width: 44px !important; height: 44px !important;
-    border-radius: 11px !important;
-    display: flex !important; align-items: center !important; justify-content: center !important;
-    font-size: 18px !important;
-    margin-right: 12px !important;
-    flex-shrink: 0;
-}
-.icon-green  { background: #E8F5E9 !important; color: #4CAF50 !important; }
-.icon-red    { background: #FFEBEE !important; color: #F44336 !important; }
-.icon-blue   { background: #E1F5FE !important; color: #03A9F4 !important; }
-.icon-yellow { background: #FFF8E1 !important; color: #FFC107 !important; }
-
-.top-card-info { min-width: 0; flex: 1; overflow: hidden; }
-.top-card-info h4 { font-size: 11px !important; color: #6C757D !important; margin: 0 0 3px !important; font-weight: 400 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.top-card-info h2 { font-size: 15px !important; font-weight: 700 !important; color: #2d3748 !important; margin: 0 0 2px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.top-card-info p  { font-size: 10px !important; color: #999 !important; margin: 0 !important; }
-.trend-up   { color: #4CAF50 !important; font-weight: 600 !important; }
-.trend-down { color: #F44336 !important; font-weight: 600 !important; }
-
-/* ================================================================
-   SALDO CARD
-   ================================================================ */
-.saldo-card {
-    background: linear-gradient(135deg, #29B6F6 0%, #0288D1 100%) !important;
-    border-radius: 14px !important;
-    padding: 20px !important;
-    color: #fff !important;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 6px 16px rgba(3,169,244,0.25) !important;
-    min-height: 160px;
-}
-.saldo-card h4 { color: rgba(255,255,255,0.85) !important; font-weight: 400 !important; font-size: 13px !important; margin-bottom: 6px !important; }
-.saldo-card h1 { color: #fff !important; font-size: clamp(18px,3vw,28px) !important; font-weight: 700 !important; margin-bottom: 6px !important; word-break: break-all; }
-.saldo-card p  { color: rgba(255,255,255,0.7) !important; font-size: 12px !important; }
-.saldo-card i.bg-icon { position: absolute !important; right: -15px !important; bottom: -15px !important; font-size: 90px !important; color: rgba(255,255,255,0.07) !important; transform: rotate(-15deg) !important; }
-
-/* ================================================================
-   AU-CARD
-   ================================================================ */
-.au-card {
-    border-radius: 14px !important;
-    border: none !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06) !important;
-    background: #fff !important;
-    margin-bottom: 16px !important;
-}
-.au-card-inner { padding: 18px !important; }
-
-.dashboard-section-title {
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    color: #2d3748 !important;
-    margin-bottom: 14px !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-}
-.dashboard-section-title a { font-size: 12px !important; color: #2196F3 !important; font-weight: 400 !important; text-decoration: none !important; }
-
-/* ================================================================
-   QUICK ACTIONS
-   ================================================================ */
-.quick-actions { display: flex !important; flex-direction: column !important; gap: 8px !important; }
-.btn-quick {
-    border-radius: 10px !important;
-    padding: 10px 14px !important;
-    font-weight: 600 !important;
-    font-size: 13px !important;
-    border: none !important;
-    cursor: pointer;
-    transition: transform 0.15s, opacity 0.15s;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 10px !important;
-    text-decoration: none !important;
-}
-.btn-quick:active { transform: scale(0.97); }
-.btn-quick i { font-size: 15px !important; width: 20px; text-align: center; flex-shrink: 0; }
-.btn-q-green  { background: #E8F5E9 !important; color: #388E3C !important; }
-.btn-q-red    { background: #FFEBEE !important; color: #D32F2F !important; }
-.btn-q-blue   { background: #E3F2FD !important; color: #1565C0 !important; }
-.btn-q-yellow { background: #FFF8E1 !important; color: #E65100 !important; }
-.btn-q-purple { background: #F3E5F5 !important; color: #7B1FA2 !important; }
-
-/* ================================================================
-   LIST ITEMS
-   ================================================================ */
-.list-item { display: flex !important; align-items: flex-start !important; padding: 10px 0 !important; border-bottom: 1px solid #f0f0f0 !important; }
-.list-item:last-child { border-bottom: none !important; }
-.list-item-icon { width: 36px !important; height: 36px !important; border-radius: 8px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-right: 10px !important; font-size: 14px !important; flex-shrink: 0; }
-.list-item-content { flex: 1 !important; min-width: 0; }
-.list-item-content h5 { font-size: 13px !important; font-weight: 600 !important; color: #2d3748 !important; margin: 0 0 2px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.list-item-content p  { font-size: 11px !important; color: #888 !important; margin: 0 !important; }
-.list-item-right { text-align: right !important; flex-shrink: 0; padding-left: 8px !important; }
-.list-item-right span   { font-size: 10px !important; color: #aaa !important; display: block; margin-bottom: 3px !important; }
-.list-item-right strong { font-size: 12px !important; }
-.text-green { color: #388E3C !important; }
-.text-red   { color: #D32F2F !important; }
-
-/* ================================================================
-   MOBILE SIDEBAR OVERLAY (untuk header.php hamburger)
-   ================================================================ */
-@media (max-width: 992px) {
+@media (max-width: 991px) {
     .menu-sidebar {
         transform: translateX(-100%) !important;
+        width: 270px !important;
     }
     .menu-sidebar.sidebar-open {
         transform: translateX(0) !important;
@@ -244,15 +188,14 @@ body { background-color: #F8F9FA !important; overflow-x: hidden; }
     }
     .header-desktop {
         left: 0 !important;
+        height: 64px !important;
     }
-    #sidebarOverlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.45);
-        z-index: 1049;
+    .header-wrap {
+        height: 64px !important;
     }
-    #sidebarOverlay.active {
-        display: block;
+    .main-content {
+        padding-top: 80px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
     }
 }
