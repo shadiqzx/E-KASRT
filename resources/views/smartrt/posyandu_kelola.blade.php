@@ -1537,9 +1537,13 @@ async function readUsbSerialStream() {
 				const lines = lineBuffer.split('\n');
 				lineBuffer = lines.pop();
 				for (const line of lines) {
-					const match = line.match(/UID:\s*([0-9A-Fa-f]+)/i);
+					// Dukung format: "UID: 8A3C4D1E", "Card UID: 8A 3C 4D 1E", "UID Kartu : 8A3C4D1E", dll
+					const match = line.match(/(?:UID|Card UID|KTP)\s*[:=-]?\s*([0-9A-Fa-f\s]{8,24})/i);
 					if (match && match[1]) {
-						sendRfidTapToServer(match[1].trim().toUpperCase());
+						const cleanUid = match[1].replace(/\s+/g, '').trim().toUpperCase();
+						if (cleanUid.length >= 4) {
+							sendRfidTapToServer(cleanUid);
+						}
 					}
 				}
 			}
