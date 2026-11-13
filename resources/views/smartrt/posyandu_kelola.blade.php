@@ -357,361 +357,214 @@
 	border: 1px solid #1e293b;
 	position: relative;
 }
-
-/* VISIONVILLAGE STYLE SCANNER CARD */
-.vv-scanner-card {
-	background: #ffffff;
-	border: 2px solid #10b981;
-	border-radius: 20px;
-	padding: 24px;
-	box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.08);
-	margin-bottom: 24px;
-	position: relative;
-}
-.vv-pulse-dot {
-	width: 10px;
-	height: 10px;
-	background: #10b981;
-	border-radius: 50%;
-	display: inline-block;
-	box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-	animation: vvPulse 1.8s infinite;
-}
-@keyframes vvPulse {
-	0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-	70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-	100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-.vv-badge-status {
-	background: #0f172a;
-	color: #cbd5e1;
-	font-size: 11px;
-	font-weight: 700;
-	padding: 3px 10px;
-	border-radius: 6px;
-}
-.vv-endpoint-code {
-	color: #e11d48;
-	font-family: 'JetBrains Mono', monospace;
-	font-size: 11.5px;
-	word-break: break-all;
-}
-.vv-btn-usb {
-	background: #059669;
-	color: #ffffff !important;
-	border: none;
-	padding: 9px 18px;
-	border-radius: 10px;
-	font-weight: 700;
-	font-size: 13px;
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	transition: all 0.2s;
-	text-decoration: none !important;
-}
-.vv-btn-usb:hover {
-	background: #047857;
-	box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-}
-.vv-android-banner {
-	background: #eff6ff;
-	border: 1px solid #bfdbfe;
-	border-radius: 16px;
-	padding: 16px 20px;
-	margin-top: 18px;
-	margin-bottom: 20px;
-}
-.vv-btn-nfc {
-	background: #2563eb;
-	color: #ffffff !important;
-	border: none;
-	padding: 12px 20px;
-	border-radius: 12px;
-	font-weight: 700;
-	font-size: 13.5px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	transition: all 0.2s;
-	text-decoration: none !important;
-	flex: 1;
-}
-.vv-btn-nfc:hover {
-	background: #1d4ed8;
-	box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
-}
-.vv-btn-camera {
-	background: #06b6d4;
-	color: #ffffff !important;
-	border: none;
-	padding: 12px 20px;
-	border-radius: 12px;
-	font-weight: 700;
-	font-size: 13.5px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	transition: all 0.2s;
-	text-decoration: none !important;
-	flex: 1;
-}
-.vv-btn-camera:hover {
-	background: #0891b2;
-	box-shadow: 0 4px 14px rgba(6, 182, 212, 0.25);
-}
-.vv-pill-test {
-	background: #ffffff;
-	border: 1px solid #10b981;
-	color: #065f46 !important;
-	font-size: 12px;
-	font-weight: 600;
-	padding: 5px 12px;
-	border-radius: 20px;
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	text-decoration: none !important;
-	transition: all 0.15s;
-	margin-bottom: 6px;
-}
-.vv-pill-test:hover {
-	background: #ecfdf5;
-	border-color: #059669;
-}
-.vv-pill-yellow {
-	border-color: #f59e0b;
-	color: #b45309 !important;
-}
-.vv-pill-yellow:hover {
-	background: #fffbeb;
-	border-color: #d97706;
-}
-.vv-center-standby {
-	padding: 32px 20px;
-	text-align: center;
-	background: #f8fafc;
-	border: 1px dashed #cbd5e1;
-	border-radius: 16px;
-	margin-top: 12px;
-}
-.vv-btn-header-green {
-	background: #10b981;
-	color: #ffffff !important;
-	border: none;
-	padding: 10px 22px;
-	border-radius: 30px;
-	font-weight: 700;
-	font-size: 13.5px;
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-	transition: all 0.2s;
-	text-decoration: none !important;
-}
-.vv-btn-header-green:hover {
-	background: #059669;
-	box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
-}
-.vv-btn-header-cyan {
-	background: #ffffff;
-	color: #0284c7 !important;
-	border: 1.5px solid #38bdf8;
-	padding: 9px 20px;
-	border-radius: 30px;
-	font-weight: 700;
-	font-size: 13.5px;
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	transition: all 0.2s;
-	text-decoration: none !important;
-}
-.vv-btn-header-cyan:hover {
-	background: #f0f9ff;
-	border-color: #0284c7;
-}
 </style>
 
-<!-- 1. HEADER VISIONVILLAGE STYLE -->
-<div class="mb-4">
+<!-- 1. HERO MESH GRADIENT HEADER -->
+<div class="posyandu-hero-mesh">
 	<div class="d-flex flex-wrap justify-content-between align-items-center">
-		<div class="mb-3 mb-md-0">
-			<div class="d-flex align-items-center gap-2 mb-1" style="gap: 12px;">
-				<span style="font-size: 32px; color: #10b981;"><i class="fas fa-id-card"></i></span>
-				<h2 class="font-weight-bold mb-0" style="color: #059669; font-size: 26px; letter-spacing: -0.5px;">
-					Loket Posyandu Balita & Tap e-KTP (RFID RC522)
-				</h2>
+		<div class="mb-3 mb-lg-0">
+			<div class="hero-glass-badge">
+				<span class="hero-pulsing-dot"></span>
+				IoT SMART RT v2.4 • ESP32 + MFRC522 RC522 (Laravel 11)
 			</div>
-			<p class="text-muted mb-0" style="font-size: 14px;">
-				Tempelkan e-KTP warga pada alat <strong>ESP32 + RFID RC522</strong> untuk absensi otomatis & pemeriksaan KMS.
+			<h1 class="hero-title">Posyandu Balita Digital</h1>
+			<p class="hero-subtitle">
+				Otomatisasi absensi balita berbasis tap <strong>e-KTP Ibu Balita</strong>, pemantauan status gizi KMS, dan integrasi hardware NodeMCU ESP32.
 			</p>
 		</div>
 
 		<div class="d-flex flex-wrap gap-2" style="gap: 10px;">
-			<a href="#modalSettingEsp32" data-toggle="modal" class="vv-btn-header-cyan">
-				<i class="fas fa-microchip"></i> Panduan & Kode ESP32
+			<a href="#modalTambahSesi" data-toggle="modal" class="hero-btn-white">
+				<i class="fas fa-plus-circle"></i> Buat Sesi Baru
 			</a>
 			@if($sesi_aktif)
-				<a href="#modalHadirManual" data-toggle="modal" class="vv-btn-header-green">
-					<i class="fas fa-plus"></i> Catat Kehadiran Manual
-				</a>
-			@else
-				<a href="#modalTambahSesi" data-toggle="modal" class="vv-btn-header-green">
-					<i class="fas fa-plus"></i> Buka Sesi Posyandu
+				<a href="#modalHadirManual" data-toggle="modal" class="hero-btn-glass">
+					<i class="fas fa-pen-alt text-info"></i> Absen Manual
 				</a>
 			@endif
+			<a href="#modalPairKtp" data-toggle="modal" class="hero-btn-glass">
+				<i class="fas fa-id-card text-warning"></i> Hubungkan e-KTP
+			</a>
+			<button type="button" class="hero-btn-glass" data-toggle="modal" data-target="#modalSettingEsp32">
+				<i class="fas fa-cog text-light"></i> Setting ESP32 & IoT
+			</button>
 		</div>
 	</div>
 </div>
 
-<!-- 2. SCANNER RFID CARD (VISIONVILLAGE DESIGN) -->
-<div class="vv-scanner-card">
-	<!-- BARIS ATAS: STATUS & SAMBUNGAN USB -->
-	<div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-		<!-- KIRI: SCANNER STATUS & ENDPOINT -->
-		<div class="mb-3 mb-xl-0" style="max-width: 620px;">
-			<div class="d-flex align-items-center gap-2 mb-1" style="gap: 8px;">
-				<span class="vv-pulse-dot"></span>
-				<span class="font-weight-bold text-dark" style="font-size: 14px;" id="scannerLiveStatusText">
-					Scanner RFID Aktif — Menunggu Tap e-KTP...
-				</span>
-				<span class="vv-badge-status" id="badgeLastTapInfo">Belum ada tap</span>
-			</div>
-			<div style="font-size: 11.5px; color: #475569; line-height: 1.5;">
-				Endpoint ESP32: <span class="vv-endpoint-code">POST {{ route('posyandu.rfid_tap') }} (atau GET {{ route('posyandu.rfid_tap') }}?uid=UID_KTP)</span>
+<!-- 2. HARDWARE HUB & PILIHAN SAMBUNGAN ESP32 -->
+<div class="hardware-hub-card">
+	<div class="hub-nav-bar">
+		<div class="d-flex align-items-center flex-wrap gap-2" style="gap: 10px;">
+			<span class="font-weight-bold text-dark" style="font-size: 13px;">
+				<i class="fas fa-microchip text-primary mr-1"></i> Mode Sambungan:
+			</span>
+			<div class="connection-mode-pills">
+				<button type="button" class="conn-pill-btn active" id="btnModeWifi" onclick="selectConnMode('wifi')">
+					<i class="fas fa-wifi text-success"></i> 📡 Wi-Fi HTTP (Default)
+				</button>
+				<button type="button" class="conn-pill-btn" id="btnModeUsb" onclick="selectConnMode('usb')">
+					<i class="fas fa-plug text-info"></i> 🔌 USB Serial COM
+				</button>
+				<button type="button" class="conn-pill-btn" id="btnModeMqtt" onclick="selectConnMode('config')">
+					<i class="fas fa-sliders-h text-warning"></i> ⚙️ Parameter IoT
+				</button>
 			</div>
 		</div>
 
-		<!-- KANAN: HUBUNGKAN USB & MANUAL TAP GROUP -->
-		<div class="d-flex flex-wrap align-items-center gap-2" style="gap: 8px;">
-			<div class="input-group input-group-sm" style="width: auto;">
-				<button type="button" class="vv-btn-usb" id="btnConnectUsb" onclick="toggleUsbSerial()">
-					<i class="fas fa-link mr-1"></i> <span id="usbBtnLabel">Hubungkan USB ESP32 (PC/Laptop)</span>
-				</button>
-				<select class="custom-select custom-select-sm ml-1" id="baudRateSelect" style="width: 85px; border-radius: 10px; font-weight: 600;">
-					<option value="115200" selected>115200</option>
-					<option value="9600">9600</option>
-				</select>
-			</div>
+		<div class="d-flex align-items-center flex-wrap gap-2" style="gap: 8px;">
+			<span class="badge badge-light border text-muted px-2 py-1 font-weight-bold" id="livePingBadge" style="font-size: 11px; border-radius: 6px;">
+				Live Polling: Aktif
+			</span>
+			<button id="toggleAudioBtn" class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 11px; border-radius: 8px; font-weight: 600;">
+				🔊 Audio: ON
+			</button>
+			<button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" onclick="testSimulasiTap()" style="font-size: 11px; border-radius: 8px; font-weight: 600;">
+				🧪 Test Tap KTP
+			</button>
+		</div>
+	</div>
 
-			<div class="input-group input-group-sm ml-xl-2" style="width: auto;">
-				<input type="text" class="form-control font-monospace font-weight-bold" id="quickManualUid" placeholder="💳 Ketik UID KTP" style="width: 140px; border-radius: 8px 0 0 8px; text-transform: uppercase;">
-				<div class="input-group-append">
-					<button class="btn btn-info font-weight-bold" type="button" onclick="submitQuickManualUid()" style="border-radius: 0 8px 8px 0;">
-						<i class="fas fa-hand-pointer mr-1"></i> Tap Manual
+	<div class="hub-body">
+		<div class="row align-items-center">
+			<div class="col-lg-7 mb-4 mb-lg-0">
+				<!-- MODE 1: WI-FI REST API -->
+				<div id="connModeWifiView">
+					<div class="d-flex align-items-center mb-2" style="gap: 8px;">
+						<span class="badge badge-success px-3 py-1 font-weight-bold d-inline-flex align-items-center gap-2" style="border-radius: 20px; font-size: 12px; gap: 6px;">
+							<span class="radar-sweep-anim"></span>
+							SENSOR ESP32 SIAP & LISTENING
+						</span>
+						<span class="text-muted" style="font-size: 12px;">• NodeMCU ESP32-WROOM-32D</span>
+					</div>
+
+					<h4 class="font-weight-bold text-dark mb-1" id="scannerStatusTitle">
+						@if($sesi_aktif)
+							Sesi Aktif: {{ $sesi_aktif->nama_sesi }}
+						@else
+							Belum Ada Sesi Posyandu yang Berstatus "Aktif"
+						@endif
+					</h4>
+					<p class="text-muted mb-3" style="font-size: 13px;" id="scannerStatusDesc">
+						@if($sesi_aktif)
+							Ibu balita dapat langsung menempelkan e-KTP ke sensor RC522. Kehadiran balita akan tercatat otomatis.
+						@else
+							Aktifkan salah satu jadwal sesi posyandu di tab <em>Manajemen Sesi</em> agar reader RFID dapat mencatat absensi.
+						@endif
+					</p>
+
+					<div class="d-flex flex-wrap align-items-center gap-2" style="gap: 8px;">
+						<div class="hw-chip">
+							<i class="fas fa-network-wired text-primary"></i> IP Server: <code id="dispIpServer">10.246.16.194</code>
+						</div>
+						<div class="hw-chip">
+							<i class="fas fa-link text-info"></i> Endpoint: <code>{{ route('posyandu.rfid_tap') }}</code>
+						</div>
+						<div class="hw-chip">
+							<i class="fas fa-key text-warning"></i> Key: <code>kasrt2025</code>
+						</div>
+					</div>
+				</div>
+
+				<!-- MODE 2: USB SERIAL COM PORT -->
+				<div id="connModeUsbView" style="display: none;">
+					<div class="d-flex align-items-center mb-2" style="gap: 8px;">
+						<span class="badge badge-info px-3 py-1 font-weight-bold" style="border-radius: 20px; font-size: 12px;">
+							<i class="fas fa-plug mr-1"></i> MODE USB SERIAL COM (Web Serial API)
+						</span>
+						<span class="text-muted" style="font-size: 12px;" id="usbStatusText">
+							🟡 Belum Terhubung
+						</span>
+					</div>
+					<h5 class="font-weight-bold text-dark mb-1">Sambungkan ESP32 langsung via Kabel USB</h5>
+					<p class="text-muted mb-3" style="font-size: 13px;">
+						Pastikan menggunakan kabel data USB (bukan kabel casan). Klik tombol di bawah dan pilih port <code>USB-SERIAL CH340</code> atau <code>CP2102</code>.
+					</p>
+					<div class="d-flex flex-wrap align-items-center gap-2" style="gap: 10px;">
+						<button type="button" class="btn btn-primary btn-sm font-weight-bold px-3 py-2" id="btnConnectUsb" onclick="toggleUsbSerial()" style="border-radius: 10px;">
+							<i class="fas fa-usb mr-1"></i> Hubungkan Port Serial USB (COM)
+						</button>
+						<span class="hw-chip">Baudrate: <code>115200 bps</code></span>
+					</div>
+				</div>
+
+				<!-- MODE 3: PARAMETER IOT -->
+				<div id="connModeConfigView" style="display: none;">
+					<div class="d-flex align-items-center mb-2">
+						<span class="badge badge-warning px-3 py-1 font-weight-bold text-dark" style="border-radius: 20px; font-size: 12px;">
+							<i class="fas fa-sliders-h mr-1"></i> PARAMETER SENSOR & HARDWARE
+						</span>
+					</div>
+					<h5 class="font-weight-bold text-dark mb-1">Konfigurasi Pengaturan IoT Posyandu</h5>
+					<p class="text-muted mb-3" style="font-size: 13px;">
+						Sesuaikan nama Wi-Fi, Password, Gain Antena RC522 (daya tembus KTP), dan Debounce time.
+					</p>
+					<button type="button" class="btn btn-outline-primary btn-sm font-weight-bold px-3 py-2" data-toggle="modal" data-target="#modalSettingEsp32" style="border-radius: 10px;">
+						<i class="fas fa-cog mr-1"></i> Buka Pengaturan Lengkap ESP32
 					</button>
 				</div>
-			</div>
+					<!-- INPUT MANUAL & UJI CEPAT (GAYA E-KASRT) -->
+					<div class="mt-3 pt-3 border-top">
+						<div class="d-flex flex-wrap align-items-center gap-2 mb-2" style="gap: 8px;">
+							<div class="input-group input-group-sm" style="max-width: 320px;">
+								<div class="input-group-prepend">
+									<span class="input-group-text bg-light text-muted"><i class="fas fa-id-card"></i></span>
+								</div>
+								<input type="text" id="manualUidInput" class="form-control font-weight-bold" placeholder="Ketik UID KTP..." style="font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
+								<div class="input-group-append">
+									<button class="btn btn-primary font-weight-bold" type="button" onclick="tapManualUid()">
+										<i class="fas fa-hand-pointer mr-1"></i> Tap Manual
+									</button>
+								</div>
+							</div>
+							<button type="button" class="btn btn-sm btn-outline-info font-weight-bold" onclick="startNfcScanMobile()" style="border-radius: 8px;">
+								<i class="fas fa-mobile-alt mr-1"></i> Mode NFC HP
+							</button>
+						</div>
 
-			<button id="toggleAudioBtn" class="btn btn-sm btn-outline-warning text-dark font-weight-bold px-2 py-1" style="border-radius: 8px; font-size: 11.5px;">
-				🔊 Suara: ON
-			</button>
-			<button class="btn btn-sm btn-outline-secondary px-2 py-1" onclick="fetchLiveStream()" title="Refresh" style="border-radius: 8px;">
-				<i class="fas fa-redo"></i>
-			</button>
-		</div>
-	</div>
+						<div class="d-flex flex-wrap align-items-center gap-1" style="gap: 6px;">
+							<small class="text-muted font-weight-bold mr-1"><i class="fas fa-bolt text-warning mr-1"></i> Uji Cepat:</small>
+							@foreach($balita_list->whereNotNull('rfid_ktp')->take(3) as $b)
+								<button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2" style="font-size: 11px; border-radius: 6px;" onclick="sendRfidTapToServer('{{ $b->rfid_ktp }}')">
+									👶 {{ $b->nama_anak }} ({{ substr($b->rfid_ktp, 0, 8) }})
+								</button>
+							@endforeach
+							<button type="button" class="btn btn-xs btn-outline-warning py-1 px-2" style="font-size: 11px; border-radius: 6px;" onclick="sendRfidTapToServer('04E99A11B280')">
+								🪪 Simulasi KTP Baru (04E99A11B280)
+							</button>
+						</div>
+					</div>
+				</div>
 
-	<!-- BARIS TENGAH: BANNER MODE HP ANDROID (NFC / QR / NIRKABEL) -->
-	<div class="vv-android-banner">
-		<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-			<div class="d-flex align-items-center gap-2" style="gap: 8px;">
-				<span class="badge badge-primary px-2 py-1 font-weight-bold" style="border-radius: 6px; font-size: 11px;">
-					📱 Mode HP Android
-				</span>
-				<span class="font-weight-bold text-dark" style="font-size: 13px;">
-					Pilihan Cara Tap e-KTP di HP:
-				</span>
-			</div>
-			<div class="d-flex gap-2" style="gap: 6px;">
-				<span class="badge badge-warning text-dark px-2 py-1 font-weight-bold" style="font-size: 11px; border-radius: 6px;">
-					🔊 Suara & Beep Aktif
-				</span>
-				<span class="badge badge-success px-2 py-1 font-weight-bold" style="font-size: 11px; border-radius: 6px;">
-					📡 Auto-Sync ESP32 Terhubung
-				</span>
-			</div>
-		</div>
+			<!-- Sisi Kanan: Live Tap Radar Hologram Card -->
+			<div class="col-lg-5">
+				<div class="live-radar-hologram" id="lastTapBox">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<span style="font-size: 11px; font-weight: 800; color: #38bdf8; letter-spacing: 1px; text-transform: uppercase;">
+							<i class="fas fa-satellite-dish mr-1"></i> RADAR TAP e-KTP TERAKHIR
+						</span>
+						<span class="badge badge-light border text-dark font-weight-bold" id="lastTapStatusBadge" style="font-size: 11px;">
+							Standby
+						</span>
+					</div>
 
-		<!-- DUA TOMBOL UTAMA HP -->
-		<div class="d-flex flex-wrap gap-2 mb-3" style="gap: 12px;">
-			<button type="button" class="vv-btn-nfc" onclick="startNfcScan()">
-				<span style="font-size: 18px;">📱</span> Tap via Sensor NFC HP (Tempel e-KTP ke Punggung HP)
-			</button>
-			<button type="button" class="vv-btn-camera" onclick="startCameraQrScan()">
-				<span style="font-size: 18px;">📷</span> Scan Barcode / QR KTP via Kamera HP
-			</button>
-		</div>
+					<div class="d-flex align-items-center" style="gap: 14px;">
+						<div class="radar-avatar-box" id="lastTapIcon">💳</div>
+						<div style="min-width: 0; flex: 1;">
+							<h6 class="font-weight-bold text-white mb-0 text-truncate" id="lastTapNama">
+								Menunggu Tap Kartu...
+							</h6>
+							<small class="text-white-50 d-block text-truncate" id="lastTapDetail" style="font-size: 12px;">
+								Tempelkan e-KTP Ibu di sensor RC522
+							</small>
+						</div>
+					</div>
 
-		<div class="mb-3" style="font-size: 12.5px; color: #1e3a8a;">
-			<i class="fas fa-check-circle text-success mr-1"></i> <strong>Nirkabel Otomatis:</strong> Anda juga bisa menempelkan e-KTP langsung pada alat <strong>ESP32 + RC522</strong> di meja. Hasil tap akan <strong>otomatis langsung tampil di HP/Laptop ini tanpa kabel!</strong>
-		</div>
-
-		<!-- UJI CEPAT (FAST SIMULATION PILLS) -->
-		<div class="d-flex flex-wrap align-items-center gap-2" style="gap: 6px;">
-			<span class="font-weight-bold text-dark mr-1" style="font-size: 12px;">
-				⚡ Uji Cepat:
-			</span>
-			@php
-				$sample_balitas = $balita_list->whereNotNull('rfid_ktp_ibu')->take(4);
-			@endphp
-			@forelse($sample_balitas as $sb)
-				<a href="javascript:void(0)" class="vv-pill-test" onclick="sendRfidTapToServer('{{ $sb->rfid_ktp_ibu }}')">
-					<i class="fas fa-id-card text-success"></i> Tap KTP {{ $sb->nama_ibu ?: $sb->nama_anak }} ({{ substr($sb->rfid_ktp_ibu, 0, 10) }})
-				</a>
-			@empty
-				<a href="javascript:void(0)" class="vv-pill-test" onclick="sendRfidTapToServer('04A67F90380')">
-					<i class="fas fa-id-card text-success"></i> Tap KTP Agus Wijaya (04A67F90380)
-				</a>
-				<a href="javascript:void(0)" class="vv-pill-test" onclick="sendRfidTapToServer('04A77F91980')">
-					<i class="fas fa-id-card text-success"></i> Tap KTP Siti Aminah (04A77F91980)
-				</a>
-				<a href="javascript:void(0)" class="vv-pill-test" onclick="sendRfidTapToServer('04A65F90180')">
-					<i class="fas fa-id-card text-success"></i> Tap Kartu Balita Kenzo (04A65F90180)
-				</a>
-			@endforelse
-			<a href="javascript:void(0)" class="vv-pill-test vv-pill-yellow" onclick="sendRfidTapToServer('04E99A11B280')">
-				<i class="fas fa-question-circle text-warning"></i> Simulasi KTP Baru (04E99A11B280)
-			</a>
-		</div>
-	</div>
-
-	<!-- BARIS BAWAH: HERO WAITING / HASIL TAP BOX -->
-	<div class="vv-center-standby" id="vvHeroStandbyBox">
-		<div id="vvHeroStandbyContent">
-			<div style="font-size: 64px; line-height: 1; margin-bottom: 12px; color: #10b981;">
-				<i class="fas fa-id-card"></i>
-			</div>
-			<h4 class="font-weight-bold text-dark mb-2" id="heroTapTitle" style="font-size: 20px;">
-				Silakan Tempelkan Kartu e-KTP Warga pada Reader RC522
-			</h4>
-			<p class="text-muted mb-0" id="heroTapDesc" style="max-width: 680px; margin: 0 auto; font-size: 13.5px; line-height: 1.6;">
-				Begitu kartu e-KTP ditempelkan ke modul RFID RC522, halaman ini akan otomatis menampilkan identitas balita & ibu, status KMS, dan mencatat absensi kehadiran secara live.
-			</p>
-		</div>
-
-		<!-- TAMPILAN KETIKA KARTU TERDETEKSI (AWALNYA HIDE) -->
-		<div id="vvHeroDetectedContent" style="display: none;">
-			<div class="d-inline-flex align-items-center justify-content-center p-3 mb-2" id="vvDetectedIconBox" style="width: 70px; height: 70px; border-radius: 50%; font-size: 32px; background: #d1fae5;">
-				<span id="lastTapIcon">🎉</span>
-			</div>
-			<div class="mb-2">
-				<span class="badge badge-success px-3 py-1 font-weight-bold" id="lastTapStatusBadge" style="font-size: 13px; border-radius: 20px;">
-					✅ Absen Berhasil!
-				</span>
-			</div>
-			<h3 class="font-weight-bold text-dark mb-1" id="lastTapNama">
-				Nama Balita / Warga
-			</h3>
-			<p class="text-muted mb-3 font-monospace" style="font-size: 14px;">
-				UID e-KTP: <strong class="text-primary font-weight-bold" id="lastTapUid">-</strong> • <span id="lastTapTime">- WIB</span>
-			</p>
-			<div id="lastTapDetail">
-				<!-- Detail atau link aksi -->
+					<div class="mt-3 pt-2 d-flex justify-content-between align-items-center" style="border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 11.5px; color: rgba(255, 255, 255, 0.75);">
+						<span>UID: <strong class="text-white font-monospace" id="lastTapUid">-</strong></span>
+						<span id="lastTapTime" class="font-weight-bold">-</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1492,34 +1345,33 @@ let keepReadingUsb = true;
 
 async function toggleUsbSerial() {
 	if (!("serial" in navigator)) {
-		alert("Browser Anda belum mendukung Web Serial API. Gunakan Google Chrome atau Microsoft Edge di PC/Laptop.");
+		alert("Browser Anda belum mendukung Web Serial API. Gunakan Google Chrome atau Microsoft Edge.");
 		return;
 	}
-	const btn = document.getElementById('btnConnectUsb');
-	const label = document.getElementById('usbBtnLabel');
 	if (usbPort) {
 		keepReadingUsb = false;
 		if (usbReader) { try { await usbReader.cancel(); } catch(e){} }
 		try { await usbPort.close(); } catch(e){}
 		usbPort = null;
-		if (label) label.innerText = 'Hubungkan USB ESP32 (PC/Laptop)';
-		if (btn) btn.style.background = '#059669';
+		document.getElementById('usbStatusText').innerHTML = '🟡 Belum Terhubung';
+		document.getElementById('btnConnectUsb').innerHTML = '<i class="fas fa-usb mr-1"></i> Hubungkan Port Serial USB (COM)';
+		document.getElementById('btnConnectUsb').className = 'btn btn-primary btn-sm font-weight-bold px-3 py-2';
 		speakVoice("Sambungan serial USB terputus.");
 		return;
 	}
 	try {
-		const baud = parseInt(document.getElementById('baudRateSelect')?.value || '115200');
 		usbPort = await navigator.serial.requestPort();
-		await usbPort.open({ baudRate: baud });
+		await usbPort.open({ baudRate: 115200 });
 		keepReadingUsb = true;
-		if (label) label.innerText = '🟢 Putuskan USB (COM Aktif)';
-		if (btn) btn.style.background = '#dc2626';
+		document.getElementById('usbStatusText').innerHTML = '<span class="text-success font-weight-bold">🟢 Port Serial Terhubung!</span>';
+		document.getElementById('btnConnectUsb').innerHTML = '<i class="fas fa-times-circle mr-1"></i> Putuskan USB Serial';
+		document.getElementById('btnConnectUsb').className = 'btn btn-danger btn-sm font-weight-bold px-3 py-2';
 		playChime(true);
-		speakVoice("ESP32 terhubung melalui kabel USB. Siap membaca tap.");
+		speakVoice("ESP32 terhubung melalui kabel USB.");
 		readUsbSerialStream();
 	} catch (err) {
 		console.error("USB Serial Connection Error:", err);
-		alert("Gagal menghubungkan USB: " + err.message);
+		alert("Gagal menghubungkan: " + err.message);
 	}
 }
 
@@ -1537,7 +1389,6 @@ async function readUsbSerialStream() {
 				const lines = lineBuffer.split('\n');
 				lineBuffer = lines.pop();
 				for (const line of lines) {
-					// Dukung format: "UID: 8A3C4D1E", "Card UID: 8A 3C 4D 1E", "UID Kartu : 8A3C4D1E", dll
 					const match = line.match(/(?:UID|Card UID|KTP)\s*[:=-]?\s*([0-9A-Fa-f\s]{8,24})/i);
 					if (match && match[1]) {
 						const cleanUid = match[1].replace(/\s+/g, '').trim().toUpperCase();
@@ -1631,46 +1482,6 @@ function pasteLastUid() {
 
 let lastSeenTapId = 0;
 
-function submitQuickManualUid() {
-	const input = document.getElementById('quickManualUid');
-	const val = input ? input.value.trim() : '';
-	if (!val) {
-		alert("Silakan ketik nomor UID e-KTP terlebih dahulu.");
-		return;
-	}
-	sendRfidTapToServer(val.toUpperCase());
-	if (input) input.value = '';
-}
-
-async function startNfcScan() {
-	if (!("NDEFReader" in window)) {
-		alert("ℹ️ Sensor NFC Web hanya aktif pada Google Chrome di HP Android dengan NFC menyala.\n\nTips: Anda juga bisa menempelkan e-KTP langsung pada alat ESP32 di meja!");
-		return;
-	}
-	try {
-		const ndef = new NDEFReader();
-		await ndef.scan();
-		playChime(true);
-		speakVoice("Sensor NFC HP aktif. Tempelkan e-KTP ke belakang HP Anda.");
-		alert("📱 Sensor NFC HP Siap!\nTempelkan e-KTP ke bagian belakang bodi HP Anda.");
-		ndef.onreading = event => {
-			const serialNumber = event.serialNumber ? event.serialNumber.replace(/:/g, '').toUpperCase() : '';
-			if (serialNumber) {
-				sendRfidTapToServer(serialNumber);
-			}
-		};
-	} catch (error) {
-		alert("Error NFC: " + error.message);
-	}
-}
-
-function startCameraQrScan() {
-	const code = prompt("📷 SIMULASI SCAN KAMERA HP\n\nMasukkan teks / nomor barcode / QR KTP:", "3201012345670001");
-	if (code) {
-		sendRfidTapToServer(code.trim().toUpperCase());
-	}
-}
-
 function fetchLiveStream() {
 	fetch("{{ route('posyandu.live_stream') }}")
 		.then(r => r.json())
@@ -1684,21 +1495,6 @@ function fetchLiveStream() {
 			if (data.logs && data.logs.length > 0) {
 				const top = data.logs[0];
 				currentLastUid = top.uid;
-
-				// Toggle center standby box to detected card
-				const standbyBox = document.getElementById('vvHeroStandbyContent');
-				const detectedBox = document.getElementById('vvHeroDetectedContent');
-				if (standbyBox && detectedBox) {
-					standbyBox.style.display = 'none';
-					detectedBox.style.display = 'block';
-				}
-
-				const badgeLast = document.getElementById('badgeLastTapInfo');
-				if (badgeLast) {
-					badgeLast.innerText = 'Tap: ' + top.created_at.substring(11, 16) + ' WIB';
-					badgeLast.className = 'vv-badge-status bg-success text-white';
-				}
-
 				if (top.id > lastSeenTapId) {
 					if (lastSeenTapId !== 0) {
 						if (top.status === 'SUCCESS') {
@@ -1716,53 +1512,72 @@ function fetchLiveStream() {
 					}
 					lastSeenTapId = top.id;
 				}
-
-				const elUid = document.getElementById('lastTapUid');
-				const elTime = document.getElementById('lastTapTime');
-				if (elUid) elUid.innerText = top.uid;
-				if (elTime) elTime.innerText = top.created_at.substring(11, 16) + ' WIB';
-
+				document.getElementById('lastTapUid').innerText = top.uid;
+				document.getElementById('lastTapTime').innerText = top.created_at.substring(11, 16) + ' WIB';
 				const statusBadge = document.getElementById('lastTapStatusBadge');
 				const namaEl = document.getElementById('lastTapNama');
 				const detailEl = document.getElementById('lastTapDetail');
 				const iconEl = document.getElementById('lastTapIcon');
-
 				if (top.status === 'SUCCESS') {
-					if (statusBadge) {
-						statusBadge.className = 'badge badge-success px-3 py-1 font-weight-bold';
-						statusBadge.innerText = '✅ Berhasil Hadir';
-					}
-					if (iconEl) iconEl.innerText = '🎉';
-					if (namaEl) namaEl.innerText = top.keterangan || 'Balita Hadir';
-					if (detailEl) detailEl.innerHTML = '<span class="text-success font-weight-bold"><i class="fas fa-check-circle mr-1"></i> Kehadiran balita telah tercatat di sistem posyandu</span>';
+					statusBadge.className = 'badge badge-success font-weight-bold';
+					statusBadge.innerText = '✅ Berhasil Hadir';
+					iconEl.innerText = '🎉';
+					namaEl.innerText = top.keterangan || 'Balita Hadir';
+					detailEl.innerText = 'Absensi via e-KTP Ibu tercatat';
 				} else if (top.status === 'ALREADY_CHECKED') {
-					if (statusBadge) {
-						statusBadge.className = 'badge badge-warning px-3 py-1 font-weight-bold text-dark';
-						statusBadge.innerText = '⚠️ Sudah Hadir';
-					}
-					if (iconEl) iconEl.innerText = 'ℹ️';
-					if (namaEl) namaEl.innerText = top.keterangan || 'Sudah Hadir';
-					if (detailEl) detailEl.innerHTML = '<span class="text-muted"><i class="fas fa-history mr-1"></i> Kartu sudah di-tap sebelumnya pada sesi hari ini</span>';
+					statusBadge.className = 'badge badge-warning font-weight-bold text-dark';
+					statusBadge.innerText = '⚠️ Sudah Hadir';
+					iconEl.innerText = 'ℹ️';
+					namaEl.innerText = top.keterangan || 'Sudah Hadir';
+					detailEl.innerText = 'Kartu sudah di-tap sebelumnya';
 				} else if (top.status === 'UNREGISTERED') {
-					if (statusBadge) {
-						statusBadge.className = 'badge badge-danger px-3 py-1 font-weight-bold';
-						statusBadge.innerText = '🔔 KTP Baru (Belum Terdaftar)';
-					}
-					if (iconEl) iconEl.innerText = '🪪';
-					if (namaEl) namaEl.innerHTML = 'KTP Baru: <span class="font-monospace text-warning">' + top.uid + '</span>';
-					if (detailEl) detailEl.innerHTML = '<a href="javascript:void(0)" onclick="openPairModalWithWarga(null, null, \'' + top.uid + '\')" class="btn btn-warning btn-sm font-weight-bold px-3 py-1"><i class="fas fa-link mr-1"></i> Hubungkan ke Data Balita/Ibu Sekarang</a>';
+					statusBadge.className = 'badge badge-danger font-weight-bold';
+					statusBadge.innerText = '🔔 KTP Baru (Belum Terdaftar)';
+					iconEl.innerText = '🪪';
+					namaEl.innerHTML = 'KTP Baru: <span class="font-monospace text-warning">' + top.uid + '</span>';
+					detailEl.innerHTML = '<a href="javascript:void(0)" onclick="openPairModalWithWarga(null, null, \'' + top.uid + '\')" class="text-info font-weight-bold"><u>Klik di sini untuk hubungkan</u></a>';
 				} else {
-					if (statusBadge) {
-						statusBadge.className = 'badge badge-secondary px-3 py-1';
-						statusBadge.innerText = top.status;
-					}
-					if (iconEl) iconEl.innerText = '💳';
-					if (namaEl) namaEl.innerText = top.keterangan || 'Menunggu Sesi Aktif';
-					if (detailEl) detailEl.innerText = top.uid;
+					statusBadge.className = 'badge badge-secondary';
+					statusBadge.innerText = top.status;
+					iconEl.innerText = '💳';
+					namaEl.innerText = top.keterangan || 'Menunggu Sesi Aktif';
+					detailEl.innerText = top.uid;
 				}
 			}
 		})
 		.catch(err => console.log('Polling error:', err));
+}
+
+
+function tapManualUid() {
+	const input = document.getElementById('manualUidInput');
+	if (!input) return;
+	const val = input.value.trim().toUpperCase();
+	if (!val) {
+		alert("Silakan ketik nomor UID e-KTP terlebih dahulu.");
+		return;
+	}
+	sendRfidTapToServer(val);
+	input.value = '';
+}
+
+async function startNfcScanMobile() {
+	if ('NDEFReader' in window) {
+		try {
+			const ndef = new NDEFReader();
+			await ndef.scan();
+			playChime(true);
+			speakVoice("Sensor NFC HP aktif. Tempelkan e-KTP ke bodi belakang HP.");
+			ndef.addEventListener("reading", ({ serialNumber }) => {
+				const uid = serialNumber.replace(/:/g, '').toUpperCase();
+				sendRfidTapToServer(uid);
+			});
+		} catch (error) {
+			alert("Error NFC: " + error.message);
+		}
+	} else {
+		alert("Browser/HP Anda belum mendukung Web NFC. Buka di Google Chrome Android dengan NFC aktif.");
+	}
 }
 
 function testSimulasiTap() {
