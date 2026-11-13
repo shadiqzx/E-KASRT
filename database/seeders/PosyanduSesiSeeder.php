@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\PosyanduSesi;
+use App\Models\PosyanduBalita;
+use App\Models\DataWarga;
 
 class PosyanduSesiSeeder extends Seeder
 {
@@ -21,5 +23,25 @@ class PosyanduSesiSeeder extends Seeder
                 'status'        => 'Aktif'
             ]
         );
+
+        // Jika balita masih kosong, hubungkan ke warga pertama
+        if (PosyanduBalita::count() == 0) {
+            $warga = DataWarga::first();
+            if ($warga) {
+                // Pastikan warga pertama punya RFID KTP untuk uji coba tap
+                if (empty($warga->rfid_ktp)) {
+                    $warga->rfid_ktp = '04E99A11B280';
+                    $warga->save();
+                }
+
+                PosyanduBalita::create([
+                    'nama_anak'     => 'Ananda ' . $warga->nama,
+                    'tanggal_lahir' => date('Y-m-d', strtotime('-18 months')),
+                    'jenis_kelamin' => 'L',
+                    'warga_id'      => $warga->idWarga,
+                    'rfid_uid'      => null
+                ]);
+            }
+        }
     }
 }
