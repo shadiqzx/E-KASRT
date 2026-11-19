@@ -358,6 +358,60 @@ class PosyanduController extends Controller
         return redirect()->route('posyandu.index')->with('success', 'Data balita dan riwayatnya berhasil dihapus!');
     }
 
+    public function kehadiranHapus($id)
+    {
+        PosyanduKehadiran::destroy($id);
+        return redirect()->route('posyandu.index')->with('success', 'Data kehadiran balita berhasil dihapus.');
+    }
+
+    public function sesiHapus($id)
+    {
+        PosyanduKehadiran::where('sesi_id', $id)->delete();
+        PosyanduSesi::destroy($id);
+        return redirect()->route('posyandu.index')->with('success', 'Sesi posyandu berhasil dihapus.');
+    }
+
+    public function unpairKtp($warga_id)
+    {
+        $warga = DataWarga::find($warga_id);
+        if ($warga) {
+            $old_uid = $warga->rfid_ktp;
+            $warga->rfid_ktp = null;
+            $warga->save();
+            return redirect()->route('posyandu.index')->with('success', 'Tautan e-KTP (' . $old_uid . ') untuk ' . $warga->nama . ' berhasil dilepas.');
+        }
+        return redirect()->route('posyandu.index')->with('error', 'Warga tidak ditemukan.');
+    }
+
+    public function resetData(Request $request)
+    {
+        $mode = $request->input('reset_mode');
+
+        if ($mode === 'kehadiran_sesi') {
+            $sesi_aktif = PosyanduSesi::where('status', 'Aktif')->first();
+            if ($sesi_aktif) {
+                PosyanduKehadiran::where('sesi_id', $sesi_aktif->id)->delete();
+                return redirect()->route('posyandu.index')->with('success', '✅ Data kehadiran pada sesi aktif hari ini berhasil dibersihkan.');
+            }
+            return redirect()->route('posyandu.index')->with('warning', 'Tidak ada sesi posyandu yang sedang aktif.');
+        } elseif ($mode === 'tap_logs') {
+            PosyanduTapLog::truncate();
+            return redirect()->route('posyandu.index')->with('success', '✅ Seluruh riwayat log tap RFID berhasil dibersihkan.');
+        } elseif ($mode === 'unpair_all') {
+            DataWarga::whereNotNull('rfid_ktp')->update(['rfid_ktp' => null]);
+            PosyanduBalita::whereNotNull('rfid_uid')->update(['rfid_uid' => null]);
+            return redirect()->route('posyandu.index')->with('success', '✅ Seluruh tautan RFID e-KTP warga dan balita berhasil dilepas.');
+        } elseif ($mode === 'all_test_data') {
+            PosyanduKehadiran::truncate();
+            PosyanduTapLog::truncate();
+            DataWarga::whereNotNull('rfid_ktp')->update(['rfid_ktp' => null]);
+            PosyanduBalita::whereNotNull('rfid_uid')->update(['rfid_uid' => null]);
+            return redirect()->route('posyandu.index')->with('success', '✅ Seluruh data uji coba (kehadiran, log tap, dan RFID warga) berhasil di-reset bersih!');
+        }
+
+        return redirect()->route('posyandu.index')->with('error', 'Pilihan mode reset tidak valid.');
+    }
+
     public function downloadFirmwareIno()
     {
         $file = public_path('firmware_esp32/esp32_rfid_posyandu/esp32_rfid_posyandu.ino');
