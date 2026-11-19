@@ -358,7 +358,7 @@
                         </li>
                         <li class="{{ request()->routeIs('smartrt.backup*') ? 'active' : '' }}">
                             <a href="{{ route('smartrt.backup') }}">
-                                <i class="fas fa-database text-info"></i> Backup Database
+                                <i class="fas fa-database text-info"></i> Database & Migrasi
                             </a>
                         </li>
                         <li style="margin-top: 20px;">
