@@ -120,7 +120,7 @@ class AuthController extends Controller
             'tgl_daftar'        => now(),
             'nik'               => $request->nik,
             'img'               => 'default.png',
-            'email'             => $request->email ?: null,
+            'email'             => $request->email ?: ($request->username . '@warga.kasrt.local'),
         ]);
 
         return redirect()->route('login')->with('success', 'Pendaftaran berhasil diajukan! Akun Anda sedang dalam antrean verifikasi oleh Pengurus RT demi keamanan. Silakan cek status secara berkala.');
