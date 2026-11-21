@@ -399,6 +399,16 @@
             border: 1px solid rgba(251, 113, 133, 0.4);
             color: #fecdd3;
         }
+        .glass-alert-warning {
+            background: rgba(245, 158, 11, 0.22);
+            border: 1px solid rgba(251, 191, 36, 0.5);
+            color: #fde68a;
+        }
+        .glass-alert-info {
+            background: rgba(14, 165, 233, 0.22);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            color: #bae6fd;
+        }
         .glass-alert-success {
             background: rgba(16, 185, 129, 0.2);
             border: 1px solid rgba(52, 211, 153, 0.4);
@@ -588,6 +598,22 @@
                 </div>
             @endif
 
+            <!-- Flash Warning (Pending Verification) Message -->
+            @if(session('warning'))
+                <div class="glass-alert glass-alert-warning">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span>{{ session('warning') }}</span>
+                </div>
+            @endif
+
+            <!-- Flash Info Message -->
+            @if(session('info'))
+                <div class="glass-alert glass-alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>{{ session('info') }}</span>
+                </div>
+            @endif
+
             <!-- Flash Success Message -->
             @if(session('success'))
                 <div class="glass-alert glass-alert-success">
@@ -649,10 +675,17 @@
                     <i class="fas fa-arrow-right"></i>
                 </button>
 
-                <!-- Link to Register Warga Baru -->
+                <!-- Link to Register Warga Baru & Cek Status -->
                 <div class="text-center my-3" style="font-size: 13.5px; color: #cbd5e1;">
                     Belum punya akun warga? 
                     <a href="{{ route('register') }}" style="color: #38bdf8; font-weight: 700; text-decoration: none;">Daftar Akun Baru &rarr;</a>
+                </div>
+
+                <div class="text-center mb-3">
+                    <button type="button" onclick="openCekStatusModal()" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; border-radius: 12px; padding: 8px 16px; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-search"></i>
+                        <span>Cek Status Pendaftaran Warga</span>
+                    </button>
                 </div>
 
                 <!-- Demo Quick Fill Pill -->
@@ -702,6 +735,128 @@
                 btn.style.transform = '';
             }, 150);
         }
+
+        // Modal Cek Status Pendaftaran Warga
+        function openCekStatusModal() {
+            document.getElementById('cekStatusModal').style.display = 'flex';
+            document.getElementById('cekStatusInput').focus();
+        }
+
+        function closeCekStatusModal() {
+            document.getElementById('cekStatusModal').style.display = 'none';
+            document.getElementById('cekStatusResult').innerHTML = '';
+            document.getElementById('cekStatusInput').value = '';
+        }
+
+        function submitCekStatus(e) {
+            e.preventDefault();
+            var keyword = document.getElementById('cekStatusInput').value.trim();
+            if (!keyword) return;
+
+            var resultDiv = document.getElementById('cekStatusResult');
+            resultDiv.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 15px;"><i class="fas fa-spinner fa-spin mr-2"></i> Memeriksa data pendaftaran...</div>';
+
+            var formData = new FormData();
+            formData.append('keyword', keyword);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            fetch("{{ route('auth.cek_status') }}", {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.found) {
+                    resultDiv.innerHTML = `
+                        <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 14px; color: #fecdd3; font-size: 13px;">
+                            <i class="fas fa-exclamation-circle mr-1"></i> Data tidak ditemukan. Pastikan NIK 16 digit atau Username yang Anda masukkan sudah benar.
+                        </div>
+                    `;
+                } else if (data.status_verifikasi === 'Menunggu Verifikasi') {
+                    resultDiv.innerHTML = `
+                        <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.45); border-radius: 14px; padding: 16px; color: #fde68a; font-size: 13px;">
+                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; color: #fbbf24; margin-bottom: 8px;">
+                                <i class="fas fa-clock fa-lg"></i>
+                                <span>Sedang Menunggu Verifikasi Pengurus RT</span>
+                            </div>
+                            <div style="margin-bottom: 4px;"><strong>Nama:</strong> ${data.nama}</div>
+                            <div style="margin-bottom: 4px;"><strong>NIK:</strong> ${data.nik}</div>
+                            <div style="margin-bottom: 4px;"><strong>Waktu Daftar:</strong> ${data.tgl_daftar}</div>
+                            <div style="margin-top: 10px; font-size: 12px; color: #fef3c7; background: rgba(0,0,0,0.2); padding: 8px 10px; border-radius: 8px;">
+                                ℹ️ Akun Anda saat ini masih dalam antrean peninjauan oleh Pengurus RT. Mohon periksa kembali nanti atau hubungi pengurus RT setempat.
+                            </div>
+                        </div>
+                    `;
+                } else if (data.status_verifikasi === 'Disetujui') {
+                    resultDiv.innerHTML = `
+                        <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.45); border-radius: 14px; padding: 16px; color: #a7f3d0; font-size: 13px;">
+                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; color: #34d399; margin-bottom: 8px;">
+                                <i class="fas fa-check-circle fa-lg"></i>
+                                <span>Akun Telah Disetujui & Aktif!</span>
+                            </div>
+                            <div style="margin-bottom: 4px;"><strong>Nama:</strong> ${data.nama}</div>
+                            <div style="margin-bottom: 4px;"><strong>Username:</strong> ${data.username}</div>
+                            <div style="margin-bottom: 4px;"><strong>Waktu Disetujui:</strong> ${data.tgl_verifikasi}</div>
+                            <button type="button" onclick="closeCekStatusModal(); document.getElementById('usernameInput').value='${data.username}'; document.getElementById('passwordInput').focus();" style="margin-top: 12px; width: 100%; padding: 8px; background: #059669; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                                Masuk Sekarang &rarr;
+                            </button>
+                        </div>
+                    `;
+                } else if (data.status_verifikasi === 'Ditolak') {
+                    resultDiv.innerHTML = `
+                        <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.45); border-radius: 14px; padding: 16px; color: #fecdd3; font-size: 13px;">
+                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; color: #f87171; margin-bottom: 8px;">
+                                <i class="fas fa-times-circle fa-lg"></i>
+                                <span>Pendaftaran Akun Ditolak</span>
+                            </div>
+                            <div style="margin-bottom: 4px;"><strong>Nama:</strong> ${data.nama}</div>
+                            <div style="margin-bottom: 4px;"><strong>Alasan Penolakan:</strong></div>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 8px; color: #fee2e2; margin-top: 4px;">
+                                "${data.alasan_tolak || 'Data tidak sesuai / bukan warga lingkungan RT setempat'}"
+                            </div>
+                        </div>
+                    `;
+                }
+            })
+            .catch(err => {
+                resultDiv.innerHTML = '<div style="color: #f87171; font-size: 13px;">Gagal memuat status. Silakan coba lagi.</div>';
+            });
+        }
     </script>
+
+    <!-- Custom Modal Cek Status Pendaftaran Warga -->
+    <div id="cekStatusModal" style="display: none; position: fixed; inset: 0; background: rgba(7, 13, 27, 0.75); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; width: 100%; max-width: 440px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); overflow: hidden; animation: modalPop 0.25s ease;">
+            <div style="padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #fff;">Cek Status Pendaftaran</h4>
+                        <small style="color: #94a3b8; font-size: 11.5px;">Pantau status verifikasi akun oleh Pengurus RT</small>
+                    </div>
+                </div>
+                <button type="button" onclick="closeCekStatusModal()" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 20px 24px;">
+                <form onsubmit="submitCekStatus(event)">
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 12.5px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px;">Masukkan NIK KTP atau Username</label>
+                        <input type="text" id="cekStatusInput" placeholder="Ketik 16 digit NIK atau username..." required style="width: 100%; height: 46px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.15); color: #fff; padding: 10px 14px; font-size: 14px; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#38bdf8'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
+                    </div>
+                    <button type="submit" style="width: 100%; height: 44px; background: linear-gradient(135deg, #0284c7, #2563eb); border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-search"></i>
+                        <span>Periksa Status</span>
+                    </button>
+                </form>
+                <div id="cekStatusResult" style="margin-top: 16px;"></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
