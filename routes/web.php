@@ -15,6 +15,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+Route::match(['get', 'post'], '/cek_status_warga', [AuthController::class, 'cekStatusWarga'])->name('auth.cek_status');
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 Route::match(['get', 'post'], '/auth/logout', [AuthController::class, 'logout']);
 
@@ -136,6 +137,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/user/store', [AdminUserController::class, 'store'])->name('admin.user.store');
     Route::post('/admin/user/update/{id}', [AdminUserController::class, 'update'])->name('admin.user.update');
     Route::get('/admin/user/toggle/{id}', [AdminUserController::class, 'toggleActive'])->name('admin.user.toggle');
+
+    // 10. Pengaturan: Verifikasi Pendaftaran Warga Baru
+    Route::get('/admin/verifikasi_warga', [AdminUserController::class, 'verifikasiWarga'])->name('admin.warga.verifikasi');
+    Route::post('/admin/verifikasi_warga/setujui/{id}', [AdminUserController::class, 'setujuiWarga'])->name('admin.warga.setujui');
+    Route::post('/admin/verifikasi_warga/tolak/{id}', [AdminUserController::class, 'tolakWarga'])->name('admin.warga.tolak');
+
     Route::get('/smartrt/backup', [SmartRtController::class, 'backup'])->name('smartrt.backup');
     Route::post('/smartrt/database_migrate', [SmartRtController::class, 'runMigrate'])->name('smartrt.database.migrate');
     Route::post('/smartrt/database_seed', [SmartRtController::class, 'runSeed'])->name('smartrt.database.seed');
