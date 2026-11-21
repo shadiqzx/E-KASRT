@@ -307,6 +307,17 @@
                                 <i class="fas fa-users"></i> Data Warga
                             </a>
                         </li>
+                        <li class="{{ request()->routeIs('admin.warga.verifikasi*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.warga.verifikasi') }}" class="d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-user-check" style="color: #06b6d4;"></i> Verifikasi Warga</span>
+                                @php
+                                    $pendingVerifCount = \App\Models\User::where('status_verifikasi', 'Menunggu Verifikasi')->count();
+                                @endphp
+                                @if($pendingVerifCount > 0)
+                                    <span class="badge badge-warning" style="border-radius: 12px; font-size: 10.5px; padding: 2px 7px; font-weight: 800; background: #f59e0b; color: #fff;">{{ $pendingVerifCount }}</span>
+                                @endif
+                            </a>
+                        </li>
                         <li class="{{ request()->routeIs('smartrt.iuran*') ? 'active' : '' }}">
                             <a href="{{ route('smartrt.iuran') }}">
                                 <i class="fas fa-money-check-alt text-success"></i> Iuran Warga
