@@ -21,6 +21,8 @@ class DataWarga extends Model
         'tanggal_lahir',
         'alamat',
         'no_rumah',
+        'no_hp',
+        'status_warga',
     ];
 
     public function balitas()
