@@ -102,6 +102,8 @@ class AuthController extends Controller
             'no_hp'             => $request->no_hp,
             'jekel'             => $request->jekel,
             'hubungan_keluarga' => 'Kepala Keluarga',
+            'tempat_lahir'      => '-',
+            'tanggal_lahir'     => '2000-01-01',
             'alamat'            => $request->alamat ?: 'Lingkungan RT',
             'no_rumah'          => $request->no_rumah ?: '-',
             'status_warga'      => 'Menunggu Verifikasi',
