@@ -512,6 +512,14 @@
                 </div>
                 <h2 class="card-title">Daftar Akun</h2>
                 <p class="card-subtitle">Lengkapi formulir data kependudukan Anda dengan benar.</p>
+                
+                <!-- Notice: Akun Harus Diverifikasi Pengurus RT -->
+                <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 12px 16px; margin-top: 14px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 12px;">
+                    <i class="fas fa-shield-alt text-warning" style="font-size: 18px; margin-top: 2px;"></i>
+                    <div style="font-size: 12.5px; color: #fde68a; line-height: 1.5;">
+                        <strong style="color: #fbbf24;">Verifikasi Pengurus RT:</strong> Akun baru tidak langsung aktif demi keamanan data warga. Setelah mendaftar, Pengurus RT akan meninjau dan memverifikasi data Anda sebelum akun dapat digunakan untuk login.
+                    </div>
+                </div>
             </div>
 
             <!-- Error Alerts -->
