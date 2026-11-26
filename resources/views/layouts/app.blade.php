@@ -902,6 +902,27 @@
     <script src="{{ asset('assets/vendor/bootstrap-4.1/popper.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/bootstrap-4.1/bootstrap.min.js') }}"></script>
 
+    <script type="application/json" id="kasCommandsJson">{!! json_encode([
+        ['title' => 'Dashboard Eksekutif', 'desc' => 'Ringkasan kas, grafik & pantauan RT', 'icon' => 'fas fa-home', 'url' => route('dashboard')],
+        ['title' => 'Pemasukan Kas', 'desc' => 'Catat dana masuk & cetak kwitansi', 'icon' => 'fas fa-arrow-down', 'url' => route('kas.masuk')],
+        ['title' => 'Pengeluaran Kas', 'desc' => 'Catat pengeluaran operasional RT', 'icon' => 'fas fa-arrow-up', 'url' => route('kas.keluar')],
+        ['title' => 'Transfer Kas', 'desc' => 'Mutasi kas antar rekening RT', 'icon' => 'fas fa-exchange-alt', 'url' => route('smartrt.transfer')],
+        ['title' => 'Laporan Kas', 'desc' => 'Rekap arus kas bulanan & cetak', 'icon' => 'fas fa-file-invoice-dollar', 'url' => route('kas.laporan')],
+        ['title' => 'Data Warga', 'desc' => 'Kelola profil warga, NIK & kartu KK', 'icon' => 'fas fa-users', 'url' => route('warga.index')],
+        ['title' => 'Verifikasi Pendaftaran Warga', 'desc' => 'Setujui atau tolak akun warga baru', 'icon' => 'fas fa-user-check', 'url' => route('admin.warga.verifikasi')],
+        ['title' => 'Iuran Warga', 'desc' => 'Tagihan bulanan, quick pay & RFID', 'icon' => 'fas fa-money-check-alt', 'url' => route('smartrt.iuran')],
+        ['title' => 'Posyandu Balita IoT', 'desc' => 'Absensi e-KTP ESP32 & KMS balita', 'icon' => 'fas fa-heartbeat', 'url' => route('posyandu.index')],
+        ['title' => 'Surat Pengantar Digital', 'desc' => 'Proses pengajuan surat domisili/SKCK', 'icon' => 'fas fa-envelope-open-text', 'url' => route('smartrt.surat')],
+        ['title' => 'Bank Sampah', 'desc' => 'Setoran & saldo tabungan sampah warga', 'icon' => 'fas fa-recycle', 'url' => route('smartrt.banksampah')],
+        ['title' => 'Pengurus RT', 'desc' => 'Daftar struktur pengurus lingkungan', 'icon' => 'fas fa-user-tie', 'url' => route('smartrt.pengurus')],
+        ['title' => 'Profil & Data RT', 'desc' => 'Info wilayah, QRIS & rekening RT', 'icon' => 'fas fa-building', 'url' => route('smartrt.datart')],
+        ['title' => 'Aspirasi Warga', 'desc' => 'Kotak masukan & laporan lingkungan', 'icon' => 'fas fa-comments', 'url' => route('smartrt.aspirasi')],
+        ['title' => 'Aset & Inventaris', 'desc' => 'Pendataan aset inventaris milik RT', 'icon' => 'fas fa-boxes', 'url' => route('smartrt.aset')],
+        ['title' => 'AI Customer Service', 'desc' => 'Atur KasBot AI & riwayat pertanyaan', 'icon' => 'fas fa-robot', 'url' => route('smartrt.ai_cs')],
+        ['title' => 'Pengguna & Hak Akses', 'desc' => 'Manajemen akun administrator & role', 'icon' => 'fas fa-user-shield', 'url' => route('admin.user')],
+        ['title' => 'Database & Backup SQL', 'desc' => 'Export database .sql & migrasi', 'icon' => 'fas fa-database', 'url' => route('smartrt.backup')],
+        ['title' => 'Portal Depan (Welcome Page)', 'desc' => 'Buka halaman utama portal publik', 'icon' => 'fas fa-globe', 'url' => route('welcome')]
+    ]) !!}</script>
     <script>
         // Bootstrap Modal Elevation Fix
         $(document).on('show.bs.modal', '.modal', function () {
@@ -987,27 +1008,11 @@
 
         // Command Palette Quick Search
         (function() {
-            var commands = [
-                { title: 'Dashboard Eksekutif', desc: 'Ringkasan kas, grafik & pantauan RT', icon: 'fas fa-home', url: "{{ route('dashboard') }}" },
-                { title: 'Pemasukan Kas', desc: 'Catat dana masuk & cetak kwitansi', icon: 'fas fa-arrow-down', url: "{{ route('kas.masuk') }}" },
-                { title: 'Pengeluaran Kas', desc: 'Catat pengeluaran operasional RT', icon: 'fas fa-arrow-up', url: "{{ route('kas.keluar') }}" },
-                { title: 'Transfer Kas', desc: 'Mutasi kas antar rekening RT', icon: 'fas fa-exchange-alt', url: "{{ route('smartrt.transfer') }}" },
-                { title: 'Laporan Kas', desc: 'Rekap arus kas bulanan & cetak', icon: 'fas fa-file-invoice-dollar', url: "{{ route('kas.laporan') }}" },
-                { title: 'Data Warga', desc: 'Kelola profil warga, NIK & kartu KK', icon: 'fas fa-users', url: "{{ route('warga.index') }}" },
-                { title: 'Verifikasi Pendaftaran Warga', desc: 'Setujui atau tolak akun warga baru', icon: 'fas fa-user-check', url: "{{ route('admin.warga.verifikasi') }}" },
-                { title: 'Iuran Warga', desc: 'Tagihan bulanan, quick pay & RFID', icon: 'fas fa-money-check-alt', url: "{{ route('smartrt.iuran') }}" },
-                { title: 'Posyandu Balita IoT', desc: 'Absensi e-KTP ESP32 & KMS balita', icon: 'fas fa-heartbeat', url: "{{ route('posyandu.index') }}" },
-                { title: 'Surat Pengantar Digital', desc: 'Proses pengajuan surat domisili/SKCK', icon: 'fas fa-envelope-open-text', url: "{{ route('smartrt.surat') }}" },
-                { title: 'Bank Sampah', desc: 'Setoran & saldo tabungan sampah warga', icon: 'fas fa-recycle', url: "{{ route('smartrt.banksampah') }}" },
-                { title: 'Pengurus RT', desc: 'Daftar struktur pengurus lingkungan', icon: 'fas fa-user-tie', url: "{{ route('smartrt.pengurus') }}" },
-                { title: 'Profil & Data RT', desc: 'Info wilayah, QRIS & rekening RT', icon: 'fas fa-building', url: "{{ route('smartrt.datart') }}" },
-                { title: 'Aspirasi Warga', desc: 'Kotak masukan & laporan lingkungan', icon: 'fas fa-comments', url: "{{ route('smartrt.aspirasi') }}" },
-                { title: 'Aset & Inventaris', desc: 'Pendataan aset inventaris milik RT', icon: 'fas fa-boxes', url: "{{ route('smartrt.aset') }}" },
-                { title: 'AI Customer Service', desc: 'Atur KasBot AI & riwayat pertanyaan', icon: 'fas fa-robot', url: "{{ route('smartrt.ai_cs') }}" },
-                { title: 'Pengguna & Hak Akses', desc: 'Manajemen akun administrator & role', icon: 'fas fa-user-shield', url: "{{ route('admin.user') }}" },
-                { title: 'Database & Backup SQL', desc: 'Export database .sql & migrasi', icon: 'fas fa-database', url: "{{ route('smartrt.backup') }}" },
-                { title: 'Portal Depan (Welcome Page)', desc: 'Buka halaman utama portal publik', icon: 'fas fa-globe', url: "{{ route('welcome') }}" }
-            ];
+            var commands = [];
+            try {
+                var jsonEl = document.getElementById('kasCommandsJson');
+                if (jsonEl) commands = JSON.parse(jsonEl.textContent || '[]');
+            } catch (e) { commands = []; }
 
             var modal = document.getElementById('kasCommandModal');
             var input = document.getElementById('kasCmdInput');

@@ -166,7 +166,7 @@
                 </span>
             @else
                 <span class="badge badge-light px-3 py-2 font-weight-bold text-success shadow-sm" style="border-radius: 14px; font-size: 13px;">
-                    <i class="fas fa-check-double mr-1.5"></i> Semua Pendaftaran Terverifikasi
+                    <i class="fas fa-check-circle mr-1.5"></i> Semua Pendaftaran Terverifikasi
                 </span>
             @endif
         </div>
@@ -348,7 +348,7 @@
                                     <td colspan="6" class="text-center py-5">
                                         <div class="py-4">
                                             <div class="mb-3" style="width: 64px; height: 64px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: inline-flex; align-items: center; justify-content: center; font-size: 28px;">
-                                                <i class="fas fa-check-double"></i>
+                                                <i class="fas fa-check-circle"></i>
                                             </div>
                                             <h5 class="font-weight-bold text-dark">Tidak Ada Antrean Verifikasi</h5>
                                             <p class="text-muted" style="font-size: 13.5px; max-width: 440px; margin: 0 auto;">
@@ -564,3 +564,4 @@ document.getElementById('verifSearchInput').addEventListener('keyup', function()
 });
 </script>
 @endsection
+
