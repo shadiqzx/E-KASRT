@@ -22,6 +22,12 @@ class User extends Authenticatable
         'img',
         'role_id',
         'is_active',
+        'nik',
+        'status_verifikasi',
+        'tgl_daftar',
+        'alasan_tolak',
+        'verifikator_id',
+        'tgl_verifikasi',
     ];
 
     protected $hidden = [
@@ -31,6 +37,16 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(UserRole::class, 'role_id', 'id');
+    }
+
+    public function dataWarga()
+    {
+        return $this->hasOne(DataWarga::class, 'nik', 'nik');
+    }
+
+    public function verifikator()
+    {
+        return $this->belongsTo(User::class, 'verifikator_id', 'user_id');
     }
 
     public function warga()

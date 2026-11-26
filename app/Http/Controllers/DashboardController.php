@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Aspirasi;
 use App\Models\DataKas;
+use App\Models\DataRt;
 use App\Models\DataWarga;
 use App\Models\PosyanduBalita;
 use App\Models\PosyanduSesi;
+use App\Models\Surat;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
@@ -27,7 +33,7 @@ class DashboardController extends Controller
             $total_balita = PosyanduBalita::count();
             $total_kk     = DataWarga::whereNotNull('no_kk')->where('no_kk', '!=', '')->distinct('no_kk')->count('no_kk') ?: (int)($total_warga / 3);
 
-            $transaksi_terbaru = DataKas::orderBy('tanggal', 'DESC')->orderBy('idKas', 'DESC')->limit(7)->get();
+            $transaksi_terbaru = DataKas::orderBy('tanggal', 'DESC')->orderBy('idKas', 'DESC')->limit(15)->get();
 
             // 6 Bulan Terakhir untuk Grafik Trend
             $chart_labels = [];
@@ -50,6 +56,18 @@ class DashboardController extends Controller
             $rasio_keuangan = $total_masuk > 0 ? min(100, max(0, round(($saldo / $total_masuk) * 100))) : 100;
 
             $sesi_aktif = PosyanduSesi::where('status', 'Aktif')->first();
+
+            // Antrean Verifikasi, Surat, Aspirasi & Status Perangkat IoT ESP32
+            $pending_verifikasi = Schema::hasTable('users')
+                ? (int) User::where('status_verifikasi', 'Menunggu Verifikasi')->count()
+                : 0;
+            $pending_surat = Schema::hasTable('surat')
+                ? (int) Surat::whereIn('status', ['Pending', 'Menunggu', 'Menunggu Persetujuan', 'Diajukan'])->count()
+                : 0;
+            $total_aspirasi = Schema::hasTable('aspirasi') ? (int) Aspirasi::count() : 0;
+            $data_rt = Schema::hasTable('data_rt') ? DataRt::first() : null;
+            $rfid_online = (bool) Cache::get('rfid_device_online', false);
+            $last_rfid_uid = Cache::get('last_rfid_uid');
         } catch (\Throwable $e) {
             $total_masuk       = 0;
             $total_keluar      = 0;
@@ -66,6 +84,12 @@ class DashboardController extends Controller
             $chart_keluar      = [];
             $rasio_keuangan    = 100;
             $sesi_aktif        = null;
+            $pending_verifikasi = 0;
+            $pending_surat     = 0;
+            $total_aspirasi    = 0;
+            $data_rt           = null;
+            $rfid_online       = false;
+            $last_rfid_uid     = null;
         }
 
         return view('dashboard.index', compact(
@@ -83,7 +107,13 @@ class DashboardController extends Controller
             'chart_masuk',
             'chart_keluar',
             'rasio_keuangan',
-            'sesi_aktif'
+            'sesi_aktif',
+            'pending_verifikasi',
+            'pending_surat',
+            'total_aspirasi',
+            'data_rt',
+            'rfid_online',
+            'last_rfid_uid'
         ));
     }
 }

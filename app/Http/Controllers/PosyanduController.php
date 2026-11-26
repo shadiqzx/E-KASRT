@@ -7,8 +7,10 @@ use App\Models\PosyanduBalita;
 use App\Models\PosyanduKehadiran;
 use App\Models\PosyanduSesi;
 use App\Models\PosyanduTapLog;
+use App\Services\RfidTapService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class PosyanduController extends Controller
@@ -73,143 +75,37 @@ class PosyanduController extends Controller
         }
 
         return response()->json([
-            'status'      => 'ok',
-            'total_hadir' => $total_hadir,
-            'logs'        => $recent
+            'status'        => 'ok',
+            'total_hadir'   => $total_hadir,
+            'logs'          => $recent,
+            'device_online' => (bool) Cache::get('rfid_device_online', false),
+            'device_info'   => Cache::get('rfid_device_info'),
+            'last_rfid_uid' => Cache::get('last_rfid_uid'),
         ]);
     }
 
-    public function rfidTap(Request $request)
+    public function rfidTap(Request $request, RfidTapService $rfidService)
     {
         $api_key = $request->input('api_key') ?: $request->query('api_key');
         if ($api_key !== 'kasrt2025') {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized API Key'], 401);
         }
 
-        $uid = strtoupper(trim($request->input('uid') ?: $request->query('uid')));
+        $uid = $rfidService->normalizeUid((string) ($request->input('uid') ?: $request->query('uid')));
         if (empty($uid)) {
             return response()->json(['status' => 'error', 'message' => 'UID is required'], 400);
         }
 
-        $now = date('Y-m-d H:i:s');
-        $sesi_aktif = PosyanduSesi::where('status', 'Aktif')->first();
-
-        // 1. Cek apakah UID terdaftar di e-KTP Warga (Ibu)
-        $warga = DataWarga::where('rfid_ktp', $uid)->first();
-        if ($warga) {
-            $balitas = PosyanduBalita::where('warga_id', $warga->idWarga)->get();
-
-            if (!$sesi_aktif) {
-                PosyanduTapLog::create([
-                    'uid'        => $uid,
-                    'status'     => 'NO_ACTIVE_SESSION',
-                    'keterangan' => 'Ibu ' . $warga->nama . ' tap KTP tapi belum ada Sesi Aktif',
-                    'warga_id'   => $warga->idWarga,
-                    'created_at' => $now
-                ]);
-                return response()->json(['status' => 'warning', 'message' => 'Sesi posyandu belum diaktifkan']);
-            }
-
-            if ($balitas->isEmpty()) {
-                PosyanduTapLog::create([
-                    'uid'        => $uid,
-                    'status'     => 'NO_CHILDREN',
-                    'keterangan' => 'KTP Ibu ' . $warga->nama . ' belum terdaftar memiliki balita',
-                    'warga_id'   => $warga->idWarga,
-                    'created_at' => $now
-                ]);
-                return response()->json(['status' => 'warning', 'message' => 'Belum ada balita terhubung ke Ibu ini']);
-            }
-
-            $anak_hadir = [];
-            foreach ($balitas as $b) {
-                $sudah = PosyanduKehadiran::where('sesi_id', $sesi_aktif->id)->where('balita_id', $b->id)->first();
-                if (!$sudah) {
-                    PosyanduKehadiran::create([
-                        'sesi_id'      => $sesi_aktif->id,
-                        'balita_id'    => $b->id,
-                        'jam_datang'   => $now,
-                        'metode_absen' => 'RFID',
-                        'rfid_uid'     => $uid
-                    ]);
-                    $anak_hadir[] = $b->nama_anak;
-                }
-            }
-
-            if (!empty($anak_hadir)) {
-                $msg = 'Ibu ' . $warga->nama . ' tap KTP -> Balita: ' . implode(', ', $anak_hadir) . ' hadir';
-                PosyanduTapLog::create([
-                    'uid'        => $uid,
-                    'status'     => 'SUCCESS',
-                    'keterangan' => $msg,
-                    'warga_id'   => $warga->idWarga,
-                    'created_at' => $now
-                ]);
-                return response()->json(['status' => 'success', 'message' => $msg]);
-            } else {
-                $msg = 'Ibu ' . $warga->nama . ' (' . $balitas->pluck('nama_anak')->implode(', ') . ') sudah absen sebelumnya';
-                PosyanduTapLog::create([
-                    'uid'        => $uid,
-                    'status'     => 'ALREADY_CHECKED',
-                    'keterangan' => $msg,
-                    'warga_id'   => $warga->idWarga,
-                    'created_at' => $now
-                ]);
-                return response()->json(['status' => 'already_checked', 'message' => $msg]);
-            }
-        }
-
-        // 2. Cek apakah UID terdaftar di RFID Khusus Balita
-        $balita = PosyanduBalita::where('rfid_uid', $uid)->first();
-        if ($balita) {
-            if (!$sesi_aktif) {
-                PosyanduTapLog::create([
-                    'uid'        => $uid,
-                    'status'     => 'NO_ACTIVE_SESSION',
-                    'keterangan' => 'Kartu balita ' . $balita->nama_anak . ' tap tapi belum ada sesi aktif',
-                    'created_at' => $now
-                ]);
-                return response()->json(['status' => 'warning', 'message' => 'Sesi posyandu belum diaktifkan']);
-            }
-
-            $sudah = PosyanduKehadiran::where('sesi_id', $sesi_aktif->id)->where('balita_id', $balita->id)->first();
-            if (!$sudah) {
-                PosyanduKehadiran::create([
-                    'sesi_id'      => $sesi_aktif->id,
-                    'balita_id'    => $balita->id,
-                    'jam_datang'   => $now,
-                    'metode_absen' => 'RFID',
-                    'rfid_uid'     => $uid
-                ]);
-
-                $msg = 'Balita ' . $balita->nama_anak . ' tercatat hadir via Kartu RFID';
-                PosyanduTapLog::create([
-                    'uid'        => $uid,
-                    'status'     => 'SUCCESS',
-                    'keterangan' => $msg,
-                    'created_at' => $now
-                ]);
-                return response()->json(['status' => 'success', 'message' => $msg]);
-            } else {
-                $msg = 'Balita ' . $balita->nama_anak . ' sudah tercatat hadir sebelumnya';
-                PosyanduTapLog::create([
-                    'uid'        => $uid,
-                    'status'     => 'ALREADY_CHECKED',
-                    'keterangan' => $msg,
-                    'created_at' => $now
-                ]);
-                return response()->json(['status' => 'already_checked', 'message' => $msg]);
-            }
-        }
-
-        // 3. Kartu Baru Belum Terdaftar
-        PosyanduTapLog::create([
-            'uid'        => $uid,
-            'status'     => 'UNREGISTERED',
-            'keterangan' => 'e-KTP baru belum terhubung: ' . $uid,
-            'created_at' => $now
+        $result = $rfidService->recordPosyanduAttendance($uid);
+        $rfidService->cacheLastScan($uid, null, [
+            'posyandu'   => $result['status'] ?? null,
+            'keterangan' => $result['message'] ?? null,
         ]);
-        return response()->json(['status' => 'unregistered', 'message' => 'e-KTP belum terdaftar. Silakan hubungkan ke data warga.']);
+
+        return response()->json([
+            'status'  => $result['status'],
+            'message' => $result['message'],
+        ]);
     }
 
     public function pairKtp(Request $request)
@@ -356,6 +252,60 @@ class PosyanduController extends Controller
         PosyanduKehadiran::where('balita_id', $id)->delete();
         PosyanduBalita::destroy($id);
         return redirect()->route('posyandu.index')->with('success', 'Data balita dan riwayatnya berhasil dihapus!');
+    }
+
+    public function kehadiranHapus($id)
+    {
+        PosyanduKehadiran::destroy($id);
+        return redirect()->route('posyandu.index')->with('success', 'Data kehadiran balita berhasil dihapus.');
+    }
+
+    public function sesiHapus($id)
+    {
+        PosyanduKehadiran::where('sesi_id', $id)->delete();
+        PosyanduSesi::destroy($id);
+        return redirect()->route('posyandu.index')->with('success', 'Sesi posyandu berhasil dihapus.');
+    }
+
+    public function unpairKtp($warga_id)
+    {
+        $warga = DataWarga::find($warga_id);
+        if ($warga) {
+            $old_uid = $warga->rfid_ktp;
+            $warga->rfid_ktp = null;
+            $warga->save();
+            return redirect()->route('posyandu.index')->with('success', 'Tautan e-KTP (' . $old_uid . ') untuk ' . $warga->nama . ' berhasil dilepas.');
+        }
+        return redirect()->route('posyandu.index')->with('error', 'Warga tidak ditemukan.');
+    }
+
+    public function resetData(Request $request)
+    {
+        $mode = $request->input('reset_mode');
+
+        if ($mode === 'kehadiran_sesi') {
+            $sesi_aktif = PosyanduSesi::where('status', 'Aktif')->first();
+            if ($sesi_aktif) {
+                PosyanduKehadiran::where('sesi_id', $sesi_aktif->id)->delete();
+                return redirect()->route('posyandu.index')->with('success', '✅ Data kehadiran pada sesi aktif hari ini berhasil dibersihkan.');
+            }
+            return redirect()->route('posyandu.index')->with('warning', 'Tidak ada sesi posyandu yang sedang aktif.');
+        } elseif ($mode === 'tap_logs') {
+            PosyanduTapLog::truncate();
+            return redirect()->route('posyandu.index')->with('success', '✅ Seluruh riwayat log tap RFID berhasil dibersihkan.');
+        } elseif ($mode === 'unpair_all') {
+            DataWarga::whereNotNull('rfid_ktp')->update(['rfid_ktp' => null]);
+            PosyanduBalita::whereNotNull('rfid_uid')->update(['rfid_uid' => null]);
+            return redirect()->route('posyandu.index')->with('success', '✅ Seluruh tautan RFID e-KTP warga dan balita berhasil dilepas.');
+        } elseif ($mode === 'all_test_data') {
+            PosyanduKehadiran::truncate();
+            PosyanduTapLog::truncate();
+            DataWarga::whereNotNull('rfid_ktp')->update(['rfid_ktp' => null]);
+            PosyanduBalita::whereNotNull('rfid_uid')->update(['rfid_uid' => null]);
+            return redirect()->route('posyandu.index')->with('success', '✅ Seluruh data uji coba (kehadiran, log tap, dan RFID warga) berhasil di-reset bersih!');
+        }
+
+        return redirect()->route('posyandu.index')->with('error', 'Pilihan mode reset tidak valid.');
     }
 
     public function downloadFirmwareIno()

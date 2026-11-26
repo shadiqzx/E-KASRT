@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AiCsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KasController;
@@ -15,6 +16,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+Route::match(['get', 'post'], '/cek_status_warga', [AuthController::class, 'cekStatusWarga'])->name('auth.cek_status');
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 Route::match(['get', 'post'], '/auth/logout', [AuthController::class, 'logout']);
 
@@ -42,9 +44,16 @@ Route::get('/', function () {
 // ESP32 RFID IoT & Polling Endpoints (Public/API with API Key)
 Route::match(['get', 'post'], '/smartrt/posyandu_rfid_tap', [PosyanduController::class, 'rfidTap'])->name('posyandu.rfid_tap');
 Route::get('/smartrt/posyandu_live_stream', [PosyanduController::class, 'liveStream'])->name('posyandu.live_stream');
+Route::match(['get', 'post'], '/smartrt/iuran_rfid_tap', [SmartRtController::class, 'iuranRfidTap'])->name('smartrt.iuran.rfid_tap');
+Route::get('/smartrt/iuran_live_stream', [SmartRtController::class, 'iuranLiveStream'])->name('smartrt.iuran.live_stream');
 Route::get('/smartrt/download_firmware_ino', [PosyanduController::class, 'downloadFirmwareIno'])->name('posyandu.download_ino');
 Route::get('/smartrt/download_firmware_zip', [PosyanduController::class, 'downloadFirmwareZip'])->name('posyandu.download_zip');
 Route::get('/smartrt/posyandu_cetak_kms/{id}', [PosyanduController::class, 'cetakKms'])->name('posyandu.cetak_kms');
+
+// AI Customer Service Public / Session Endpoints
+Route::post('/ai-cs/chat', [AiCsController::class, 'chat'])->name('ai_cs.chat');
+Route::get('/ai-cs/history', [AiCsController::class, 'history'])->name('ai_cs.history');
+Route::post('/ai-cs/reset', [AiCsController::class, 'reset'])->name('ai_cs.reset');
 
 // Authenticated Routes
 Route::middleware(['auth'])->group(function () {
@@ -92,16 +101,23 @@ Route::middleware(['auth'])->group(function () {
     // 3. Layanan Smart RT: Posyandu Balita Digital
     Route::get('/smartrt/posyandu', [PosyanduController::class, 'index'])->name('posyandu.index');
     Route::post('/smartrt/posyandu_pair_ktp', [PosyanduController::class, 'pairKtp'])->name('posyandu.pair_ktp');
+    Route::get('/smartrt/posyandu_unpair_ktp/{warga_id}', [PosyanduController::class, 'unpairKtp'])->name('posyandu.unpair_ktp');
     Route::post('/smartrt/posyandu_sesi_tambah', [PosyanduController::class, 'sesiTambah'])->name('posyandu.sesi_tambah');
     Route::get('/smartrt/posyandu_sesi_status/{id}/{status}', [PosyanduController::class, 'sesiStatus'])->name('posyandu.sesi_status');
+    Route::get('/smartrt/posyandu_sesi_hapus/{id}', [PosyanduController::class, 'sesiHapus'])->name('posyandu.sesi_hapus');
     Route::post('/smartrt/posyandu_hadir_manual', [PosyanduController::class, 'hadirManual'])->name('posyandu.hadir_manual');
+    Route::get('/smartrt/posyandu_kehadiran_hapus/{id}', [PosyanduController::class, 'kehadiranHapus'])->name('posyandu.kehadiran_hapus');
     Route::post('/smartrt/posyandu_update_pemeriksaan/{id}', [PosyanduController::class, 'updatePemeriksaan'])->name('posyandu.update_pemeriksaan');
     Route::post('/smartrt/posyandu_balita_tambah', [PosyanduController::class, 'balitaTambah'])->name('posyandu.balita_tambah');
     Route::get('/smartrt/posyandu_balita_hapus/{id}', [PosyanduController::class, 'balitaHapus'])->name('posyandu.balita_hapus');
+    Route::post('/smartrt/posyandu_reset_data', [PosyanduController::class, 'resetData'])->name('posyandu.reset_data');
 
     // 4. Layanan Smart RT: Iuran Warga
     Route::get('/smartrt/iuran', [SmartRtController::class, 'iuran'])->name('smartrt.iuran');
     Route::post('/smartrt/iuran_bayar', [SmartRtController::class, 'iuranBayar'])->name('smartrt.iuran.bayar');
+    Route::post('/smartrt/iuran_quick_pay', [SmartRtController::class, 'iuranQuickPay'])->name('smartrt.iuran.quick_pay');
+    Route::post('/smartrt/iuran_pair_ktp', [SmartRtController::class, 'iuranPairKtp'])->name('smartrt.iuran.pair_ktp');
+    Route::get('/smartrt/iuran_unpair_ktp/{warga_id}', [SmartRtController::class, 'iuranUnpairKtp'])->name('smartrt.iuran.unpair_ktp');
     Route::get('/smartrt/iuran_update_status/{id}/{status}', [SmartRtController::class, 'iuranUpdateStatus'])->name('smartrt.iuran.status');
 
     // 5. Layanan Smart RT: Bank Sampah
@@ -122,10 +138,24 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/smartrt/aset_tambah', [SmartRtController::class, 'asetTambah'])->name('smartrt.aset.store');
     Route::get('/smartrt/aset_hapus/{id}', [SmartRtController::class, 'asetHapus'])->name('smartrt.aset.destroy');
 
-    // 9. Pengaturan: User Management & Backup
+    // 9. Pengaturan: User Management & Database / Backup & Migrasi
     Route::get('/admin/user', [AdminUserController::class, 'index'])->name('admin.user');
     Route::post('/admin/user/store', [AdminUserController::class, 'store'])->name('admin.user.store');
     Route::post('/admin/user/update/{id}', [AdminUserController::class, 'update'])->name('admin.user.update');
     Route::get('/admin/user/toggle/{id}', [AdminUserController::class, 'toggleActive'])->name('admin.user.toggle');
+
+    // 10. Pengaturan: Verifikasi Pendaftaran Warga Baru
+    Route::get('/admin/verifikasi_warga', [AdminUserController::class, 'verifikasiWarga'])->name('admin.warga.verifikasi');
+    Route::post('/admin/verifikasi_warga/setujui/{id}', [AdminUserController::class, 'setujuiWarga'])->name('admin.warga.setujui');
+    Route::post('/admin/verifikasi_warga/tolak/{id}', [AdminUserController::class, 'tolakWarga'])->name('admin.warga.tolak');
+
     Route::get('/smartrt/backup', [SmartRtController::class, 'backup'])->name('smartrt.backup');
+    Route::post('/smartrt/database_migrate', [SmartRtController::class, 'runMigrate'])->name('smartrt.database.migrate');
+    Route::post('/smartrt/database_seed', [SmartRtController::class, 'runSeed'])->name('smartrt.database.seed');
+    Route::get('/smartrt/database_export_sql', [SmartRtController::class, 'downloadSqlBackup'])->name('smartrt.database.export');
+
+    // 11. Layanan Smart RT: AI Customer Service Monitoring & Pengaturan
+    Route::get('/smartrt/ai-cs', [AiCsController::class, 'index'])->name('smartrt.ai_cs');
+    Route::post('/smartrt/ai-cs/settings', [AiCsController::class, 'updateSettings'])->name('smartrt.ai_cs.settings');
+    Route::post('/smartrt/ai-cs/clear-logs', [AiCsController::class, 'clearLogs'])->name('smartrt.ai_cs.clear_logs');
 });

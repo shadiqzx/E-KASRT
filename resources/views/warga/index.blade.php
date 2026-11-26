@@ -249,7 +249,14 @@
 						</div>
 						<div class="col-md-6 form-group mb-3">
 							<label class="font-weight-bold text-dark" style="font-size: 13px;">UID e-KTP (Opsional)</label>
-							<input class="form-control" type="text" name="rfid_ktp" placeholder="Contoh: 99AA88BB" style="border-radius: 9px; font-family: 'JetBrains Mono';">
+							<div class="input-group">
+								<input class="form-control" type="text" name="rfid_ktp" placeholder="Contoh: E3A82C10" style="border-radius: 9px 0 0 9px; font-family: 'JetBrains Mono'; text-transform: uppercase;">
+								<div class="input-group-append">
+									<button type="button" class="btn btn-outline-primary btn-sm font-weight-bold" onclick="fillLastRfidUid(this)" title="Ambil UID scan kartu terakhir dari ESP32" style="border-radius: 0 9px 9px 0;">
+										📡 Scan
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -319,7 +326,14 @@
 						</div>
 						<div class="col-md-6 form-group mb-3">
 							<label class="font-weight-bold text-dark" style="font-size: 13px;">UID e-KTP (Opsional)</label>
-							<input class="form-control" type="text" name="rfid_ktp" value="{{ $w->rfid_ktp }}" placeholder="Contoh: 99AA88BB" style="border-radius: 9px; font-family: 'JetBrains Mono';">
+							<div class="input-group">
+								<input class="form-control" type="text" name="rfid_ktp" value="{{ $w->rfid_ktp }}" placeholder="Contoh: E3A82C10" style="border-radius: 9px 0 0 9px; font-family: 'JetBrains Mono'; text-transform: uppercase;">
+								<div class="input-group-append">
+									<button type="button" class="btn btn-outline-primary btn-sm font-weight-bold" onclick="fillLastRfidUid(this)" title="Ambil UID scan kartu terakhir dari ESP32" style="border-radius: 0 9px 9px 0;">
+										📡 Scan
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -366,6 +380,27 @@ function searchWargaTable() {
 		let text = r.innerText.toLowerCase();
 		r.style.display = text.includes(input) ? '' : 'none';
 	});
+}
+
+function fillLastRfidUid(btn) {
+	const input = btn.closest('.input-group').querySelector('input[name="rfid_ktp"]');
+	const originalText = btn.innerHTML;
+	btn.disabled = true;
+	btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+	fetch("{{ url('/api/rfid/status') }}")
+		.then(r => r.json())
+		.then(data => {
+			if (data.last_rfid_uid) {
+				input.value = data.last_rfid_uid;
+			} else {
+				alert('Belum ada tap kartu RFID/e-KTP dalam 30 detik terakhir. Silakan tempelkan kartu di alat ESP32.');
+			}
+		})
+		.catch(() => alert('Gagal mengambil UID terakhir dari server.'))
+		.finally(() => {
+			btn.disabled = false;
+			btn.innerHTML = originalText;
+		});
 }
 </script>
 @endsection

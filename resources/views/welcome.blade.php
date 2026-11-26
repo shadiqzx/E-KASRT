@@ -1066,12 +1066,493 @@
                 </div>
             </a>
 
-            <ul class="nav-links">
-                <li><a href="#fitur">Fitur Sekilas</a></li>
-                <li><a href="#kas">Transparansi Kas</a></li>
-                <li><a href="#posyandu">Posyandu IoT</a></li>
-                <li><a href="#warga">Layanan Warga</a></li>
-            </ul>
+            <style id="hydrogen-welcome-css">
+                /* Hydrogen Engine: Scroll Progress & Interactive Particle Canvas */
+                #scroll-progress-bar {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    height: 3px;
+                    width: 0%;
+                    z-index: 10050;
+                    background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6, #10b981);
+                    background-size: 200% 100%;
+                    animation: hydroBarShift 4s linear infinite;
+                    box-shadow: 0 0 14px rgba(56, 189, 248, 0.75);
+                    pointer-events: none;
+                }
+                @keyframes hydroBarShift {
+                    0% { background-position: 0% 50%; }
+                    100% { background-position: 200% 50%; }
+                }
+
+                #hydrogen-canvas {
+                    position: fixed;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 1;
+                    opacity: 0.72;
+                }
+
+                /* Neutralize sluggish 1.2s hover stomp while keeping smooth theme color fade */
+                body .glass-stat-card,
+                body .feature-card,
+                body .btn-cta-primary,
+                body .hero-showcase-card {
+                    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+                                box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                                background-color 0.7s ease,
+                                border-color 0.45s ease !important;
+                    will-change: transform;
+                }
+
+                /* Spotlight border radial glow on interactive glass cards */
+                .glass-stat-card,
+                .feature-card,
+                .hero-showcase-card {
+                    --mx: 50%;
+                    --my: 50%;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .glass-stat-card::after,
+                .feature-card::after,
+                .hero-showcase-card::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    background: radial-gradient(360px circle at var(--mx) var(--my), rgba(56, 189, 248, 0.16), transparent 55%);
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    pointer-events: none;
+                }
+                .glass-stat-card:hover::after,
+                .feature-card:hover::after,
+                .hero-showcase-card:hover::after {
+                    opacity: 1;
+                }
+                .glass-stat-card:hover,
+                .feature-card:hover {
+                    box-shadow: 0 24px 48px -12px rgba(2, 132, 199, 0.28), 0 0 0 1px rgba(56, 189, 248, 0.35) !important;
+                }
+
+                /* Custom inline SVG icon polish */
+                .stat-icon svg,
+                .hero-svg-badge svg {
+                    width: 24px;
+                    height: 24px;
+                    display: block;
+                }
+                .stat-icon {
+                    position: relative;
+                    box-shadow: 0 8px 22px -6px rgba(56, 189, 248, 0.45);
+                    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+                }
+                .glass-stat-card:hover .stat-icon {
+                    transform: scale(1.12) rotate(-4deg);
+                }
+
+                /* Feature Card Hydrogen Visual Artwork Banner */
+                .feature-svg-artwork {
+                    width: 68px;
+                    height: 68px;
+                    border-radius: 18px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 18px;
+                    background: linear-gradient(135deg, rgba(14, 165, 233, 0.14), rgba(99, 102, 241, 0.14));
+                    border: 1px solid rgba(56, 189, 248, 0.25);
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 10px 24px -8px rgba(2, 132, 199, 0.3);
+                    position: relative;
+                    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+                }
+                .feature-card:hover .feature-svg-artwork {
+                    transform: translateY(-4px) scale(1.06);
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 16px 32px -8px rgba(56, 189, 248, 0.45);
+                }
+
+                /* Hydrogen Hero Interactive Command Hub Visual */
+                .hero {
+                    position: relative;
+                    z-index: 2;
+                }
+                .hero-hydrogen-stage {
+                    width: 100%;
+                    max-width: 980px;
+                    margin: 46px auto 0 auto;
+                    position: relative;
+                    perspective: 1200px;
+                    z-index: 3;
+                }
+                .hero-aurora-halo {
+                    position: absolute;
+                    inset: -28px 6% -20px 6%;
+                    border-radius: 36px;
+                    background: radial-gradient(ellipse at 30% 40%, rgba(14, 165, 233, 0.32), transparent 58%),
+                                radial-gradient(ellipse at 75% 60%, rgba(16, 185, 129, 0.26), transparent 55%),
+                                radial-gradient(ellipse at 50% 20%, rgba(139, 92, 246, 0.22), transparent 60%);
+                    filter: blur(36px);
+                    z-index: 0;
+                    animation: hydroHaloPulse 8s ease-in-out infinite alternate;
+                    pointer-events: none;
+                }
+                @keyframes hydroHaloPulse {
+                    0% { opacity: 0.65; transform: scale(0.97) translateY(0); }
+                    100% { opacity: 1; transform: scale(1.03) translateY(-6px); }
+                }
+
+                .hero-showcase-grid {
+                    position: relative;
+                    z-index: 2;
+                    display: grid;
+                    grid-template-columns: 1.35fr 1fr;
+                    gap: 18px;
+                    text-align: left;
+                }
+                .hero-showcase-card {
+                    border-radius: 24px;
+                    padding: 22px 24px;
+                    background: rgba(15, 23, 42, 0.58);
+                    backdrop-filter: blur(22px);
+                    -webkit-backdrop-filter: blur(22px);
+                    border: 1px solid rgba(148, 163, 184, 0.22);
+                    box-shadow: 0 24px 50px -14px rgba(2, 6, 23, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+                    color: #f8fafc;
+                }
+                [data-theme="light"] .hero-showcase-card {
+                    background: rgba(255, 255, 255, 0.78);
+                    border-color: rgba(14, 165, 233, 0.24);
+                    box-shadow: 0 22px 48px -14px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+                    color: #0f172a;
+                }
+                [data-theme="light"] .hero-showcase-card .hsc-muted {
+                    color: #475569 !important;
+                }
+                [data-theme="light"] .hero-showcase-card .hsc-chip {
+                    background: rgba(14, 165, 233, 0.1);
+                    color: #0369a1;
+                    border-color: rgba(14, 165, 233, 0.25);
+                }
+
+                .hsc-top {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 14px;
+                    gap: 10px;
+                }
+                .hsc-dots {
+                    display: flex;
+                    gap: 6px;
+                    align-items: center;
+                }
+                /* Only actual dot spans get fixed size — text spans (.hsc-muted) are excluded */
+                .hsc-dots .hsc-dot {
+                    width: 9px;
+                    height: 9px;
+                    border-radius: 50%;
+                    display: inline-block;
+                    flex-shrink: 0;
+                }
+                .hsc-chip {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 4px 10px;
+                    border-radius: 999px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 0.4px;
+                    background: rgba(16, 185, 129, 0.15);
+                    border: 1px solid rgba(52, 211, 153, 0.35);
+                    color: #34d399;
+                }
+                .hsc-pulse {
+                    width: 7px;
+                    height: 7px;
+                    border-radius: 50%;
+                    background: #10b981;
+                    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+                    animation: hydroPing 1.8s infinite;
+                }
+                @keyframes hydroPing {
+                    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.75); }
+                    70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+                }
+
+                .hsc-amount {
+                    font-size: 28px;
+                    font-weight: 800;
+                    letter-spacing: -0.7px;
+                    background: linear-gradient(135deg, #38bdf8, #34d399);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    margin-bottom: 4px;
+                }
+                [data-theme="light"] .hsc-amount {
+                    background: linear-gradient(135deg, #0284c7, #059669);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+
+                .svg-sparkline-path {
+                    stroke-dasharray: 420;
+                    stroke-dashoffset: 420;
+                    animation: hydroDrawPath 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.3s;
+                }
+                @keyframes hydroDrawPath {
+                    to { stroke-dashoffset: 0; }
+                }
+                .svg-nfc-wave {
+                    transform-origin: center;
+                    animation: hydroNfcPulse 2.4s ease-out infinite;
+                }
+                .svg-nfc-wave-2 { animation-delay: 0.55s; }
+                .svg-nfc-wave-3 { animation-delay: 1.1s; }
+                @keyframes hydroNfcPulse {
+                    0% { opacity: 0.95; transform: scale(0.82); }
+                    100% { opacity: 0; transform: scale(1.38); }
+                }
+                .svg-float-card {
+                    animation: hydroFloatSlow 5.5s ease-in-out infinite alternate;
+                }
+                @keyframes hydroFloatSlow {
+                    0% { transform: translateY(0px); }
+                    100% { transform: translateY(-6px); }
+                }
+
+                /* Truly Centered Single Scroll Down Indicator */
+                body .scroll-down-hint {
+                    display: inline-flex !important;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    margin: 40px auto 0 auto !important;
+                    width: fit-content;
+                    position: relative;
+                    left: auto;
+                    right: auto;
+                    text-align: center;
+                    cursor: pointer;
+                    z-index: 4;
+                    padding: 10px 22px;
+                    border-radius: 999px;
+                    border: 1px solid rgba(56, 189, 248, 0.25);
+                    background: rgba(15, 23, 42, 0.28);
+                    backdrop-filter: blur(10px);
+                    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease !important;
+                    animation: none !important;
+                }
+                [data-theme="light"] body .scroll-down-hint {
+                    background: rgba(255, 255, 255, 0.65);
+                    border-color: rgba(14, 165, 233, 0.28);
+                }
+                body .scroll-down-hint:hover {
+                    transform: translateY(3px);
+                    border-color: rgba(56, 189, 248, 0.65);
+                }
+                .scroll-mouse-pill {
+                    width: 22px;
+                    height: 34px;
+                    border-radius: 12px;
+                    border: 2px solid rgba(56, 189, 248, 0.7);
+                    display: flex;
+                    justify-content: center;
+                    padding-top: 6px;
+                }
+                .scroll-mouse-dot {
+                    width: 4px;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: #38bdf8;
+                    animation: hydroWheelScroll 1.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+                }
+                @keyframes hydroWheelScroll {
+                    0% { opacity: 1; transform: translateY(0); }
+                    75% { opacity: 0.2; transform: translateY(10px); }
+                    100% { opacity: 0; transform: translateY(12px); }
+                }
+                .scroll-label-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 1.6px;
+                    text-transform: uppercase;
+                }
+                .scroll-chevron-bounce {
+                    animation: hydroChev 1.6s ease-in-out infinite;
+                }
+                @keyframes hydroChev {
+                    0%, 100% { transform: translateY(0); opacity: 0.7; }
+                    50% { transform: translateY(4px); opacity: 1; }
+                }
+
+                @media (max-width: 860px) {
+                    .hero-showcase-grid {
+                        grid-template-columns: 1fr;
+                    }
+                    .hero-hydrogen-stage {
+                        margin-top: 24px;
+                    }
+                    .hsc-amount {
+                        font-size: 22px;
+                    }
+                }
+
+                /* Bugfix & Clean Hero Fit Overrides */
+                #particle-canvas,
+                #scroll-progress {
+                    display: none !important;
+                }
+                /* hsc-dots: only the colored dots get fixed size; text spans are auto */
+                .hsc-dots .hsc-dot {
+                    width: 9px !important;
+                    height: 9px !important;
+                    border-radius: 50% !important;
+                    display: inline-block !important;
+                    flex-shrink: 0;
+                }
+                /* Ensure hsc-muted text inside hsc-dots is not affected by dot sizing */
+                .hsc-dots .hsc-muted {
+                    width: auto !important;
+                    height: auto !important;
+                    border-radius: 0 !important;
+                    display: inline !important;
+                }
+                .hero-banner {
+                    padding: 36px 24px 28px !important;
+                }
+                .hero-pill {
+                    margin-bottom: 16px !important;
+                }
+                .hero-main-title {
+                    font-size: clamp(32px, 4.1vw, 48px) !important;
+                    margin-bottom: 14px !important;
+                }
+                .hero-subtitle {
+                    font-size: 16px !important;
+                    line-height: 1.55 !important;
+                    margin: 0 auto 24px !important;
+                }
+                .hero-btn-group {
+                    margin-bottom: 24px !important;
+                }
+                .hero-hydrogen-stage {
+                    margin: 0 auto !important;
+                    max-width: 1040px !important;
+                }
+                .hero-showcase-grid {
+                    grid-template-columns: 1fr 0.96fr 1fr !important;
+                    gap: 16px !important;
+                    align-items: stretch;
+                }
+                .hero-showcase-card {
+                    padding: 16px 18px !important;
+                }
+                .hero-3d-card {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 12px 14px 14px !important;
+                    background: radial-gradient(circle at 50% 42%, rgba(14, 165, 233, 0.24), rgba(15, 23, 42, 0.72) 72%) !important;
+                    border-color: rgba(56, 189, 248, 0.38) !important;
+                }
+                [data-theme="light"] .hero-3d-card {
+                    background: radial-gradient(circle at 50% 42%, rgba(56, 189, 248, 0.16), rgba(255, 255, 255, 0.88) 76%) !important;
+                }
+                .hero-3d-stage-wrap {
+                    position: relative;
+                    width: 100%;
+                    height: 186px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: grab;
+                    user-select: none;
+                    touch-action: pan-y;
+                }
+                .hero-3d-stage-wrap:active {
+                    cursor: grabbing;
+                }
+                #hero3dCanvas {
+                    width: 100%;
+                    height: 100%;
+                    max-width: 280px;
+                    display: block;
+                    position: relative;
+                    z-index: 2;
+                }
+                #hero3dFallback {
+                    position: absolute;
+                    inset: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1;
+                    pointer-events: none;
+                    animation: hydroFloatSlow 3.5s ease-in-out infinite alternate;
+                }
+                .hero-3d-controls {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    flex-wrap: wrap;
+                    position: relative;
+                    z-index: 3;
+                }
+                .h3d-btn {
+                    border: 1px solid rgba(56, 189, 248, 0.35);
+                    background: rgba(14, 165, 233, 0.14);
+                    color: #e0f2fe;
+                    font-size: 10.5px;
+                    font-weight: 700;
+                    padding: 4px 10px;
+                    border-radius: 999px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    letter-spacing: 0.2px;
+                }
+                [data-theme="light"] .h3d-btn {
+                    color: #0369a1;
+                    background: rgba(14, 165, 233, 0.12);
+                }
+                .h3d-btn:hover,
+                .h3d-btn.active {
+                    background: linear-gradient(135deg, #0284c7, #2563eb);
+                    color: #ffffff;
+                    border-color: #38bdf8;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+                }
+                body .scroll-down-hint {
+                    margin: 22px auto 0 auto !important;
+                    padding: 7px 18px !important;
+                }
+                @media (max-width: 991px) {
+                    .hero-showcase-grid {
+                        grid-template-columns: 1fr 1fr !important;
+                    }
+                    .hero-3d-card {
+                        grid-column: 1 / -1;
+                        order: -1;
+                    }
+                }
+                @media (max-width: 640px) {
+                    .hero-showcase-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            </style>
 
             <div class="nav-actions">
                 @if(Auth::check())
@@ -1136,25 +1617,155 @@
                     <span>Daftar Warga Baru</span>
                 </a>
             @endif
-            <a href="#fitur" class="btn-cta-secondary">
-                <i class="fas fa-compass"></i>
-                <span>Jelajahi Fitur Sekilas</span>
-            </a>
         </div>
 
-        <!-- Scroll Down Hint -->
-        <div class="scroll-down-hint" onclick="document.querySelector('.stats-grid').scrollIntoView({behavior:'smooth'})">
-            <span>Scroll</span>
-            <i class="fas fa-chevron-down"></i>
+        <!-- Hydrogen Interactive 3D Command Hub & IoT Visual Showcase -->
+        <div class="hero-hydrogen-stage reveal">
+            <div class="hero-aurora-halo"></div>
+            <div class="hero-showcase-grid">
+                <!-- Left Panel: Live Treasury & Sparkline Preview -->
+                <div class="hero-showcase-card hydro-tilt-card">
+                    <div class="hsc-top">
+                        <div class="hsc-dots">
+                            <span class="hsc-dot" style="background:#f87171;"></span>
+                            <span class="hsc-dot" style="background:#fbbf24;"></span>
+                            <span class="hsc-dot" style="background:#34d399;"></span>
+                            <span class="hsc-muted" style="font-size:11.5px; font-weight:700; margin-left:6px; letter-spacing:0.3px; white-space:nowrap;">KAS RT COMMAND CENTER</span>
+                        </div>
+                        <span class="hsc-chip"><span class="hsc-pulse"></span> LIVE LEDGER</span>
+                    </div>
+                    <div class="hsc-muted" style="font-size:11.5px; text-transform:uppercase; letter-spacing:1px; font-weight:700; opacity:0.78;">Saldo Kas Terverifikasi</div>
+                    <div class="hsc-amount">Rp {{ rupiah($saldo) }}</div>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:12px; margin-bottom:10px;">
+                        <span style="color:#34d399; font-weight:700;">&#8593; Masuk: Rp {{ rupiah($total_masuk) }}</span>
+                        <span style="color:#fb7185; font-weight:700;">&#8595; Keluar: Rp {{ rupiah($total_keluar) }}</span>
+                    </div>
+                    <!-- Custom Animated SVG Sparkline Curve -->
+                    <svg viewBox="0 0 360 76" width="100%" height="76" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block; overflow:visible;">
+                        <defs>
+                            <linearGradient id="heroSparkFill" x1="0" y1="0" x2="0" y2="88" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.38"/>
+                                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
+                            </linearGradient>
+                            <linearGradient id="heroSparkStroke" x1="0" y1="0" x2="360" y2="0" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#38bdf8"/>
+                                <stop offset="55%" stop-color="#818cf8"/>
+                                <stop offset="100%" stop-color="#34d399"/>
+                            </linearGradient>
+                        </defs>
+                        <line x1="0" y1="22" x2="360" y2="22" stroke="rgba(148,163,184,0.14)" stroke-dasharray="4 4"/>
+                        <line x1="0" y1="52" x2="360" y2="52" stroke="rgba(148,163,184,0.14)" stroke-dasharray="4 4"/>
+                        <path d="M6 68 C 48 64, 72 44, 114 48 C 156 52, 182 24, 224 28 C 266 32, 298 14, 348 16 L 348 86 L 6 86 Z" fill="url(#heroSparkFill)"/>
+                        <path class="svg-sparkline-path" d="M6 68 C 48 64, 72 44, 114 48 C 156 52, 182 24, 224 28 C 266 32, 298 14, 348 16" stroke="url(#heroSparkStroke)" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="348" cy="16" r="5" fill="#34d399"/>
+                        <circle cx="348" cy="16" r="11" fill="rgba(52,211,153,0.28)">
+                            <animate attributeName="r" values="6;14;6" dur="2.2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.7;0.1;0.7" dur="2.2s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                </div>
+
+                <!-- Center Panel: Interactive 3D Character Guardian Stage -->
+                <div class="hero-showcase-card hero-3d-card">
+                    <div class="hsc-top" style="width:100%; margin-bottom:2px;">
+                        <span class="hsc-muted" style="font-size:10.5px; font-weight:800; letter-spacing:0.6px; text-transform:uppercase;">3D Smart-RT Guide</span>
+                        <span class="hsc-chip" style="background:rgba(56,189,248,0.16); border-color:rgba(56,189,248,0.4); color:#38bdf8; font-size:10px; padding:2px 8px;">3D LIVE</span>
+                    </div>
+
+                    <div class="hero-3d-stage-wrap" id="hero3dStageWrap" title="Geser untuk putar 3D &bull; Klik karakter untuk berinteraksi">
+                        <canvas id="hero3dCanvas" width="280" height="190"></canvas>
+                        <div id="hero3dFallback" aria-hidden="true">
+                            <svg width="108" height="126" viewBox="0 0 96 120">
+                                <defs>
+                                    <linearGradient id="h3fHead" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e0f2fe"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
+                                    <linearGradient id="h3fBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
+                                </defs>
+                                <ellipse cx="48" cy="112" rx="30" ry="6" fill="rgba(56,189,248,0.25)"/>
+                                <rect x="20" y="60" width="56" height="38" rx="15" fill="url(#h3fBody)"/>
+                                <rect x="12" y="10" width="72" height="48" rx="18" fill="url(#h3fHead)"/>
+                                <rect x="17" y="18" width="62" height="32" rx="11" fill="#0f172a"/>
+                                <circle cx="34" cy="33" r="6" fill="#38bdf8"/><circle cx="62" cy="33" r="6" fill="#38bdf8"/>
+                                <path d="M36 43Q48 50 60 43" stroke="#34d399" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="hero-3d-controls">
+                        <button type="button" class="h3d-btn active" onclick="window.HeroChar3D && HeroChar3D.setMode('idle', this)">Idle</button>
+                        <button type="button" class="h3d-btn" onclick="window.HeroChar3D && HeroChar3D.setMode('wave', this)">Sapa</button>
+                        <button type="button" class="h3d-btn" onclick="window.HeroChar3D && HeroChar3D.setMode('dance', this)">Joget</button>
+                        <button type="button" class="h3d-btn" onclick="window.HeroChar3D && HeroChar3D.spinJump()">Putar 360&deg;</button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: IoT ESP32 RFID & Smart Community Visual -->
+                <div class="hero-showcase-card hydro-tilt-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+                    <div class="hsc-top" style="margin-bottom:10px;">
+                        <span class="hsc-muted" style="font-size:11.5px; font-weight:800; letter-spacing:0.6px; text-transform:uppercase;">IoT e-KTP &amp; Smart Posyandu</span>
+                        <span class="hsc-chip" style="background:rgba(56,189,248,0.15); border-color:rgba(56,189,248,0.35); color:#38bdf8;">ESP32 SYNC</span>
+                    </div>
+
+                    <div class="svg-float-card" style="display:flex; align-items:center; gap:14px; background:rgba(14,165,233,0.1); border:1px solid rgba(56,189,248,0.24); border-radius:16px; padding:12px 14px;">
+                        <!-- Animated Contactless RFID & Shield SVG -->
+                        <svg width="56" height="56" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                            <rect x="6" y="14" width="38" height="28" rx="6" fill="rgba(15,23,42,0.85)" stroke="#38bdf8" stroke-width="2"/>
+                            <rect x="12" y="22" width="10" height="8" rx="2" fill="#fbbf24" fill-opacity="0.85"/>
+                            <path d="M12 35H30" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="48" cy="28" r="3" fill="#34d399"/>
+                            <path class="svg-nfc-wave" d="M52 21a10 10 0 0 1 0 14" stroke="#34d399" stroke-width="2.2" stroke-linecap="round"/>
+                            <path class="svg-nfc-wave svg-nfc-wave-2" d="M56 17a16 16 0 0 1 0 22" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                            <path class="svg-nfc-wave svg-nfc-wave-3" d="M60 13a22 22 0 0 1 0 30" stroke="#818cf8" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        <div>
+                            <div style="font-size:13px; font-weight:800; margin-bottom:2px;">Tap Kartu e-KTP / RFID</div>
+                            <div class="hsc-muted" style="font-size:11.5px; opacity:0.8; line-height:1.35;">Absensi posyandu &amp; identifikasi warga otomatis 0.3 detik.</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px;">
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(148,163,184,0.18); border-radius:12px; padding:8px 10px;">
+                            <div class="hsc-muted" style="font-size:10px; text-transform:uppercase; font-weight:700; opacity:0.7;">Warga</div>
+                            <div style="font-size:16px; font-weight:800; color:#a78bfa;">{{ $total_warga }}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(148,163,184,0.18); border-radius:12px; padding:8px 10px;">
+                            <div class="hsc-muted" style="font-size:10px; text-transform:uppercase; font-weight:700; opacity:0.7;">KK</div>
+                            <div style="font-size:16px; font-weight:800; color:#38bdf8;">{{ $total_kk }}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(148,163,184,0.18); border-radius:12px; padding:8px 10px;">
+                            <div class="hsc-muted" style="font-size:10px; text-transform:uppercase; font-weight:700; opacity:0.7;">Balita</div>
+                            <div style="font-size:16px; font-weight:800; color:#34d399;">{{ $total_balita }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Centered Single Scroll Down Indicator -->
+        <div style="width:100%; display:flex; justify-content:center; align-items:center;">
+            <div class="scroll-down-hint" onclick="var target = document.querySelector('.stats-grid'); if(target) target.scrollIntoView({behavior:'smooth'});" role="button" tabindex="0" aria-label="Scroll ke bawah">
+                <div class="scroll-mouse-pill">
+                    <div class="scroll-mouse-dot"></div>
+                </div>
+                <div class="scroll-label-row">
+                    <span>Scroll</span>
+                    <svg class="scroll-chevron-bounce" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+            </div>
         </div>
     </section>
 
+    <div id="scroll-progress-bar"></div>
+    <canvas id="hydrogen-canvas"></canvas>
+
     <!-- 3. LIVE STATS TICKER (Real DB Numbers) -->
-    <section class="stats-grid">
+    <section class="stats-grid" id="statistik">
         <!-- Stat 1: Saldo Kas -->
         <div class="glass-stat-card reveal delay-1">
             <div class="stat-icon stat-icon-blue">
-                <i class="fas fa-wallet"></i>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+                    <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+                </svg>
             </div>
             <div class="stat-label">Saldo Kas RT Saat Ini</div>
             <div class="stat-val text-primary" style="color: #38bdf8 !important;">
@@ -1207,17 +1818,227 @@
             </div>
         </div>
 
-        <!-- Scroll Down Hint -->
-        <div class="scroll-down-hint" onclick="document.querySelector('.stats-grid').scrollIntoView({behavior:'smooth'})">
-            <span>Scroll</span>
-            <i class="fas fa-chevron-down"></i>
-        </div>
     </section>
 
     <!-- 4. FEATURE SHOWCASE (FITUR SEKILAS) -->
-    <section class="features-section reveal" id="fitur">
+    <script id="hydrogen-welcome-engine">
+        (function() {
+            function getThemePalette() {
+                var t = document.documentElement.getAttribute('data-theme') || 'dark';
+                if (t === 'light') {
+                    return { dot: 'rgba(2, 132, 199, 0.42)', line: 'rgba(37, 99, 235, ', alpha: 0.14 };
+                }
+                if (t === 'twilight') {
+                    return { dot: 'rgba(251, 191, 36, 0.45)', line: 'rgba(56, 189, 248, ', alpha: 0.17 };
+                }
+                return { dot: 'rgba(56, 189, 248, 0.58)', line: 'rgba(56, 189, 248, ', alpha: 0.19 };
+            }
+
+            function initHydrogenWelcome() {
+                // 1. Top Scroll Progress Bar
+                var bar = document.getElementById('scroll-progress-bar');
+                if (bar) {
+                    var updateBar = function() {
+                        var docH = document.documentElement.scrollHeight - window.innerHeight;
+                        var pct = docH > 0 ? Math.min(100, Math.max(0, (window.scrollY / docH) * 100)) : 0;
+                        bar.style.width = pct.toFixed(1) + '%';
+                    };
+                    window.addEventListener('scroll', updateBar, { passive: true });
+                    updateBar();
+                }
+
+                // 2. Hydrogen Interactive Particle Constellation Canvas
+                var canvas = document.getElementById('hydrogen-canvas');
+                if (canvas && canvas.getContext) {
+                    var ctx = canvas.getContext('2d');
+                    var w = 0, h = 0;
+                    var mouse = { x: -9999, y: -9999 };
+                    var count = window.innerWidth < 768 ? 20 : 46;
+                    var pts = [];
+                    var palette = getThemePalette();
+
+                    var obs = new MutationObserver(function() {
+                        palette = getThemePalette();
+                    });
+                    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+                    function resizeCanvas() {
+                        w = canvas.width = window.innerWidth;
+                        h = canvas.height = window.innerHeight;
+                    }
+                    resizeCanvas();
+                    window.addEventListener('resize', resizeCanvas, { passive: true });
+                    document.addEventListener('mousemove', function(e) {
+                        mouse.x = e.clientX;
+                        mouse.y = e.clientY;
+                    }, { passive: true });
+
+                    for (var i = 0; i < count; i++) {
+                        pts.push({
+                            x: Math.random() * (w || 1280),
+                            y: Math.random() * (h || 800),
+                            vx: (Math.random() - 0.5) * 0.48,
+                            vy: (Math.random() - 0.5) * 0.48,
+                            r: 1.4 + Math.random() * 1.9
+                        });
+                    }
+
+                    function animateCanvas() {
+                        ctx.clearRect(0, 0, w, h);
+                        for (var i = 0; i < pts.length; i++) {
+                            var p = pts[i];
+                            p.x += p.vx;
+                            p.y += p.vy;
+                            if (p.x < 0 || p.x > w) p.vx *= -1;
+                            if (p.y < 0 || p.y > h) p.vy *= -1;
+
+                            var dxm = p.x - mouse.x, dym = p.y - mouse.y;
+                            var dm = Math.sqrt(dxm * dxm + dym * dym);
+                            if (dm < 145 && dm > 1) {
+                                p.x += (dxm / dm) * 0.65;
+                                p.y += (dym / dm) * 0.65;
+                            }
+
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                            ctx.fillStyle = palette.dot;
+                            ctx.fill();
+
+                            for (var j = i + 1; j < pts.length; j++) {
+                                var q = pts[j];
+                                var dx = p.x - q.x, dy = p.y - q.y;
+                                var dist = Math.sqrt(dx * dx + dy * dy);
+                                if (dist < 135) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(p.x, p.y);
+                                    ctx.lineTo(q.x, q.y);
+                                    ctx.strokeStyle = palette.line + ((1 - dist / 135) * palette.alpha).toFixed(3) + ')';
+                                    ctx.lineWidth = 1;
+                                    ctx.stroke();
+                                }
+                            }
+                        }
+                        requestAnimationFrame(animateCanvas);
+                    }
+                    animateCanvas();
+                }
+
+                // 3. Spotlight Radial Glow & Subtle 3D Tilt on Cards
+                var isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+                document.querySelectorAll('.glass-stat-card, .feature-card, .hero-showcase-card').forEach(function(card) {
+                    if (isTouch) return;
+                    card.addEventListener('mousemove', function(e) {
+                        var rect = card.getBoundingClientRect();
+                        var x = e.clientX - rect.left;
+                        var y = e.clientY - rect.top;
+                        card.style.setProperty('--mx', x + 'px');
+                        card.style.setProperty('--my', y + 'px');
+                        var rx = ((y / rect.height) - 0.5) * -5;
+                        var ry = ((x / rect.width) - 0.5) * 5;
+                        card.style.transform = 'perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) translateY(-4px)';
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        card.style.transform = '';
+                    });
+                });
+
+                // 4. Upgrade All Stat Card Icons with Crisp SVG Fallbacks & Animated Halo
+                var statSvgs = [
+                    null, // Card 1 already uses custom wallet SVG
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 19h14"/></svg>',
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l1.5-3 2 6 1.5-3h5.28"/></svg>'
+                ];
+                document.querySelectorAll('.stats-grid .glass-stat-card .stat-icon').forEach(function(iconBox, idx) {
+                    if (idx > 0 && statSvgs[idx]) {
+                        iconBox.innerHTML = statSvgs[idx];
+                    }
+                });
+
+                // 5. Upgrade Feature Card Icons into Crisp Custom SVG Artworks (matching exact 6 cards)
+                var featureArtworks = [
+                    '<svg width="32" height="32" viewBox="0 0 36 36" fill="none"><rect x="4" y="20" width="5" height="10" rx="2" fill="#34d399"/><rect x="12" y="14" width="5" height="16" rx="2" fill="#38bdf8"/><rect x="20" y="9" width="5" height="21" rx="2" fill="#a7f3d0"/><path d="M5 14L13 8L21 11L31 4" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                    '<svg width="32" height="32" viewBox="0 0 36 36" fill="none"><path d="M29 19c2.2-2.2 4-4.7 4-8a7 7 0 0 0-12.5-4.3L18 9.5l-2.5-2.8A7 7 0 0 0 3 11c0 3.3 1.8 5.8 4 8l11 11 11-11Z" stroke="#ffffff" stroke-width="2" fill="rgba(255,255,255,0.16)"/><path d="M8 18h5l2.5-5 3.5 9 2.5-4h6" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                    '<svg width="32" height="32" viewBox="0 0 36 36" fill="none"><circle cx="14" cy="12" r="4.5" stroke="#ffffff" stroke-width="2.2"/><path d="M5.5 29c0-4.4 3.8-8 8.5-8s8.5 3.6 8.5 8" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/><circle cx="26" cy="14" r="3" stroke="#bae6fd" stroke-width="2"/><path d="M25.5 21.5c3 .5 5.5 3 5.5 6.5" stroke="#bae6fd" stroke-width="2" stroke-linecap="round"/></svg>',
+                    '<svg width="32" height="32" viewBox="0 0 36 36" fill="none"><rect x="6" y="5" width="24" height="26" rx="4" stroke="#ffffff" stroke-width="2.2" fill="rgba(255,255,255,0.12)"/><path d="M12 13h12M12 19h10M12 25h6" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/><circle cx="27" cy="26" r="5" fill="#34d399"/><path d="M24.8 26l1.5 1.5 3-3" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                    '<svg width="32" height="32" viewBox="0 0 36 36" fill="none"><path d="M18 5l5 8h-4v7h-2v-7h-4l5-8Z" fill="#ffffff"/><path d="M8 25l-3-5 5-1 1.5 2.5 5-3 1 1.8-6.5 4.2-3 .5ZM28 25l3-5-5-1-1.5 2.5-5-3-1 1.8 6.5 4.2 3 .5Z" fill="#ccfbf1"/><path d="M11 29h14" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/></svg>',
+                    '<svg width="32" height="32" viewBox="0 0 36 36" fill="none"><path d="M6 12l12-6 12 6v14l-12 6-12-6V12Z" stroke="#ffffff" stroke-width="2.2" fill="rgba(255,255,255,0.14)"/><path d="M6 12l12 6 12-6M18 18v14" stroke="#ffffff" stroke-width="2"/></svg>'
+                ];
+                document.querySelectorAll('.features-grid .feature-card').forEach(function(card, idx) {
+                    var iconWrap = card.querySelector('.feature-icon-wrapper, .feature-icon');
+                    if (iconWrap && featureArtworks[idx]) {
+                        iconWrap.innerHTML = featureArtworks[idx];
+                    }
+                });
+
+                // 6. Smooth Number Count-Up Animation on Scroll
+                if ('IntersectionObserver' in window) {
+                    var counted = new WeakSet();
+                    var countObserver = new IntersectionObserver(function(entries) {
+                        entries.forEach(function(entry) {
+                            if (!entry.isIntersecting || counted.has(entry.target)) return;
+                            counted.add(entry.target);
+                            var el = entry.target;
+                            // Preserve child span suffix if present (e.g. "9 Jiwa", "1 Balita")
+                            var suffixSpan = el.querySelector('span');
+                            if (suffixSpan) {
+                                var firstNode = el.firstChild;
+                                var numVal = firstNode ? parseInt((firstNode.textContent || '').replace(/\D/g, ''), 10) : 0;
+                                if (!numVal || numVal <= 0) return;
+                                var durShort = 900;
+                                var t0 = performance.now();
+                                function stepShort(now) {
+                                    var p = Math.min(1, (now - t0) / durShort);
+                                    var ease = 1 - Math.pow(1 - p, 4);
+                                    if (firstNode) firstNode.textContent = Math.round(numVal * ease) + ' ';
+                                    if (p < 1) requestAnimationFrame(stepShort);
+                                    else if (firstNode) firstNode.textContent = numVal + ' ';
+                                }
+                                requestAnimationFrame(stepShort);
+                                return;
+                            }
+                            var raw = el.textContent.trim();
+                            var match = raw.match(/^(Rp\s*)?([0-9][0-9.]*)(.*)$/);
+                            if (!match) return;
+                            var prefix = match[1] || '';
+                            var target = parseInt(match[2].replace(/\./g, ''), 10);
+                            var suffix = match[3] || '';
+                            if (!target || target <= 0) return;
+
+                            var duration = 1100;
+                            var start = performance.now();
+                            function step(now) {
+                                var p = Math.min(1, (now - start) / duration);
+                                var ease = 1 - Math.pow(1 - p, 4);
+                                var val = Math.round(target * ease);
+                                el.textContent = prefix + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + suffix;
+                                if (p < 1) {
+                                    requestAnimationFrame(step);
+                                } else {
+                                    el.textContent = raw;
+                                }
+                            }
+                            requestAnimationFrame(step);
+                        });
+                    }, { threshold: 0.35 });
+
+                    document.querySelectorAll('.stats-grid .stat-val, .stats-grid .stat-value').forEach(function(el) {
+                        countObserver.observe(el);
+                    });
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initHydrogenWelcome);
+            } else {
+                initHydrogenWelcome();
+            }
+        })();
+    </script>
+
+    <section class="features-section reveal" id="ekosistem">
         <div class="section-header">
-            <div class="section-badge">SEKILAS FITUR UTAMA</div>
+            <div class="section-badge">EKOSISTEM SMART RT</div>
             <h2 class="section-title">Teknologi Cerdas untuk Kemajuan Lingkungan RT</h2>
             <p class="section-subtitle">
                 E-KASRT dirancang khusus mempermudah tugas pengurus RT dan memberikan rasa aman bagi seluruh warga melalui transparansi digital.
@@ -1328,11 +2149,6 @@
             </div>
         </div>
 
-        <!-- Scroll Down Hint -->
-        <div class="scroll-down-hint" onclick="document.querySelector('.stats-grid').scrollIntoView({behavior:'smooth'})">
-            <span>Scroll</span>
-            <i class="fas fa-chevron-down"></i>
-        </div>
     </section>
 
     <!-- 5. CALL TO ACTION BOX -->
@@ -1717,9 +2533,12 @@
             if (irisR) irisR.setAttribute('fill', t.light);
             if (antDot) antDot.setAttribute('fill', t.light);
 
-            // 11. KasBot SVG drop shadow
+            // 11. KasBot SVG drop shadow & 3D character theme broadcast
             var svg = document.getElementById('kasbot-svg');
             if (svg) svg.style.filter = 'drop-shadow(0 8px 24px ' + t.accent + '99)';
+            try {
+                window.dispatchEvent(new CustomEvent('kasbot:theme', { detail: t }));
+            } catch (e) {}
         }
 
         function triggerFlash(t) {
@@ -1958,9 +2777,11 @@
         </div>
 
         <!-- Inner wrapper — isolates CSS tap animations from physics transform -->
-        <div id="kasbot-inner">
-        <!-- SVG Robot -->
-        <svg id="kasbot-svg" width="96" height="120" viewBox="0 0 96 120" xmlns="http://www.w3.org/2000/svg">
+        <div id="kasbot-inner" style="position:relative; width:128px; height:148px;">
+        <!-- Real-Time Three.js 3D Character Canvas for KasBot -->
+        <canvas id="kasbot-3d-canvas" width="128" height="148" style="display:block; width:128px; height:148px; pointer-events:none; position:relative; z-index:2; filter:drop-shadow(0 12px 26px rgba(2,132,199,0.5));"></canvas>
+        <!-- SVG Robot (instant paint & WebGL fallback) -->
+        <svg id="kasbot-svg" width="96" height="120" viewBox="0 0 96 120" xmlns="http://www.w3.org/2000/svg" style="position:absolute; left:16px; top:14px; z-index:1; pointer-events:none; transition:opacity 0.35s ease;">
             <defs>
                 <linearGradient id="kbBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%"   stop-color="#0ea5e9"/>
@@ -2091,33 +2912,42 @@
         var armL    = document.getElementById('kb-arm-l');
         var armR    = document.getElementById('kb-arm-r');
 
-        var W = 96, H = 120;
+        var W = 128, H = 148;
 
         /* ══════════════════════════════════════════
            ZERO-GRAVITY PHYSICS ENGINE
         ══════════════════════════════════════════ */
         var px, py, vx, vy, rotation = 0, angVel = 0;
         var DAMPING = 0.995, BOUNCE = 0.72, ANG_DAMP = 0.97;
-        var physicsRunning = true; // ← BUG FIX: was missing → loop returned immediately
+        var physicsRunning = true;
         var isDragging = false;
         var tapCount = 0, isSleeping = false;
         var sleepTimer = null, bubbleTimer = null, faceTimer = null;
         var msgIdx = 0;
 
-        px = window.innerWidth  / 2 - W / 2;
-        py = window.innerHeight / 2 - H / 2;
-        vx = (Math.random() - 0.5) * 2.5;
-        vy = (Math.random() - 0.5) * 2.5;
-        angVel = (Math.random() - 0.5) * 0.6;
+        // Safe bottom-left spawn — use clientHeight for reliable VH, clamp to safe zone
+        var _vw = document.documentElement.clientWidth  || window.innerWidth  || 1024;
+        var _vh = document.documentElement.clientHeight || window.innerHeight || 768;
+        px = Math.max(20, Math.min(64, _vw * 0.04));
+        py = Math.max(200, _vh - H - 36);
+        vx = 0.65;
+        vy = -0.35;
+        angVel = 0;
 
-        // KEY FIX: position via left/top (NOT transform) so wrap.style.transform
-        // is free for rotation ONLY — and inner is NEVER touched by JS inline style,
-        // so CSS animations on inner (.tap-burst, .squash-x, .spin) run without conflict.
+        window.__kbPhysicsState = { px: px, py: py, vx: vx, vy: vy, isSleeping: false, face: 'normal', drag: false };
+
         function applyTransform() {
             wrap.style.left      = Math.round(px) + 'px';
             wrap.style.top       = Math.round(py) + 'px';
             wrap.style.transform = 'rotate(' + rotation.toFixed(2) + 'deg)';
-            // inner is NEVER set here — CSS animations own inner's transform
+            if (window.__kbPhysicsState) {
+                window.__kbPhysicsState.px = px;
+                window.__kbPhysicsState.py = py;
+                window.__kbPhysicsState.vx = vx;
+                window.__kbPhysicsState.vy = vy;
+                window.__kbPhysicsState.isSleeping = isSleeping;
+                window.__kbPhysicsState.drag = isDragging;
+            }
         }
         applyTransform();
 
@@ -2555,7 +3385,7 @@
         /* ── GREET on load ── */
         setTimeout(function() {
             setFace('happy', 3000);
-            showBubble('👋 Hai! Aku KasBot!\nAku bebas melayang~\nTap aku dong! 🤖', 4500);
+            showBubble('👋 Hai! Aku KasBot 3D!\nAku melayang di sini~\nTap & lempar aku ya! 🤖', 4500);
             waveArms();
             resetSleepTimer();
         }, 1000);
@@ -2564,5 +3394,866 @@
     </script>
     {{-- ===== END KASBOT MASCOT ===== --}}
 
+    {{-- ===== REAL-TIME THREE.JS 3D CHARACTERS ENGINE (HERO & KASBOT 3D) ===== --}}
+    <script id="ekasrt-3d-characters">
+    (function() {
+        var pointerNorm = { x: 0, y: 0, clientX: window.innerWidth * 0.5, clientY: window.innerHeight * 0.5 };
+        document.addEventListener('mousemove', function(e) {
+            pointerNorm.clientX = e.clientX;
+            pointerNorm.clientY = e.clientY;
+            pointerNorm.x = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+            pointerNorm.y = -((e.clientY / Math.max(1, window.innerHeight)) * 2 - 1);
+        }, { passive: true });
+
+        function hexStringToInt(hex, fallback) {
+            if (!hex || typeof hex !== 'string') return fallback;
+            var clean = hex.replace('#', '').trim();
+            var parsed = parseInt(clean, 16);
+            return isNaN(parsed) ? fallback : parsed;
+        }
+
+        function buildEkBotRig(THREE, opts) {
+            opts = opts || {};
+            var accentHex = opts.accentHex || 0x0284c7;
+            var lightHex  = opts.lightHex  || 0x38bdf8;
+            var emeraldHex = 0x34d399;
+
+            var sceneGroup = new THREE.Group();
+            var robotGroup = new THREE.Group();
+            sceneGroup.add(robotGroup);
+
+            // Shared PBR Materials
+            var armorMat = new THREE.MeshStandardMaterial({
+                color: 0xf1f5f9,
+                metalness: 0.28,
+                roughness: 0.22
+            });
+            var trimMat = new THREE.MeshStandardMaterial({
+                color: accentHex,
+                emissive: accentHex,
+                emissiveIntensity: 0.35,
+                metalness: 0.45,
+                roughness: 0.25
+            });
+            var darkMetalMat = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                metalness: 0.65,
+                roughness: 0.3
+            });
+            var visorMat = new THREE.MeshStandardMaterial({
+                color: 0x061021,
+                emissive: 0x030c1a,
+                metalness: 0.72,
+                roughness: 0.14
+            });
+            var neonMat = new THREE.MeshStandardMaterial({
+                color: 0xe0f2fe,
+                emissive: lightHex,
+                emissiveIntensity: 1.5,
+                roughness: 0.18
+            });
+            var eyeMatL = neonMat.clone();
+            var eyeMatR = neonMat.clone();
+            var mouthMat = new THREE.MeshStandardMaterial({
+                color: 0xd1fae5,
+                emissive: emeraldHex,
+                emissiveIntensity: 1.35,
+                roughness: 0.2
+            });
+            var blushMat = new THREE.MeshStandardMaterial({
+                color: 0xfb7185,
+                emissive: 0xf43f5e,
+                emissiveIntensity: 0.75,
+                transparent: true,
+                opacity: 0
+            });
+            var flameMat = new THREE.MeshBasicMaterial({
+                color: lightHex,
+                transparent: true,
+                opacity: 0.78
+            });
+
+            // ── TORSO ──
+            var torsoGroup = new THREE.Group();
+            robotGroup.add(torsoGroup);
+
+            var torsoCore = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.35, 0.66, 28), armorMat);
+            torsoCore.position.y = 0.0;
+            torsoGroup.add(torsoCore);
+
+            var torsoTopDome = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 16), armorMat);
+            torsoTopDome.scale.set(1, 0.44, 1);
+            torsoTopDome.position.y = 0.32;
+            torsoGroup.add(torsoTopDome);
+
+            var torsoBottomDome = new THREE.Mesh(new THREE.SphereGeometry(0.35, 24, 16), darkMetalMat);
+            torsoBottomDome.scale.set(1, 0.48, 1);
+            torsoBottomDome.position.y = -0.32;
+            torsoGroup.add(torsoBottomDome);
+
+            var beltRing = new THREE.Mesh(new THREE.TorusGeometry(0.37, 0.032, 12, 32), trimMat);
+            beltRing.rotation.x = Math.PI / 2;
+            beltRing.position.y = -0.18;
+            torsoGroup.add(beltRing);
+
+            // Chest Glass Panel & Tri-LEDs
+            var chestPlate = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.25, 0.08), darkMetalMat);
+            chestPlate.position.set(0, 0.06, 0.36);
+            torsoGroup.add(chestPlate);
+
+            var chestHex = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.04, 6), neonMat);
+            chestHex.rotation.x = Math.PI / 2;
+            chestHex.position.set(0, 0.11, 0.405);
+            torsoGroup.add(chestHex);
+
+            var chestLeds = [];
+            var ledColors = [0x34d399, 0x38bdf8, 0x818cf8];
+            for (var li = 0; li < 3; li++) {
+                var ledMat = new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                    emissive: ledColors[li],
+                    emissiveIntensity: 1.3
+                });
+                var ledMesh = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 12), ledMat);
+                ledMesh.position.set(-0.11 + li * 0.11, -0.005, 0.41);
+                torsoGroup.add(ledMesh);
+                chestLeds.push({ mesh: ledMesh, mat: ledMat, baseColor: ledColors[li] });
+            }
+
+            // Back Dual Jetpack & Thruster Flames
+            var flames = [];
+            [-0.17, 0.17].forEach(function(px) {
+                var pod = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.125, 0.42, 16), darkMetalMat);
+                pod.position.set(px, 0.02, -0.37);
+                pod.rotation.x = 0.12;
+                torsoGroup.add(pod);
+
+                var nozzleRing = new THREE.Mesh(new THREE.TorusGeometry(0.095, 0.02, 8, 16), trimMat);
+                nozzleRing.rotation.x = Math.PI / 2 + 0.12;
+                nozzleRing.position.set(px, -0.18, -0.39);
+                torsoGroup.add(nozzleRing);
+
+                var flame = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.28, 12), flameMat);
+                flame.rotation.x = Math.PI;
+                flame.position.set(px, -0.34, -0.41);
+                torsoGroup.add(flame);
+                flames.push(flame);
+            });
+
+            // ── HEAD & VISOR ──
+            var headGroup = new THREE.Group();
+            headGroup.position.y = 0.72;
+            robotGroup.add(headGroup);
+
+            var neck = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.16, 0.2, 16), darkMetalMat);
+            neck.position.y = -0.26;
+            headGroup.add(neck);
+
+            var helmet = new THREE.Mesh(new THREE.SphereGeometry(0.56, 32, 24), armorMat);
+            helmet.scale.set(1.16, 0.88, 0.96);
+            helmet.position.y = 0.06;
+            headGroup.add(helmet);
+
+            var visor = new THREE.Mesh(new THREE.SphereGeometry(0.51, 32, 24), visorMat);
+            visor.scale.set(1.06, 0.72, 0.74);
+            visor.position.set(0, 0.04, 0.18);
+            headGroup.add(visor);
+
+            var visorRim = new THREE.Mesh(new THREE.TorusGeometry(0.49, 0.024, 10, 36), trimMat);
+            visorRim.scale.set(1.06, 0.78, 0.65);
+            visorRim.position.set(0, 0.04, 0.36);
+            headGroup.add(visorRim);
+
+            // Ear Headphones / Comms Pods
+            [-0.65, 0.65].forEach(function(ex) {
+                var earCup = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.11, 20), trimMat);
+                earCup.rotation.z = Math.PI / 2;
+                earCup.position.set(ex, 0.05, 0.0);
+                headGroup.add(earCup);
+
+                var earRing = new THREE.Mesh(new THREE.TorusGeometry(0.125, 0.02, 8, 24), neonMat);
+                earRing.rotation.y = Math.PI / 2;
+                earRing.position.set(ex > 0 ? ex + 0.058 : ex - 0.058, 0.05, 0.0);
+                headGroup.add(earRing);
+            });
+
+            // Antenna
+            var antennaStem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.032, 0.32, 12), darkMetalMat);
+            antennaStem.position.set(0, 0.64, 0);
+            headGroup.add(antennaStem);
+
+            var antennaBulb = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), neonMat);
+            antennaBulb.position.set(0, 0.82, 0);
+            headGroup.add(antennaBulb);
+
+            // ── 3D EXPRESSIVE FACE ──
+            var faceGroup = new THREE.Group();
+            faceGroup.position.set(0, 0.03, 0.54);
+            headGroup.add(faceGroup);
+
+            var eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.088, 20, 16), eyeMatL);
+            eyeL.scale.set(0.95, 1.32, 0.42);
+            eyeL.position.set(-0.20, 0.045, 0);
+            faceGroup.add(eyeL);
+
+            var eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.088, 20, 16), eyeMatR);
+            eyeR.scale.set(0.95, 1.32, 0.42);
+            eyeR.position.set(0.20, 0.045, 0);
+            faceGroup.add(eyeR);
+
+            var pupilDotMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            var pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.025, 10, 10), pupilDotMat);
+            pupilL.position.set(-0.18, 0.08, 0.035);
+            faceGroup.add(pupilL);
+            var pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.025, 10, 10), pupilDotMat);
+            pupilR.position.set(0.22, 0.08, 0.035);
+            faceGroup.add(pupilR);
+
+            var mouth = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.022, 10, 24, Math.PI * 0.78), mouthMat);
+            mouth.rotation.z = Math.PI + (Math.PI - Math.PI * 0.78) / 2;
+            mouth.position.set(0, -0.05, 0.015);
+            faceGroup.add(mouth);
+
+            var blushL = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), blushMat);
+            blushL.scale.set(1.35, 0.7, 0.35);
+            blushL.position.set(-0.31, -0.04, -0.01);
+            faceGroup.add(blushL);
+
+            var blushR = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), blushMat);
+            blushR.scale.set(1.35, 0.7, 0.35);
+            blushR.position.set(0.31, -0.04, -0.01);
+            faceGroup.add(blushR);
+
+            // Sunglasses prop for 'cool' mood
+            var shadesGroup = new THREE.Group();
+            shadesGroup.visible = false;
+            var lensMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, emissive: 0x1e293b, metalness: 0.9, roughness: 0.08 });
+            var lensL = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.11, 0.04), lensMat);
+            lensL.position.set(-0.19, 0.045, 0.045);
+            var lensR = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.11, 0.04), lensMat);
+            lensR.position.set(0.19, 0.045, 0.045);
+            var bridge = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.028, 0.035), trimMat);
+            bridge.position.set(0, 0.06, 0.045);
+            shadesGroup.add(lensL, lensR, bridge);
+            faceGroup.add(shadesGroup);
+
+            // ── ARTICULATED ARMS ──
+            function makeArm(side) {
+                var pivot = new THREE.Group();
+                pivot.position.set(side * 0.52, 0.18, 0);
+
+                var shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.105, 16, 12), trimMat);
+                pivot.add(shoulder);
+
+                var armTube = new THREE.Mesh(new THREE.CylinderGeometry(0.088, 0.08, 0.30, 16), armorMat);
+                armTube.position.y = -0.18;
+                pivot.add(armTube);
+
+                var hand = new THREE.Mesh(new THREE.SphereGeometry(0.105, 16, 14), darkMetalMat);
+                hand.position.y = -0.35;
+                pivot.add(hand);
+
+                var palmGlow = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), neonMat);
+                palmGlow.position.set(0, -0.36, 0.07);
+                pivot.add(palmGlow);
+
+                return pivot;
+            }
+            var armL = makeArm(-1);
+            var armR = makeArm(1);
+            robotGroup.add(armL, armR);
+
+            // ── ARTICULATED LEGS & HOVER BOOTS ──
+            function makeLeg(side) {
+                var pivot = new THREE.Group();
+                pivot.position.set(side * 0.19, -0.36, 0);
+
+                var thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.08, 0.22, 14), darkMetalMat);
+                thigh.position.y = -0.11;
+                pivot.add(thigh);
+
+                var boot = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.13, 0.20, 16), armorMat);
+                boot.position.y = -0.28;
+                pivot.add(boot);
+
+                var soleGlow = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.022, 8, 22), neonMat);
+                soleGlow.rotation.x = Math.PI / 2;
+                soleGlow.position.y = -0.38;
+                pivot.add(soleGlow);
+
+                return pivot;
+            }
+            var legL = makeLeg(-1);
+            var legR = makeLeg(1);
+            robotGroup.add(legL, legR);
+
+            // ── HERO PROPS (Pedestal Hologram Rings + Orbiting Gold Kas Coin & e-KTP Badge) ──
+            var props = null;
+            if (opts.withProps) {
+                var pedGroup = new THREE.Group();
+                pedGroup.position.y = -0.94;
+                sceneGroup.add(pedGroup);
+
+                var holoRing1 = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.022, 10, 48), neonMat);
+                holoRing1.rotation.x = Math.PI / 2;
+                pedGroup.add(holoRing1);
+
+                var holoRing2 = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.018, 10, 40), trimMat);
+                holoRing2.rotation.x = Math.PI / 2;
+                pedGroup.add(holoRing2);
+
+                var holoDisc = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.88, 0.88, 0.02, 36),
+                    new THREE.MeshBasicMaterial({ color: lightHex, transparent: true, opacity: 0.14 })
+                );
+                pedGroup.add(holoDisc);
+
+                // Orbiting 3D Golden Kas Coin
+                var coinPivot = new THREE.Group();
+                sceneGroup.add(coinPivot);
+                var coinSpinGroup = new THREE.Group();
+                coinSpinGroup.position.set(-1.32, 0.35, 0.18);
+                var coinMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xd97706, emissiveIntensity: 0.38, metalness: 0.75, roughness: 0.2 });
+                var coinMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.055, 28), coinMat);
+                coinMesh.rotation.x = Math.PI / 2;
+                var coinRim = new THREE.Mesh(new THREE.TorusGeometry(0.21, 0.02, 8, 24), new THREE.MeshStandardMaterial({ color: 0xfef3c7, emissive: 0xf59e0b, emissiveIntensity: 0.6 }));
+                coinSpinGroup.add(coinMesh, coinRim);
+                coinPivot.add(coinSpinGroup);
+
+                // Orbiting 3D Smart RFID e-KTP Card
+                var cardPivot = new THREE.Group();
+                sceneGroup.add(cardPivot);
+                var cardGroup = new THREE.Group();
+                cardGroup.position.set(1.34, 0.22, 0.18);
+                var cardBody = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.42, 0.27, 0.036),
+                    new THREE.MeshStandardMaterial({ color: 0x0ea5e9, emissive: 0x0369a1, emissiveIntensity: 0.55, metalness: 0.35, roughness: 0.25 })
+                );
+                var cardChip = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.09, 0.075, 0.044),
+                    coinMat
+                );
+                cardChip.position.set(-0.10, 0.015, 0);
+                cardGroup.add(cardBody, cardChip);
+                cardPivot.add(cardGroup);
+
+                props = {
+                    holoRing1: holoRing1,
+                    holoRing2: holoRing2,
+                    holoDisc: holoDisc,
+                    coinPivot: coinPivot,
+                    coinSpinGroup: coinSpinGroup,
+                    cardPivot: cardPivot,
+                    cardGroup: cardGroup
+                };
+            }
+
+            // Apply Face Expression
+            function applyMood(mood) {
+                mood = mood || 'normal';
+                shadesGroup.visible = (mood === 'cool');
+                blushMat.opacity = (mood === 'happy' || mood === 'excited' || mood === 'love') ? 0.62 : 0;
+
+                var c = lightHex;
+                if (mood === 'happy') c = 0x34d399;
+                else if (mood === 'excited') c = 0xfbbf24;
+                else if (mood === 'love' || mood === 'surprised') c = 0xf472b6;
+                else if (mood === 'dizzy') c = 0xa78bfa;
+                else if (mood === 'sad') c = 0x94a3b8;
+
+                eyeMatL.emissive.setHex(c);
+                eyeMatR.emissive.setHex(c);
+
+                if (mood === 'sleeping') {
+                    eyeL.scale.set(1.1, 0.14, 0.42);
+                    eyeR.scale.set(1.1, 0.14, 0.42);
+                    pupilL.visible = false;
+                    pupilR.visible = false;
+                    mouth.scale.set(0.75, 0.6, 1);
+                    mouth.rotation.z = Math.PI + (Math.PI - Math.PI * 0.78) / 2;
+                } else if (mood === 'surprised') {
+                    eyeL.scale.set(1.18, 1.52, 0.42);
+                    eyeR.scale.set(1.18, 1.52, 0.42);
+                    pupilL.visible = true;
+                    pupilR.visible = true;
+                    mouth.scale.set(0.55, 1.15, 1);
+                    mouth.rotation.z = (Math.PI - Math.PI * 0.78) / 2;
+                } else if (mood === 'sad') {
+                    eyeL.scale.set(0.9, 1.05, 0.42);
+                    eyeR.scale.set(0.9, 1.05, 0.42);
+                    pupilL.visible = true;
+                    pupilR.visible = true;
+                    mouth.scale.set(0.95, 0.9, 1);
+                    mouth.rotation.z = (Math.PI - Math.PI * 0.78) / 2; // upside down frown
+                } else {
+                    eyeL.scale.set(0.95, 1.32, 0.42);
+                    eyeR.scale.set(0.95, 1.32, 0.42);
+                    pupilL.visible = (mood !== 'cool');
+                    pupilR.visible = (mood !== 'cool');
+                    mouth.scale.set(mood === 'happy' || mood === 'excited' || mood === 'love' ? 1.18 : 1.0, 1, 1);
+                    mouth.rotation.z = Math.PI + (Math.PI - Math.PI * 0.78) / 2;
+                }
+            }
+
+            function setThemeColors(accentStr, lightStr) {
+                accentHex = hexStringToInt(accentStr, 0x0284c7);
+                lightHex  = hexStringToInt(lightStr,  0x38bdf8);
+                trimMat.color.setHex(accentHex);
+                trimMat.emissive.setHex(accentHex);
+                neonMat.emissive.setHex(lightHex);
+                flameMat.color.setHex(lightHex);
+                if (props && props.holoDisc) {
+                    props.holoDisc.material.color.setHex(lightHex);
+                }
+            }
+
+            return {
+                sceneGroup: sceneGroup,
+                robotGroup: robotGroup,
+                headGroup: headGroup,
+                armL: armL,
+                armR: armR,
+                legL: legL,
+                legR: legR,
+                eyeL: eyeL,
+                eyeR: eyeR,
+                antennaBulb: antennaBulb,
+                flames: flames,
+                chestLeds: chestLeds,
+                props: props,
+                applyMood: applyMood,
+                setThemeColors: setThemeColors
+            };
+        }
+
+        function boot3DCharacters(THREE) {
+            // ── STAGE 1: HERO 3D GUARDIAN CHARACTER ──
+            var heroCanvas = document.getElementById('hero3dCanvas');
+            var heroWrap = document.getElementById('hero3dStageWrap');
+            var heroFallback = document.getElementById('hero3dFallback');
+
+            if (heroCanvas && heroWrap) {
+                try {
+                    var hScene = new THREE.Scene();
+                    var hW = heroWrap.clientWidth || 280;
+                    var hH = heroWrap.clientHeight || 186;
+                    var hCam = new THREE.PerspectiveCamera(36, hW / hH, 0.1, 50);
+                    hCam.position.set(0, 0.22, 4.9);
+                    hCam.lookAt(0, 0.12, 0);
+
+                    var hRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+                    hRenderer.setClearColor(0x000000, 0);
+                    hRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                    hRenderer.setSize(hW, hH, false);
+
+                    hScene.add(new THREE.HemisphereLight(0xe0f2fe, 0x0f172a, 0.95));
+                    var hKey = new THREE.DirectionalLight(0xffffff, 1.35);
+                    hKey.position.set(3, 5, 4);
+                    hScene.add(hKey);
+                    var hRim1 = new THREE.PointLight(0x38bdf8, 1.65, 12);
+                    hRim1.position.set(-3, 2, 3);
+                    hScene.add(hRim1);
+                    var hRim2 = new THREE.PointLight(0x34d399, 1.25, 10);
+                    hRim2.position.set(3, 1.2, -2.5);
+                    hScene.add(hRim2);
+
+                    var hRig = buildEkBotRig(THREE, { withProps: true });
+                    hScene.add(hRig.sceneGroup);
+
+                    var heroState = {
+                        mode: 'idle',
+                        spinTarget: 0,
+                        spinAngle: 0,
+                        jumpT: 0,
+                        manualYaw: 0,
+                        dragging: false,
+                        lastX: 0,
+                        moved: false,
+                        visible: true,
+                        blinkTimer: 2.5
+                    };
+
+                    if ('IntersectionObserver' in window) {
+                        new IntersectionObserver(function(entries) {
+                            heroState.visible = entries[0].isIntersecting;
+                        }, { threshold: 0.05 }).observe(heroWrap);
+                    }
+
+                    window.addEventListener('resize', function() {
+                        var w = heroWrap.clientWidth || 280;
+                        var h = heroWrap.clientHeight || 186;
+                        hCam.aspect = w / Math.max(1, h);
+                        hCam.updateProjectionMatrix();
+                        hRenderer.setSize(w, h, false);
+                    }, { passive: true });
+
+                    heroWrap.addEventListener('pointerdown', function(e) {
+                        heroState.dragging = true;
+                        heroState.lastX = e.clientX;
+                        heroState.moved = false;
+                    });
+                    document.addEventListener('pointermove', function(e) {
+                        if (!heroState.dragging) return;
+                        var dx = e.clientX - heroState.lastX;
+                        if (Math.abs(dx) > 3) heroState.moved = true;
+                        heroState.manualYaw += dx * 0.015;
+                        heroState.lastX = e.clientX;
+                    }, { passive: true });
+                    document.addEventListener('pointerup', function() {
+                        if (heroState.dragging && !heroState.moved) {
+                            HeroChar3D.spinJump();
+                        }
+                        heroState.dragging = false;
+                    });
+
+                    window.HeroChar3D = {
+                        setMode: function(mode, btn) {
+                            heroState.mode = mode;
+                            document.querySelectorAll('.hero-3d-controls .h3d-btn').forEach(function(b) {
+                                b.classList.remove('active');
+                            });
+                            if (btn) btn.classList.add('active');
+                            if (mode === 'wave') hRig.applyMood('happy');
+                            else if (mode === 'dance') hRig.applyMood('excited');
+                            else hRig.applyMood('normal');
+                        },
+                        spinJump: function() {
+                            heroState.spinTarget += Math.PI * 2;
+                            heroState.jumpT = 1.0;
+                            hRig.applyMood('excited');
+                            setTimeout(function() {
+                                if (heroState.mode === 'idle') hRig.applyMood('normal');
+                            }, 1600);
+                        }
+                    };
+
+                    window.addEventListener('kasbot:theme', function(ev) {
+                        if (!ev || !ev.detail) return;
+                        hRig.setThemeColors(ev.detail.accent, ev.detail.light);
+                        hRim1.color.setHex(hexStringToInt(ev.detail.light, 0x38bdf8));
+                    });
+
+                    var hLast = performance.now();
+                    var hFirstFrame = false;
+                    function renderHero(now) {
+                        requestAnimationFrame(renderHero);
+                        if (document.hidden || !heroState.visible) {
+                            hLast = now;
+                            return;
+                        }
+                        var dt = Math.min(0.05, (now - hLast) / 1000);
+                        hLast = now;
+                        var t = now * 0.001;
+
+                        // Gentle hover bob + jump bounce
+                        var jumpLift = 0;
+                        if (heroState.jumpT > 0) {
+                            heroState.jumpT = Math.max(0, heroState.jumpT - dt * 1.9);
+                            jumpLift = Math.sin(heroState.jumpT * Math.PI) * 0.45;
+                        }
+                        hRig.robotGroup.position.y = Math.sin(t * 2.2) * 0.07 + jumpLift;
+
+                        // Manual drag orbit + clean 360-degree spin completion
+                        heroState.spinAngle += (heroState.spinTarget - heroState.spinAngle) * 0.12;
+                        if (!heroState.dragging) {
+                            heroState.manualYaw += (Math.sin(t * 0.7) * 0.18 - heroState.manualYaw) * 0.04;
+                        }
+                        hRig.robotGroup.rotation.y = heroState.manualYaw + heroState.spinAngle;
+
+                        // Head cursor tracking
+                        var targetYaw = Math.max(-0.42, Math.min(0.42, pointerNorm.x * 0.4));
+                        var targetPitch = Math.max(-0.22, Math.min(0.25, -pointerNorm.y * 0.2));
+                        hRig.headGroup.rotation.y += (targetYaw - hRig.headGroup.rotation.y) * 0.09;
+                        hRig.headGroup.rotation.x += (targetPitch - hRig.headGroup.rotation.x) * 0.09;
+
+                        // Animated Arms & Legs by Mode
+                        if (heroState.mode === 'wave') {
+                            hRig.armR.rotation.z = 2.35 + Math.sin(t * 9.0) * 0.35;
+                            hRig.armR.rotation.x = 0.25;
+                            hRig.armL.rotation.z = -0.25 + Math.sin(t * 2.5) * 0.06;
+                            hRig.legL.rotation.x = Math.sin(t * 2.2) * 0.08;
+                            hRig.legR.rotation.x = -Math.sin(t * 2.2) * 0.08;
+                        } else if (heroState.mode === 'dance') {
+                            hRig.robotGroup.position.x = Math.sin(t * 5.0) * 0.14;
+                            hRig.robotGroup.rotation.z = Math.sin(t * 5.0) * 0.12;
+                            hRig.armL.rotation.z = -1.6 + Math.sin(t * 7.5) * 0.55;
+                            hRig.armR.rotation.z = 1.6 + Math.cos(t * 7.5) * 0.55;
+                            hRig.legL.rotation.x = Math.sin(t * 7.5) * 0.32;
+                            hRig.legR.rotation.x = -Math.sin(t * 7.5) * 0.32;
+                        } else {
+                            hRig.robotGroup.position.x *= 0.9;
+                            hRig.robotGroup.rotation.z *= 0.9;
+                            hRig.armL.rotation.z = -0.22 + Math.sin(t * 2.4) * 0.08;
+                            hRig.armR.rotation.z = 0.22 - Math.sin(t * 2.4) * 0.08;
+                            hRig.armR.rotation.x = 0;
+                            hRig.legL.rotation.x = Math.sin(t * 2.2) * 0.1;
+                            hRig.legR.rotation.x = -Math.sin(t * 2.2) * 0.1;
+                        }
+
+                        // Flicker thrusters & blink
+                        hRig.flames.forEach(function(fl, fi) {
+                            fl.scale.y = 0.78 + Math.sin(t * 24 + fi * 2) * 0.28;
+                        });
+                        hRig.chestLeds.forEach(function(ld, i) {
+                            ld.mat.emissiveIntensity = 0.6 + 0.9 * (0.5 + 0.5 * Math.sin(t * 4 - i * 1.1));
+                        });
+                        heroState.blinkTimer -= dt;
+                        if (heroState.blinkTimer <= 0) {
+                            hRig.eyeL.scale.y = 0.12;
+                            hRig.eyeR.scale.y = 0.12;
+                            if (heroState.blinkTimer <= -0.11) {
+                                hRig.eyeL.scale.y = 1.32;
+                                hRig.eyeR.scale.y = 1.32;
+                                heroState.blinkTimer = 2.4 + Math.random() * 2.8;
+                            }
+                        }
+
+                        // Animate Orbiting Props & Hologram Pedestal
+                        if (hRig.props) {
+                            hRig.props.holoRing1.rotation.z = t * 0.9;
+                            hRig.props.holoRing2.rotation.z = -t * 1.3;
+                            hRig.props.coinPivot.rotation.y = t * 0.65;
+                            hRig.props.coinSpinGroup.rotation.y = t * 2.4;
+                            hRig.props.coinSpinGroup.position.y = 0.35 + Math.sin(t * 2.6) * 0.08;
+                            hRig.props.cardPivot.rotation.y = t * 0.65 + 0.3;
+                            hRig.props.cardGroup.position.y = 0.22 + Math.cos(t * 2.6) * 0.08;
+                            hRig.props.cardGroup.rotation.y = Math.sin(t * 1.4) * 0.45;
+                        }
+
+                        hRenderer.render(hScene, hCam);
+                        if (!hFirstFrame) {
+                            hFirstFrame = true;
+                            if (heroFallback) heroFallback.style.display = 'none';
+                        }
+                    }
+                    requestAnimationFrame(renderHero);
+                } catch (err) {
+                    // Fallback SVG stays visible smoothly if WebGL unavailable
+                }
+            }
+
+            // ── STAGE 2: FLOATING KASBOT 3D MASCOT ──
+            var kbCanvas = document.getElementById('kasbot-3d-canvas');
+            var kbSvg = document.getElementById('kasbot-svg');
+            var kbInner = document.getElementById('kasbot-inner');
+            var kbIrisL = document.getElementById('kb-iris-l');
+            var kbEyeEl = document.getElementById('kb-eyes');
+            var kbArmL  = document.getElementById('kb-arm-l');
+
+            if (kbCanvas) {
+                try {
+                    var kScene = new THREE.Scene();
+                    var kCam = new THREE.PerspectiveCamera(35, 128 / 148, 0.1, 40);
+                    kCam.position.set(0, 0.28, 4.1);
+                    kCam.lookAt(0, 0.26, 0);
+
+                    var kRenderer = new THREE.WebGLRenderer({ canvas: kbCanvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+                    kRenderer.setClearColor(0x000000, 0);
+                    kRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                    kRenderer.setSize(128, 148, false);
+
+                    kScene.add(new THREE.HemisphereLight(0xe0f2fe, 0x0f172a, 1.0));
+                    var kKey = new THREE.DirectionalLight(0xffffff, 1.35);
+                    kKey.position.set(2.5, 4.5, 4);
+                    kScene.add(kKey);
+                    var kRim = new THREE.PointLight(0x38bdf8, 1.6, 10);
+                    kRim.position.set(-2.5, 1.5, 2.5);
+                    kScene.add(kRim);
+
+                    var kRig = buildEkBotRig(THREE, { withProps: false });
+                    kScene.add(kRig.sceneGroup);
+
+                    var kb3d = {
+                        mood: 'normal',
+                        spinTarget: 0,
+                        spinAngle: 0,
+                        bankYaw: 0,
+                        jumpT: 0,
+                        blinkTimer: 2.0
+                    };
+
+                    function inferMoodFromSvg() {
+                        var st = window.__kbPhysicsState;
+                        if (st && st.isSleeping) return 'sleeping';
+                        if (kbEyeEl) {
+                            var spec = kbEyeEl.querySelector('.kb-special-eye');
+                            if (spec) {
+                                var txt = (spec.textContent || '').trim();
+                                if (txt === '★') return 'excited';
+                                if (txt === '♥') return 'love';
+                                if (txt === '😎') return 'cool';
+                                if (txt === '✕') return 'dizzy';
+                                return 'sleeping';
+                            }
+                        }
+                        if (kbIrisL) {
+                            var fill = (kbIrisL.getAttribute('fill') || '').toLowerCase();
+                            if (fill === '#34d399') return 'happy';
+                            if (fill === '#f472b6') return 'surprised';
+                            if (fill === '#94a3b8') return 'sad';
+                        }
+                        return 'normal';
+                    }
+
+                    if (kbInner) {
+                        new MutationObserver(function() {
+                            if (kbInner.classList.contains('spin')) {
+                                kb3d.spinTarget += Math.PI * 2;
+                                kb3d.jumpT = 1.0;
+                            } else if (kbInner.classList.contains('tap-burst')) {
+                                kb3d.jumpT = 0.7;
+                            }
+                        }).observe(kbInner, { attributes: true, attributeFilter: ['class'] });
+                    }
+
+                    if (kbIrisL && kbEyeEl) {
+                        var syncMood = function() {
+                            kb3d.mood = inferMoodFromSvg();
+                            kRig.applyMood(kb3d.mood);
+                        };
+                        new MutationObserver(syncMood).observe(kbIrisL, { attributes: true, attributeFilter: ['fill'] });
+                        new MutationObserver(syncMood).observe(kbEyeEl, { childList: true });
+                    }
+
+                    window.addEventListener('kasbot:theme', function(ev) {
+                        if (!ev || !ev.detail) return;
+                        kRig.setThemeColors(ev.detail.accent, ev.detail.light);
+                        kRim.color.setHex(hexStringToInt(ev.detail.light, 0x38bdf8));
+                    });
+
+                    var kLast = performance.now();
+                    var kFirstFrame = false;
+                    function renderKasBot3D(now) {
+                        requestAnimationFrame(renderKasBot3D);
+                        if (document.hidden) {
+                            kLast = now;
+                            return;
+                        }
+                        var dt = Math.min(0.05, (now - kLast) / 1000);
+                        kLast = now;
+                        var t = now * 0.001;
+                        var st = window.__kbPhysicsState || { px: 60, py: 400, vx: 0, vy: 0, isSleeping: false };
+
+                        // Update sleeping transition cleanly
+                        var nowSleep = !!st.isSleeping;
+                        if (nowSleep && kb3d.mood !== 'sleeping') {
+                            kb3d.mood = 'sleeping';
+                            kRig.applyMood('sleeping');
+                        } else if (!nowSleep && kb3d.mood === 'sleeping') {
+                            kb3d.mood = inferMoodFromSvg();
+                            kRig.applyMood(kb3d.mood);
+                        }
+
+                        // Jump & Float Bob
+                        var jumpOffset = 0;
+                        if (kb3d.jumpT > 0) {
+                            kb3d.jumpT = Math.max(0, kb3d.jumpT - dt * 2.2);
+                            jumpOffset = Math.sin(kb3d.jumpT * Math.PI) * 0.25;
+                        }
+                        kRig.robotGroup.position.y = (nowSleep ? -0.04 : Math.sin(t * 2.6) * 0.06) + jumpOffset;
+
+                        // Lean toward travel velocity + clean 360-degree barrel roll
+                        kb3d.spinAngle += (kb3d.spinTarget - kb3d.spinAngle) * 0.14;
+                        var targetBankYaw = Math.max(-0.45, Math.min(0.45, (st.vx || 0) * 0.06));
+                        kb3d.bankYaw += (targetBankYaw - kb3d.bankYaw) * 0.1;
+                        var bankPitch = Math.max(-0.2, Math.min(0.2, (st.vy || 0) * 0.03));
+                        kRig.robotGroup.rotation.y = kb3d.bankYaw + kb3d.spinAngle;
+                        kRig.robotGroup.rotation.x += (bankPitch - kRig.robotGroup.rotation.x) * 0.1;
+
+                        // Cursor Aim Relative to Mascot Screen Position
+                        if (nowSleep) {
+                            kRig.headGroup.rotation.x += (0.28 - kRig.headGroup.rotation.x) * 0.06;
+                            kRig.headGroup.rotation.y += (0 - kRig.headGroup.rotation.y) * 0.06;
+                        } else {
+                            var cx = (st.px || 0) + 64;
+                            var cy = (st.py || 0) + 52;
+                            var relX = Math.max(-0.52, Math.min(0.52, (pointerNorm.clientX - cx) / 360));
+                            var relY = Math.max(-0.24, Math.min(0.26, (pointerNorm.clientY - cy) / 360));
+                            kRig.headGroup.rotation.y += (relX - kRig.headGroup.rotation.y) * 0.12;
+                            kRig.headGroup.rotation.x += (relY - kRig.headGroup.rotation.x) * 0.12;
+                        }
+
+                        // Waving Arms (synced to #kb-arm-l attribute transform or idle sway)
+                        var isWaving = kbArmL && kbArmL.hasAttribute('transform');
+                        if (isWaving) {
+                            kRig.armL.rotation.z = -1.9 + Math.sin(t * 12) * 0.5;
+                            kRig.armR.rotation.z = 1.9 + Math.cos(t * 12) * 0.5;
+                        } else if (nowSleep) {
+                            kRig.armL.rotation.z = -0.1;
+                            kRig.armR.rotation.z = 0.1;
+                        } else {
+                            kRig.armL.rotation.z = -0.24 + Math.sin(t * 2.5) * 0.09;
+                            kRig.armR.rotation.z = 0.24 - Math.sin(t * 2.5) * 0.09;
+                        }
+                        kRig.legL.rotation.x = nowSleep ? 0.1 : Math.sin(t * 2.6) * 0.12;
+                        kRig.legR.rotation.x = nowSleep ? 0.1 : -Math.sin(t * 2.6) * 0.12;
+
+                        // Jetpack flames
+                        kRig.flames.forEach(function(fl, fi) {
+                            fl.visible = !nowSleep;
+                            fl.scale.y = 0.72 + Math.sin(t * 25 + fi * 2) * 0.3;
+                        });
+                        kRig.chestLeds.forEach(function(ld, i) {
+                            ld.mat.emissiveIntensity = nowSleep ? 0.15 : (0.6 + 0.9 * (0.5 + 0.5 * Math.sin(t * 4.5 - i * 1.1)));
+                        });
+
+                        // Periodic blink in awake states
+                        if (!nowSleep) {
+                            kb3d.blinkTimer -= dt;
+                            if (kb3d.blinkTimer <= 0) {
+                                kRig.eyeL.scale.y = 0.12;
+                                kRig.eyeR.scale.y = 0.12;
+                                if (kb3d.blinkTimer <= -0.11) {
+                                    kRig.applyMood(kb3d.mood);
+                                    kb3d.blinkTimer = 2.2 + Math.random() * 3.0;
+                                }
+                            }
+                        }
+
+                        kRenderer.render(kScene, kCam);
+                        if (!kFirstFrame) {
+                            kFirstFrame = true;
+                            if (kbSvg) kbSvg.style.opacity = '0';
+                        }
+                    }
+                    requestAnimationFrame(renderKasBot3D);
+                } catch (err) {
+                    // Fallback SVG remains cleanly visible
+                }
+            }
+        }
+
+        function loadThreeAndBoot() {
+            if (window.THREE) {
+                boot3DCharacters(window.THREE);
+                return;
+            }
+            var s1 = document.createElement('script');
+            s1.src = 'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js';
+            s1.async = true;
+            s1.onload = function() {
+                if (window.THREE) boot3DCharacters(window.THREE);
+            };
+            s1.onerror = function() {
+                var s2 = document.createElement('script');
+                s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js';
+                s2.async = true;
+                s2.onload = function() {
+                    if (window.THREE) boot3DCharacters(window.THREE);
+                };
+                document.head.appendChild(s2);
+            };
+            document.head.appendChild(s1);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadThreeAndBoot);
+        } else {
+            loadThreeAndBoot();
+        }
+    })();
+    </script>
+
+    @include('components.ai-cs-widget')
 </body>
 </html>

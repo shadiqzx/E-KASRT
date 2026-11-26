@@ -388,6 +388,9 @@
 			<button type="button" class="hero-btn-glass" data-toggle="modal" data-target="#modalSettingEsp32">
 				<i class="fas fa-cog text-light"></i> Setting ESP32 & IoT
 			</button>
+			<button type="button" class="hero-btn-glass text-warning border-warning" data-toggle="modal" data-target="#modalResetData" title="Reset atau bersihkan data uji coba">
+				<i class="fas fa-undo-alt text-warning"></i> Reset Data
+			</button>
 		</div>
 	</div>
 </div>
@@ -480,11 +483,28 @@
 					<p class="text-muted mb-3" style="font-size: 13px;">
 						Pastikan menggunakan kabel data USB (bukan kabel casan). Klik tombol di bawah dan pilih port <code>USB-SERIAL CH340</code> atau <code>CP2102</code>.
 					</p>
-					<div class="d-flex flex-wrap align-items-center gap-2" style="gap: 10px;">
+					<div class="d-flex flex-wrap align-items-center gap-2 mb-2" style="gap: 10px;">
 						<button type="button" class="btn btn-primary btn-sm font-weight-bold px-3 py-2" id="btnConnectUsb" onclick="toggleUsbSerial()" style="border-radius: 10px;">
 							<i class="fas fa-usb mr-1"></i> Hubungkan Port Serial USB (COM)
 						</button>
+						<button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold px-2 py-2" id="btnResetEsp" onclick="restartEsp32ViaSerial()" style="border-radius: 10px; display: none;" title="Kirim sinyal reset ke ESP32">
+							<i class="fas fa-redo-alt mr-1"></i> Restart ESP32
+						</button>
+						<button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold px-2 py-2" onclick="clearSerialLog()" style="border-radius: 10px; display: none;" id="btnClearLog">
+							<i class="fas fa-trash-alt mr-1"></i> Bersihkan Log
+						</button>
 						<span class="hw-chip">Baudrate: <code>115200 bps</code></span>
+					</div>
+
+					<!-- TERMINAL MONITOR LOG SERIAL ESP32 -->
+					<div id="serialTerminalWrapper" style="display: none;" class="mt-2">
+						<div class="d-flex justify-content-between align-items-center px-2 py-1 bg-dark text-white rounded-top" style="font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+							<span><i class="fas fa-terminal mr-1 text-info"></i> <strong>Live Serial Monitor ESP32 (COM)</strong></span>
+							<span class="badge badge-success" id="serialOnlineBadge" style="font-size: 9px;">STREAMING</span>
+						</div>
+						<div id="serialTerminalBox" class="p-2 bg-dark text-light rounded-bottom" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; max-height: 130px; min-height: 70px; overflow-y: auto; line-height: 1.4; border: 1px solid #1e293b; border-top: none;">
+							<div class="text-white-50">> Port Serial terhubung. Menunggu data tap atau log dari ESP32...</div>
+						</div>
 					</div>
 				</div>
 
@@ -544,7 +564,7 @@
 							<i class="fas fa-satellite-dish mr-1"></i> RADAR TAP e-KTP TERAKHIR
 						</span>
 						<span class="badge badge-light border text-dark font-weight-bold" id="lastTapStatusBadge" style="font-size: 11px;">
-							Standby
+							<span class="hero-pulsing-dot d-inline-block mr-1" style="width:7px;height:7px;background:#10b981;"></span> Standby
 						</span>
 					</div>
 
@@ -745,8 +765,11 @@
 											<button type="button" class="btn btn-sm btn-primary py-1 px-3 font-weight-bold" onclick="openModalPemeriksaan({{ json_encode($k) }})">
 												⚖️ Periksa
 											</button>
-											<a href="{{ route('posyandu.cetak_kms', $k->balita_id) }}" target="_blank" class="btn btn-sm btn-outline-secondary py-1 px-2">
+											<a href="{{ route('posyandu.cetak_kms', $k->balita_id) }}" target="_blank" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Cetak KMS">
 												🖨️ KMS
+											</a>
+											<a href="{{ route('posyandu.kehadiran_hapus', $k->id) }}" onclick="return confirm('Hapus data kehadiran {{ $k->nama_anak }} dari sesi ini?')" class="btn btn-sm btn-outline-danger py-1 px-2" title="Hapus Kehadiran">
+												🗑️
 											</a>
 										</div>
 									</td>
@@ -1258,6 +1281,80 @@
 	</div>
 </div>
 
+<!-- MODAL RESET DATA UJI COBA -->
+<div class="modal fade" id="modalResetData" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content border-0 shadow" style="border-radius: 20px;">
+			<div class="modal-header border-0 pb-0 pt-4 px-4">
+				<div class="d-flex align-items-center">
+					<div style="width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 14px;">
+						<i class="fas fa-trash-restore-alt"></i>
+					</div>
+					<div>
+						<h5 class="modal-title font-weight-bold text-dark">Reset Data Uji Coba Posyandu</h5>
+						<small class="text-muted">Bersihkan data kehadiran, log tap, atau RFID warga</small>
+					</div>
+				</div>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form action="{{ route('posyandu.reset_data') }}" method="POST">
+				@csrf
+				<div class="modal-body p-4">
+					<p class="text-muted mb-3" style="font-size: 13.5px;">
+						Pilih jenis data uji coba yang ingin Anda bersihkan:
+					</p>
+					
+					<div class="form-group">
+						<div class="custom-control custom-radio mb-2">
+							<input type="radio" id="resetMode1" name="reset_mode" value="kehadiran_sesi" class="custom-control-input" checked>
+							<label class="custom-control-label font-weight-bold text-dark" for="resetMode1" style="font-size: 13.5px;">
+								1. Reset Kehadiran Sesi Hari Ini
+							</label>
+							<small class="d-block text-muted ml-4">Hanya menghapus absensi balita pada sesi yang sedang aktif agar bisa dicoba tap ulang.</small>
+						</div>
+
+						<div class="custom-control custom-radio mb-2">
+							<input type="radio" id="resetMode2" name="reset_mode" value="tap_logs" class="custom-control-input">
+							<label class="custom-control-label font-weight-bold text-dark" for="resetMode2" style="font-size: 13.5px;">
+								2. Bersihkan Seluruh Riwayat Log Tap RFID
+							</label>
+							<small class="d-block text-muted ml-4">Mengosongkan tabel log tap sensor RFID tanpa menghapus kehadiran balita.</small>
+						</div>
+
+						<div class="custom-control custom-radio mb-2">
+							<input type="radio" id="resetMode3" name="reset_mode" value="unpair_all" class="custom-control-input">
+							<label class="custom-control-label font-weight-bold text-dark" for="resetMode3" style="font-size: 13.5px;">
+								3. Lepas Semua Tautan RFID e-KTP Warga
+							</label>
+							<small class="d-block text-muted ml-4">Mereset semua UID kartu warga kembali ke status belum tertaut (unpaired).</small>
+						</div>
+
+						<div class="custom-control custom-radio">
+							<input type="radio" id="resetMode4" name="reset_mode" value="all_test_data" class="custom-control-input">
+							<label class="custom-control-label font-weight-bold text-danger" for="resetMode4" style="font-size: 13.5px;">
+								4. Reset Total Data Uji Coba (Bersih 100%)
+							</label>
+							<small class="d-block text-muted ml-4">Membersihkan semua kehadiran uji coba, log tap, dan melepaskan seluruh tautan KTP.</small>
+						</div>
+					</div>
+
+					<div class="alert alert-warning border-0 mb-0" style="border-radius: 12px; font-size: 12px;">
+						<i class="fas fa-exclamation-triangle mr-1"></i> Tindakan reset tidak dapat dibatalkan. Pastikan data penting sudah dicatat atau di-backup.
+					</div>
+				</div>
+				<div class="modal-footer border-0 pt-0 pb-4 px-4">
+					<button type="button" class="btn btn-light font-weight-bold px-4" data-dismiss="modal" style="border-radius: 10px;">Batal</button>
+					<button type="submit" class="btn btn-warning font-weight-bold px-4" style="border-radius: 10px;" onclick="return confirm('Apakah Anda yakin ingin mengeksekusi reset data ini?');">
+						<i class="fas fa-trash-alt mr-1"></i> Eksekusi Reset Data
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
 @push('scripts')
 <script>
 let audioCtx = null;
@@ -1343,6 +1440,49 @@ let usbPort = null;
 let usbReader = null;
 let keepReadingUsb = true;
 
+function appendSerialLog(text) {
+	const box = document.getElementById('serialTerminalBox');
+	if (!box) return;
+	const div = document.createElement('div');
+	div.style.whiteSpace = 'pre-wrap';
+	div.style.wordBreak = 'break-all';
+	const now = new Date().toTimeString().substring(0, 8);
+
+	if (text.includes('UID') || text.includes('KTP') || text.includes('TAP')) {
+		div.innerHTML = '<span class="text-info">[' + now + ']</span> <strong class="text-warning">' + escapeHtml(text) + '</strong>';
+	} else if (text.includes('✅') || text.includes('TERDETEKSI') || text.includes('Siap') || text.includes('Terhubung')) {
+		div.innerHTML = '<span class="text-info">[' + now + ']</span> <span class="text-success">' + escapeHtml(text) + '</span>';
+	} else if (text.includes('❌') || text.includes('Gagal') || text.includes('Error')) {
+		div.innerHTML = '<span class="text-info">[' + now + ']</span> <span class="text-danger">' + escapeHtml(text) + '</span>';
+	} else {
+		div.innerHTML = '<span class="text-muted">[' + now + ']</span> ' + escapeHtml(text);
+	}
+	box.appendChild(div);
+	box.scrollTop = box.scrollHeight;
+}
+
+function clearSerialLog() {
+	const box = document.getElementById('serialTerminalBox');
+	if (box) box.innerHTML = '<div class="text-muted">> Log dibersihkan. Menunggu output Serial...</div>';
+}
+
+function escapeHtml(str) {
+	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+async function restartEsp32ViaSerial() {
+	if (!usbPort) return;
+	try {
+		appendSerialLog(">> [PC] Mengirim sinyal Reset DTR/RTS ke ESP32...");
+		await usbPort.setSignals({ dataTerminalReady: false, requestToSend: true });
+		await new Promise(r => setTimeout(r, 250));
+		await usbPort.setSignals({ dataTerminalReady: false, requestToSend: false });
+		appendSerialLog(">> [PC] Selesai. Menunggu ESP32 boot...");
+	} catch (e) {
+		appendSerialLog(">> [Error Reset] " + e.message);
+	}
+}
+
 async function toggleUsbSerial() {
 	if (!("serial" in navigator)) {
 		alert("Browser Anda belum mendukung Web Serial API. Gunakan Google Chrome atau Microsoft Edge.");
@@ -1356,6 +1496,9 @@ async function toggleUsbSerial() {
 		document.getElementById('usbStatusText').innerHTML = '🟡 Belum Terhubung';
 		document.getElementById('btnConnectUsb').innerHTML = '<i class="fas fa-usb mr-1"></i> Hubungkan Port Serial USB (COM)';
 		document.getElementById('btnConnectUsb').className = 'btn btn-primary btn-sm font-weight-bold px-3 py-2';
+		document.getElementById('btnResetEsp').style.display = 'none';
+		document.getElementById('btnClearLog').style.display = 'none';
+		document.getElementById('serialTerminalWrapper').style.display = 'none';
 		speakVoice("Sambungan serial USB terputus.");
 		return;
 	}
@@ -1366,6 +1509,9 @@ async function toggleUsbSerial() {
 		document.getElementById('usbStatusText').innerHTML = '<span class="text-success font-weight-bold">🟢 Port Serial Terhubung!</span>';
 		document.getElementById('btnConnectUsb').innerHTML = '<i class="fas fa-times-circle mr-1"></i> Putuskan USB Serial';
 		document.getElementById('btnConnectUsb').className = 'btn btn-danger btn-sm font-weight-bold px-3 py-2';
+		document.getElementById('btnResetEsp').style.display = 'inline-block';
+		document.getElementById('btnClearLog').style.display = 'inline-block';
+		document.getElementById('serialTerminalWrapper').style.display = 'block';
 		playChime(true);
 		speakVoice("ESP32 terhubung melalui kabel USB.");
 		readUsbSerialStream();
@@ -1388,13 +1534,36 @@ async function readUsbSerialStream() {
 				lineBuffer += value;
 				const lines = lineBuffer.split('\n');
 				lineBuffer = lines.pop();
-				for (const line of lines) {
-					const match = line.match(/(?:UID|Card UID|KTP)\s*[:=-]?\s*([0-9A-Fa-f\s]{8,24})/i);
-					if (match && match[1]) {
-						const cleanUid = match[1].replace(/\s+/g, '').trim().toUpperCase();
-						if (cleanUid.length >= 4) {
-							sendRfidTapToServer(cleanUid);
+				for (const rawLine of lines) {
+					const line = rawLine.trim();
+					if (!line) continue;
+
+					// Tampilkan setiap baris ke Live Terminal Box
+					appendSerialLog(line);
+
+					// Tangkap UID dengan berbagai format fleksibel
+					let detectedUid = null;
+
+					// Format 1: Prefix UID / Card UID / KTP / RFID / TAP
+					const matchPrefix = line.match(/(?:UID|Card UID|Card|KTP|RFID|TAG|TAP)\s*[:=-]?\s*([0-9A-Fa-f\s]{4,24})/i);
+					if (matchPrefix && matchPrefix[1]) {
+						const clean = matchPrefix[1].replace(/\s+/g, '').toUpperCase();
+						if (clean.length >= 4 && clean.length <= 20) {
+							detectedUid = clean;
 						}
+					}
+
+					// Format 2: Baris berisi deretan hex murni (cth: 04E99A11B280 atau 99AA88BB)
+					if (!detectedUid) {
+						const matchPureHex = line.match(/^([0-9A-Fa-f]{8,16})$/);
+						if (matchPureHex) {
+							detectedUid = matchPureHex[1].toUpperCase();
+						}
+					}
+
+					// Jika UID berhasil dideteksi, langsung kirim ke server
+					if (detectedUid) {
+						sendRfidTapToServer(detectedUid);
 					}
 				}
 			}
@@ -1411,9 +1580,19 @@ function sendRfidTapToServer(uid) {
 	})
 	.then(r => r.json())
 	.then(res => {
+		// Tampilkan langsung di radar dengan timer auto-reset 6 detik
+		const tapObj = {
+			uid: uid,
+			status: res.status ? res.status.toUpperCase() : 'INFO',
+			keterangan: res.message || '',
+			created_at: new Date().toISOString().replace('T', ' ').substring(0, 19)
+		};
+		displayTapOnRadar(tapObj);
+
 		if (res.status === 'success') {
 			playChime(true);
 			speakVoice("Selamat datang! " + res.message);
+			setTimeout(() => { window.location.reload(); }, 2000);
 		} else if (res.status === 'already_checked') {
 			playChime(false);
 			speakVoice(res.message);
@@ -1481,11 +1660,131 @@ function pasteLastUid() {
 }
 
 let lastSeenTapId = 0;
+let isFirstFetch = true;
+let radarResetTimer = null;
+
+// Kembalikan Radar ke tampilan Standby bersih saat tidak ada tap aktif
+function resetRadarToStandby() {
+	const statusBadge = document.getElementById('lastTapStatusBadge');
+	const namaEl = document.getElementById('lastTapNama');
+	const detailEl = document.getElementById('lastTapDetail');
+	const iconEl = document.getElementById('lastTapIcon');
+	const uidEl = document.getElementById('lastTapUid');
+	const timeEl = document.getElementById('lastTapTime');
+	const boxEl = document.getElementById('lastTapBox');
+
+	if (statusBadge) {
+		statusBadge.className = 'badge badge-light border text-dark font-weight-bold';
+		statusBadge.innerHTML = '<span class="hero-pulsing-dot d-inline-block mr-1" style="width:7px;height:7px;background:#10b981;"></span> Standby';
+	}
+	if (iconEl) iconEl.innerText = '💳';
+	if (namaEl) namaEl.innerText = 'Menunggu Tap Kartu...';
+	if (detailEl) detailEl.innerText = 'Tempelkan e-KTP Ibu di sensor RC522';
+	if (uidEl) uidEl.innerText = '-';
+	if (timeEl) timeEl.innerText = '-';
+	if (boxEl) {
+		boxEl.style.borderColor = 'rgba(14, 165, 233, 0.3)';
+		boxEl.style.boxShadow = '0 10px 25px -5px rgba(2, 132, 199, 0.3)';
+	}
+}
+
+// Tampilkan hasil tap kartu pada Radar dengan auto-reset ke Standby setelah 6 detik
+function displayTapOnRadar(tapData) {
+	currentLastUid = tapData.uid;
+
+	const statusBadge = document.getElementById('lastTapStatusBadge');
+	const namaEl = document.getElementById('lastTapNama');
+	const detailEl = document.getElementById('lastTapDetail');
+	const iconEl = document.getElementById('lastTapIcon');
+	const uidEl = document.getElementById('lastTapUid');
+	const timeEl = document.getElementById('lastTapTime');
+	const boxEl = document.getElementById('lastTapBox');
+
+	if (uidEl) uidEl.innerText = tapData.uid || '-';
+	if (timeEl) {
+		if (tapData.created_at && tapData.created_at.length >= 16) {
+			timeEl.innerText = tapData.created_at.substring(11, 16) + ' WIB';
+		} else {
+			timeEl.innerText = 'Baru saja';
+		}
+	}
+
+	const status = (tapData.status || '').toUpperCase();
+
+	if (status === 'SUCCESS') {
+		if (statusBadge) {
+			statusBadge.className = 'badge badge-success font-weight-bold';
+			statusBadge.innerText = '✅ Berhasil Hadir';
+		}
+		if (iconEl) iconEl.innerText = '🎉';
+		if (namaEl) namaEl.innerText = tapData.keterangan || 'Balita Hadir';
+		if (detailEl) detailEl.innerText = 'Absensi via e-KTP Ibu tercatat';
+		if (boxEl) {
+			boxEl.style.borderColor = '#10b981';
+			boxEl.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
+		}
+	} else if (status === 'ALREADY_CHECKED') {
+		if (statusBadge) {
+			statusBadge.className = 'badge badge-warning font-weight-bold text-dark';
+			statusBadge.innerText = '⚠️ Sudah Hadir';
+		}
+		if (iconEl) iconEl.innerText = 'ℹ️';
+		if (namaEl) namaEl.innerText = tapData.keterangan || 'Sudah Hadir';
+		if (detailEl) detailEl.innerText = 'Kartu sudah di-tap sebelumnya';
+		if (boxEl) {
+			boxEl.style.borderColor = '#f59e0b';
+			boxEl.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.4)';
+		}
+	} else if (status === 'UNREGISTERED') {
+		if (statusBadge) {
+			statusBadge.className = 'badge badge-danger font-weight-bold';
+			statusBadge.innerText = '🔔 KTP Baru (Belum Terdaftar)';
+		}
+		if (iconEl) iconEl.innerText = '🪪';
+		if (namaEl) namaEl.innerHTML = 'KTP Baru: <span class="font-monospace text-warning">' + tapData.uid + '</span>';
+		if (detailEl) detailEl.innerHTML = '<a href="javascript:void(0)" onclick="openPairModalWithWarga(null, null, \'' + tapData.uid + '\')" class="text-info font-weight-bold"><u>Klik di sini untuk hubungkan</u></a>';
+		if (boxEl) {
+			boxEl.style.borderColor = '#ef4444';
+			boxEl.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.4)';
+		}
+	} else {
+		if (statusBadge) {
+			statusBadge.className = 'badge badge-secondary';
+			statusBadge.innerText = tapData.status || 'Info';
+		}
+		if (iconEl) iconEl.innerText = '💳';
+		if (namaEl) namaEl.innerText = tapData.keterangan || 'Tap Terdeteksi';
+		if (detailEl) detailEl.innerText = tapData.uid || '';
+		if (boxEl) {
+			boxEl.style.borderColor = 'rgba(14, 165, 233, 0.5)';
+		}
+	}
+
+	// ⏱️ Auto-reset radar kembali ke 'Standby' setelah 6 detik jika tidak ada tap baru!
+	if (radarResetTimer) clearTimeout(radarResetTimer);
+	radarResetTimer = setTimeout(() => {
+		resetRadarToStandby();
+	}, 6000);
+}
 
 function fetchLiveStream() {
 	fetch("{{ route('posyandu.live_stream') }}")
 		.then(r => r.json())
 		.then(data => {
+			const pingBadge = document.getElementById('livePingBadge');
+			if (pingBadge) {
+				if (data.device_online) {
+					const ipInfo = data.device_info && data.device_info.ip ? ' • ' + data.device_info.ip : '';
+					pingBadge.className = 'badge badge-success px-2 py-1 font-weight-bold';
+					pingBadge.innerText = '🟢 ESP32 Online' + ipInfo;
+				} else {
+					pingBadge.className = 'badge badge-light border text-muted px-2 py-1 font-weight-bold';
+					pingBadge.innerText = 'Live Polling: Aktif';
+				}
+			}
+			if (data.last_rfid_uid) {
+				currentLastUid = data.last_rfid_uid;
+			}
 			if (data.total_hadir !== undefined) {
 				const badge = document.getElementById('tabHadirBadge');
 				const stat = document.getElementById('statHadirNum');
@@ -1494,54 +1793,38 @@ function fetchLiveStream() {
 			}
 			if (data.logs && data.logs.length > 0) {
 				const top = data.logs[0];
-				currentLastUid = top.uid;
-				if (top.id > lastSeenTapId) {
-					if (lastSeenTapId !== 0) {
-						if (top.status === 'SUCCESS') {
-							playChime(true);
-							speakVoice("Selamat datang! " + (top.keterangan || "Kehadiran balita tercatat."));
-							setTimeout(() => { window.location.reload(); }, 2000);
-						} else if (top.status === 'ALREADY_CHECKED') {
-							playChime(false);
-							speakVoice(top.keterangan || "Kartu ini sudah tercatat hadir.");
-						} else if (top.status === 'UNREGISTERED') {
-							playChime(false);
-							speakVoice("Kartu e-KTP baru terdeteksi dengan nomor " + top.uid + ".");
-							openPairModalWithWarga(null, null, top.uid);
-						}
-					}
+
+				// Saat pertama kali load halaman: sinkronkan lastSeenTapId ke tap terakhir
+				// agar riwayat tap lama TIDAK mengotori radar (radar tetap bersih di Standby)
+				if (isFirstFetch) {
 					lastSeenTapId = top.id;
+					isFirstFetch = false;
+					resetRadarToStandby();
+					return;
 				}
-				document.getElementById('lastTapUid').innerText = top.uid;
-				document.getElementById('lastTapTime').innerText = top.created_at.substring(11, 16) + ' WIB';
-				const statusBadge = document.getElementById('lastTapStatusBadge');
-				const namaEl = document.getElementById('lastTapNama');
-				const detailEl = document.getElementById('lastTapDetail');
-				const iconEl = document.getElementById('lastTapIcon');
-				if (top.status === 'SUCCESS') {
-					statusBadge.className = 'badge badge-success font-weight-bold';
-					statusBadge.innerText = '✅ Berhasil Hadir';
-					iconEl.innerText = '🎉';
-					namaEl.innerText = top.keterangan || 'Balita Hadir';
-					detailEl.innerText = 'Absensi via e-KTP Ibu tercatat';
-				} else if (top.status === 'ALREADY_CHECKED') {
-					statusBadge.className = 'badge badge-warning font-weight-bold text-dark';
-					statusBadge.innerText = '⚠️ Sudah Hadir';
-					iconEl.innerText = 'ℹ️';
-					namaEl.innerText = top.keterangan || 'Sudah Hadir';
-					detailEl.innerText = 'Kartu sudah di-tap sebelumnya';
-				} else if (top.status === 'UNREGISTERED') {
-					statusBadge.className = 'badge badge-danger font-weight-bold';
-					statusBadge.innerText = '🔔 KTP Baru (Belum Terdaftar)';
-					iconEl.innerText = '🪪';
-					namaEl.innerHTML = 'KTP Baru: <span class="font-monospace text-warning">' + top.uid + '</span>';
-					detailEl.innerHTML = '<a href="javascript:void(0)" onclick="openPairModalWithWarga(null, null, \'' + top.uid + '\')" class="text-info font-weight-bold"><u>Klik di sini untuk hubungkan</u></a>';
-				} else {
-					statusBadge.className = 'badge badge-secondary';
-					statusBadge.innerText = top.status;
-					iconEl.innerText = '💳';
-					namaEl.innerText = top.keterangan || 'Menunggu Sesi Aktif';
-					detailEl.innerText = top.uid;
+
+				// Hanya tampilkan jika benar-benar ada TAP BARU yang masuk!
+				if (top.id > lastSeenTapId) {
+					lastSeenTapId = top.id;
+					displayTapOnRadar(top);
+
+					if (top.status === 'SUCCESS') {
+						playChime(true);
+						speakVoice("Selamat datang! " + (top.keterangan || "Kehadiran balita tercatat."));
+						setTimeout(() => { window.location.reload(); }, 2000);
+					} else if (top.status === 'ALREADY_CHECKED') {
+						playChime(false);
+						speakVoice(top.keterangan || "Kartu ini sudah tercatat hadir.");
+					} else if (top.status === 'UNREGISTERED') {
+						playChime(false);
+						speakVoice("Kartu e-KTP baru terdeteksi dengan nomor " + top.uid + ".");
+						openPairModalWithWarga(null, null, top.uid);
+					}
+				}
+			} else {
+				if (isFirstFetch) {
+					isFirstFetch = false;
+					resetRadarToStandby();
 				}
 			}
 		})
