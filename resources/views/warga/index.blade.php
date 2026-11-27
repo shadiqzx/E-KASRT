@@ -732,7 +732,7 @@ body.dark-exec .badge-nik { background: #1e293b; color: #e2e8f0; border-color: r
 					</div>
 					<div class="map3d-controls">
 						<button type="button" class="map3d-btn" id="btnChibiFollow" onclick="window.WargaMap3D && WargaMap3D.toggleFollow(this)" title="Kamera mengikuti karakter Chibi jalan-jalan"><i class="fas fa-walking mr-1"></i> Ikuti Chibi</button>
-						<button type="button" class="map3d-btn active" id="btnChibiWalk" onclick="window.WargaMap3D && WargaMap3D.toggleWalk(this)" title="Mulai / jeda Chibi keliling komplek">Patroli: ON</button>
+						<button type="button" class="map3d-btn" id="btnChibiWalk" onclick="window.WargaMap3D && WargaMap3D.toggleWalk(this)" title="Aktifkan / jeda Chibi jalan otomatis keliling komplek">Patroli: OFF</button>
 						<button type="button" class="map3d-btn active" id="btnCamIso" onclick="window.WargaMap3D && WargaMap3D.setView('iso', this)">Isometric 3D</button>
 						<button type="button" class="map3d-btn" id="btnCamTop" onclick="window.WargaMap3D && WargaMap3D.setView('top', this)">Top-Down Map</button>
 						<button type="button" class="map3d-btn" onclick="window.WargaMap3D && WargaMap3D.zoom(-4)">+</button>
@@ -1492,7 +1492,7 @@ function initWargaMap3D() {
 			new THREE.Vector3(0, 0.05, 4)
 		];
 		var patrolIdx = 1;
-		var chibiWalkEnabled = true;
+		var chibiWalkEnabled = false;
 		var chibiFollowCam = false;
 		var chibiVisitTarget = null;
 		var chibiWalkPhase = 0;
@@ -1780,10 +1780,6 @@ function initWargaMap3D() {
 			rec.group.scale.set(1.08, 1.08, 1.08);
 			camGoalTarget.set(rec.x, 0.5, rec.z);
 			goalDist = Math.min(goalDist, 22);
-
-			// Arahkan karakter Chibi berjalan ke depan halaman rumah yang dipilih
-			var frontZ = rec.z >= 0 ? rec.z - 2.6 : rec.z + 2.6;
-			chibiVisitTarget = new THREE.Vector3(rec.x, 0.05, frontZ);
 
 			renderInspector(rec.data);
 		}
