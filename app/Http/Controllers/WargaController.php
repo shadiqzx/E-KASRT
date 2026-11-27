@@ -131,20 +131,80 @@ class WargaController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nik'  => 'required',
-            'nama' => 'required',
+        $validated = $request->validate([
+            'nik'               => 'required|string|max:50',
+            'no_kk'             => 'nullable|string|max:50',
+            'nama'              => 'required|string|max:50',
+            'hubungan_keluarga' => 'nullable|string|max:50',
+            'jekel'             => 'nullable|string|max:20',
+            'rfid_ktp'          => 'nullable|string|max:50',
+            'tempat_lahir'      => 'nullable|string|max:100',
+            'tanggal_lahir'     => 'nullable|date',
+            'alamat'            => 'nullable|string',
+            'no_rumah'          => 'nullable|string|max:50',
+            'no_hp'             => 'nullable|string|max:30',
         ]);
 
-        DataWarga::create($request->all());
-        return redirect()->route('warga.index')->with('success', 'Data warga berhasil ditambahkan!');
+        try {
+            $data = [
+                'nik'               => trim($validated['nik']),
+                'no_kk'             => $request->filled('no_kk') ? trim($request->input('no_kk')) : null,
+                'nama'              => trim($validated['nama']),
+                'hubungan_keluarga' => $request->input('hubungan_keluarga') ?: 'Kepala Keluarga',
+                'jekel'             => $request->input('jekel') ?: 'Laki-Laki',
+                'rfid_ktp'          => $request->filled('rfid_ktp') ? strtoupper(trim($request->input('rfid_ktp'))) : null,
+                'tempat_lahir'      => $request->filled('tempat_lahir') ? trim($request->input('tempat_lahir')) : '-',
+                'tanggal_lahir'     => $request->filled('tanggal_lahir') ? $request->input('tanggal_lahir') : '2000-01-01',
+                'alamat'            => $request->filled('alamat') ? trim($request->input('alamat')) : '-',
+                'no_rumah'          => $request->filled('no_rumah') ? strtoupper(trim($request->input('no_rumah'))) : null,
+                'no_hp'             => $request->filled('no_hp') ? trim($request->input('no_hp')) : null,
+                'status_warga'      => 'Terverifikasi',
+            ];
+
+            DataWarga::create($data);
+            return redirect()->route('warga.index')->with('success', 'Data warga berhasil ditambahkan!');
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan data warga: ' . $e->getMessage());
+        }
     }
 
     public function update(Request $request, $id)
     {
         $w = DataWarga::findOrFail($id);
-        $w->update($request->all());
-        return redirect()->route('warga.index')->with('success', 'Data warga berhasil diperbarui!');
+
+        $validated = $request->validate([
+            'nik'               => 'required|string|max:50',
+            'no_kk'             => 'nullable|string|max:50',
+            'nama'              => 'required|string|max:50',
+            'hubungan_keluarga' => 'nullable|string|max:50',
+            'jekel'             => 'nullable|string|max:20',
+            'rfid_ktp'          => 'nullable|string|max:50',
+            'tempat_lahir'      => 'nullable|string|max:100',
+            'tanggal_lahir'     => 'nullable|date',
+            'alamat'            => 'nullable|string',
+            'no_rumah'          => 'nullable|string|max:50',
+            'no_hp'             => 'nullable|string|max:30',
+        ]);
+
+        try {
+            $w->update([
+                'nik'               => trim($validated['nik']),
+                'no_kk'             => $request->filled('no_kk') ? trim($request->input('no_kk')) : null,
+                'nama'              => trim($validated['nama']),
+                'hubungan_keluarga' => $request->input('hubungan_keluarga') ?: $w->hubungan_keluarga,
+                'jekel'             => $request->input('jekel') ?: $w->jekel,
+                'rfid_ktp'          => $request->filled('rfid_ktp') ? strtoupper(trim($request->input('rfid_ktp'))) : null,
+                'tempat_lahir'      => $request->filled('tempat_lahir') ? trim($request->input('tempat_lahir')) : ($w->tempat_lahir ?: '-'),
+                'tanggal_lahir'     => $request->filled('tanggal_lahir') ? $request->input('tanggal_lahir') : ($w->tanggal_lahir ?: '2000-01-01'),
+                'alamat'            => $request->filled('alamat') ? trim($request->input('alamat')) : ($w->alamat ?: '-'),
+                'no_rumah'          => $request->filled('no_rumah') ? strtoupper(trim($request->input('no_rumah'))) : null,
+                'no_hp'             => $request->filled('no_hp') ? trim($request->input('no_hp')) : $w->no_hp,
+            ]);
+
+            return redirect()->route('warga.index')->with('success', 'Data warga berhasil diperbarui!');
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data warga: ' . $e->getMessage());
+        }
     }
 
     public function destroy($id)

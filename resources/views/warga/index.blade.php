@@ -448,6 +448,18 @@ body.dark-exec .badge-nik { background: #1e293b; color: #e2e8f0; border-color: r
 </style>
 
 <div class="warga-page-wrapper">
+	@if($errors->any())
+	<div class="alert alert-danger alert-dismissible fade show mb-3" style="border-radius: 14px;">
+		<strong><i class="fas fa-exclamation-triangle mr-1"></i> Gagal menyimpan data:</strong>
+		<ul class="mb-0 mt-1 pl-3">
+			@foreach($errors->all() as $err)
+				<li>{{ $err }}</li>
+			@endforeach
+		</ul>
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+	</div>
+	@endif
+
 	<!-- Hero Mesh Gradient Header -->
 	<div class="warga-hero-mesh">
 		<div class="d-flex flex-wrap align-items-center justify-content-between" style="gap: 20px;">
