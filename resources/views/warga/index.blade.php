@@ -648,9 +648,11 @@ body.dark-exec .badge-nik { background: #1e293b; color: #e2e8f0; border-color: r
 				<div class="map3d-hud-top">
 					<div class="map3d-hud-pill">
 						<span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block;"></span>
-						<span>MINI-MAP 3D KAWASAN RT ({{ $totalRumah }} RUMAH &bull; {{ $totalKk }} KK)</span>
+						<span id="chibiHudStatus">MINI-MAP 3D KAWASAN RT ({{ $totalRumah }} RUMAH &bull; {{ $totalKk }} KK)</span>
 					</div>
 					<div class="map3d-controls">
+						<button type="button" class="map3d-btn" id="btnChibiFollow" onclick="window.WargaMap3D && WargaMap3D.toggleFollow(this)" title="Kamera mengikuti karakter Chibi jalan-jalan"><i class="fas fa-walking mr-1"></i> Ikuti Chibi</button>
+						<button type="button" class="map3d-btn active" id="btnChibiWalk" onclick="window.WargaMap3D && WargaMap3D.toggleWalk(this)" title="Mulai / jeda Chibi keliling komplek">Patroli: ON</button>
 						<button type="button" class="map3d-btn active" id="btnCamIso" onclick="window.WargaMap3D && WargaMap3D.setView('iso', this)">Isometric 3D</button>
 						<button type="button" class="map3d-btn" id="btnCamTop" onclick="window.WargaMap3D && WargaMap3D.setView('top', this)">Top-Down Map</button>
 						<button type="button" class="map3d-btn" onclick="window.WargaMap3D && WargaMap3D.zoom(-4)">+</button>
@@ -665,7 +667,7 @@ body.dark-exec .badge-nik { background: #1e293b; color: #e2e8f0; border-color: r
 					<span><span class="legend-dot" style="background: #0ea5e9;"></span>1 KK</span>
 					<span><span class="legend-dot" style="background: #f59e0b;"></span>Multi-KK (2+ KK)</span>
 					<span><span class="legend-dot" style="background: #10b981;"></span>Rumah Terpilih</span>
-					<span style="opacity: 0.85;">Drag: Putar &bull; Klik Rumah: Lihat KK &amp; Penghuni</span>
+					<span style="opacity: 0.85;">Drag: Putar &bull; WASD/Panah: Gerakkan Chibi &bull; Klik Rumah: Detail KK</span>
 				</div>
 			</div>
 
@@ -1260,6 +1262,247 @@ function initWargaMap3D() {
 			});
 		});
 
+		// =========================================================
+		// KARAKTER 3D CHIBI WARGA / PAK RT (JALAN-JALAN KELILING)
+		// =========================================================
+		function buildChibiCharacter() {
+			var root = new THREE.Group();
+
+			var skinMat  = new THREE.MeshStandardMaterial({ color: 0xfde68a, roughness: 0.55 });
+			var shirtMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.45 });
+			var pantsMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 });
+			var shoeMat  = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 });
+			var hairMat  = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7 });
+			var capMat   = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.35, metalness: 0.15 });
+			var eyeMat   = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+			var shineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			var blushMat = new THREE.MeshBasicMaterial({ color: 0xfb7185 });
+
+			// Shadow ring di bawah kaki
+			var shadowRing = new THREE.Mesh(
+				new THREE.CircleGeometry(0.55, 20),
+				new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35 })
+			);
+			shadowRing.rotation.x = -Math.PI / 2;
+			shadowRing.position.y = 0.08;
+			root.add(shadowRing);
+
+			var bodyPivot = new THREE.Group();
+			root.add(bodyPivot);
+
+			// Kaki Kiri & Kanan (pivot di pinggul)
+			var legL = new THREE.Group();
+			legL.position.set(-0.2, 0.55, 0);
+			var legLMesh = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.45, 0.24), pantsMat);
+			legLMesh.position.y = -0.22;
+			var shoeL = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.14, 0.34), shoeMat);
+			shoeL.position.set(0, -0.46, 0.05);
+			legL.add(legLMesh, shoeL);
+
+			var legR = new THREE.Group();
+			legR.position.set(0.2, 0.55, 0);
+			var legRMesh = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.45, 0.24), pantsMat);
+			legRMesh.position.y = -0.22;
+			var shoeR = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.14, 0.34), shoeMat);
+			shoeR.position.set(0, -0.46, 0.05);
+			legR.add(legRMesh, shoeR);
+
+			// Badan Chibi (kompak & gemas)
+			var torso = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.62, 0.44), shirtMat);
+			torso.position.y = 0.86;
+			torso.castShadow = true;
+
+			// Badge / Dasi kecil di dada
+			var badge = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.22, 0.05), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+			badge.position.set(0, 0.92, 0.23);
+
+			// Tangan Kiri & Kanan (pivot di bahu)
+			var armL = new THREE.Group();
+			armL.position.set(-0.44, 1.08, 0);
+			var armLMesh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.48, 0.2), shirtMat);
+			armLMesh.position.y = -0.2;
+			var handL = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), skinMat);
+			handL.position.y = -0.46;
+			armL.add(armLMesh, handL);
+
+			var armR = new THREE.Group();
+			armR.position.set(0.44, 1.08, 0);
+			var armRMesh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.48, 0.2), shirtMat);
+			armRMesh.position.y = -0.2;
+			var handR = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), skinMat);
+			handR.position.y = -0.46;
+			armR.add(armRMesh, handR);
+
+			// Kepala Chibi Besar
+			var headGroup = new THREE.Group();
+			headGroup.position.set(0, 1.58, 0);
+			var head = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.78, 0.82), skinMat);
+			head.castShadow = true;
+			headGroup.add(head);
+
+			// Rambut & Topi Chibi
+			var hairTop = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.26, 0.86), hairMat);
+			hairTop.position.set(0, 0.34, -0.02);
+			var capDome = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.22, 0.8), capMat);
+			capDome.position.set(0, 0.48, 0);
+			var capBrim = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.08, 0.32), capMat);
+			capBrim.position.set(0, 0.38, 0.48);
+			// Antena / Pom-pom lucu di atas topi
+			var antennaGlow = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), new THREE.MeshBasicMaterial({ color: 0x34d399 }));
+			antennaGlow.position.set(0, 0.68, 0);
+			headGroup.add(hairTop, capDome, capBrim, antennaGlow);
+
+			// Mata Chibi + Kilau + Pipi Merona
+			var eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.05), eyeMat);
+			eyeL.position.set(-0.2, 0.02, 0.42);
+			var eyeR = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.05), eyeMat);
+			eyeR.position.set(0.2, 0.02, 0.42);
+			var shineL = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.06), shineMat);
+			shineL.position.set(-0.18, 0.06, 0.43);
+			var shineR = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.06), shineMat);
+			shineR.position.set(0.22, 0.06, 0.43);
+			var blushL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.07, 0.04), blushMat);
+			blushL.position.set(-0.28, -0.11, 0.415);
+			var blushR = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.07, 0.04), blushMat);
+			blushR.position.set(0.28, -0.11, 0.415);
+			headGroup.add(eyeL, eyeR, shineL, shineR, blushL, blushR);
+
+			bodyPivot.add(legL, legR, torso, badge, armL, armR, headGroup);
+
+			return {
+				root: root,
+				bodyPivot: bodyPivot,
+				headGroup: headGroup,
+				legL: legL,
+				legR: legR,
+				armL: armL,
+				armR: armR
+			};
+		}
+
+		var chibi = buildChibiCharacter();
+		chibi.root.position.set(0, 0.05, 16);
+		scene.add(chibi.root);
+
+		// Rute patroli mengelilingi jalan utama & area rumah Blok A-D
+		var patrolPoints = [
+			new THREE.Vector3(0, 0.05, 22),
+			new THREE.Vector3(0, 0.05, 0),
+			new THREE.Vector3(-22, 0.05, 0),
+			new THREE.Vector3(-22, 0.05, -4),
+			new THREE.Vector3(-7, 0.05, -4),
+			new THREE.Vector3(0, 0.05, -4),
+			new THREE.Vector3(0, 0.05, -22),
+			new THREE.Vector3(0, 0.05, 0),
+			new THREE.Vector3(22, 0.05, 0),
+			new THREE.Vector3(22, 0.05, 4),
+			new THREE.Vector3(7, 0.05, 4),
+			new THREE.Vector3(0, 0.05, 4)
+		];
+		var patrolIdx = 1;
+		var chibiWalkEnabled = true;
+		var chibiFollowCam = false;
+		var chibiVisitTarget = null;
+		var chibiWalkPhase = 0;
+		var keysPressed = {};
+
+		window.addEventListener('keydown', function(e) {
+			if (currentWargaMode !== 'map3d') return;
+			var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+			if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+			if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D'].indexOf(e.key) !== -1) {
+				keysPressed[e.key.toLowerCase()] = true;
+				chibiVisitTarget = null;
+			}
+		});
+		window.addEventListener('keyup', function(e) {
+			keysPressed[e.key.toLowerCase()] = false;
+		});
+
+		var lastNearbyKey = '';
+		function updateChibi(dt) {
+			var moveX = 0, moveZ = 0;
+			if (keysPressed['w'] || keysPressed['arrowup']) moveZ -= 1;
+			if (keysPressed['s'] || keysPressed['arrowdown']) moveZ += 1;
+			if (keysPressed['a'] || keysPressed['arrowleft']) moveX -= 1;
+			if (keysPressed['d'] || keysPressed['arrowright']) moveX += 1;
+
+			var isMoving = false;
+			var speed = 6.2;
+
+			if (moveX !== 0 || moveZ !== 0) {
+				// Kontrol manual keyboard WASD / Panah
+				var len = Math.hypot(moveX, moveZ);
+				moveX /= len; moveZ /= len;
+				chibi.root.position.x = Math.max(-36, Math.min(36, chibi.root.position.x + moveX * speed * dt));
+				chibi.root.position.z = Math.max(-36, Math.min(36, chibi.root.position.z + moveZ * speed * dt));
+				var targetRot = Math.atan2(moveX, moveZ);
+				chibi.root.rotation.y += Math.atan2(Math.sin(targetRot - chibi.root.rotation.y), Math.cos(targetRot - chibi.root.rotation.y)) * 0.2;
+				isMoving = true;
+			} else if (chibiVisitTarget || chibiWalkEnabled) {
+				var targetVec = chibiVisitTarget || patrolPoints[patrolIdx];
+				var dx = targetVec.x - chibi.root.position.x;
+				var dz = targetVec.z - chibi.root.position.z;
+				var d = Math.hypot(dx, dz);
+
+				if (d < 0.45) {
+					if (chibiVisitTarget) {
+						chibiVisitTarget = null;
+					} else {
+						patrolIdx = (patrolIdx + 1) % patrolPoints.length;
+					}
+				} else {
+					var vx = (dx / d) * speed * 0.72 * dt;
+					var vz = (dz / d) * speed * 0.72 * dt;
+					chibi.root.position.x += vx;
+					chibi.root.position.z += vz;
+					var rot = Math.atan2(dx, dz);
+					chibi.root.rotation.y += Math.atan2(Math.sin(rot - chibi.root.rotation.y), Math.cos(rot - chibi.root.rotation.y)) * 0.14;
+					isMoving = true;
+				}
+			}
+
+			if (isMoving) {
+				chibiWalkPhase += dt * 11;
+				var swing = Math.sin(chibiWalkPhase) * 0.65;
+				chibi.legL.rotation.x = swing;
+				chibi.legR.rotation.x = -swing;
+				chibi.armL.rotation.x = -swing * 0.75;
+				chibi.armR.rotation.x = swing * 0.75;
+				chibi.bodyPivot.position.y = Math.abs(Math.sin(chibiWalkPhase)) * 0.12;
+				chibi.headGroup.rotation.z = Math.sin(chibiWalkPhase * 0.5) * 0.05;
+			} else {
+				chibi.legL.rotation.x *= 0.85;
+				chibi.legR.rotation.x *= 0.85;
+				chibi.armL.rotation.x *= 0.85;
+				chibi.armR.rotation.x *= 0.85;
+				chibi.bodyPivot.position.y *= 0.85;
+				chibi.headGroup.rotation.z *= 0.85;
+			}
+
+			if (chibiFollowCam) {
+				camGoalTarget.set(chibi.root.position.x, 0.8, chibi.root.position.z);
+			}
+
+			// Cek rumah terdekat yang dilewati Chibi untuk info HUD
+			var nearest = null, minD = 6.2;
+			for (var i = 0; i < houseRecords.length; i++) {
+				var hr = houseRecords[i];
+				var hd = Math.hypot(hr.x - chibi.root.position.x, hr.z - chibi.root.position.z);
+				if (hd < minD) { minD = hd; nearest = hr; }
+			}
+			var hudEl = document.getElementById('chibiHudStatus');
+			if (hudEl) {
+				if (nearest && nearest.data.key !== lastNearbyKey) {
+					lastNearbyKey = nearest.data.key;
+					hudEl.textContent = 'Chibi melintas: Rumah ' + nearest.data.kode_rumah + ' (' + nearest.data.total_kk + ' KK • ' + nearest.data.total_jiwa + ' Jiwa)';
+				} else if (!nearest && lastNearbyKey !== '') {
+					lastNearbyKey = '';
+					hudEl.textContent = 'MINI-MAP 3D KAWASAN RT (' + houses.length + ' RUMAH)';
+				}
+			}
+		}
+
 		// Orbit Camera State
 		var camTarget = new THREE.Vector3(0, 0, 0);
 		var camGoalTarget = new THREE.Vector3(0, 0, 0);
@@ -1333,6 +1576,10 @@ function initWargaMap3D() {
 			camGoalTarget.set(rec.x, 0.5, rec.z);
 			goalDist = Math.min(goalDist, 22);
 
+			// Arahkan karakter Chibi berjalan ke depan halaman rumah yang dipilih
+			var frontZ = rec.z >= 0 ? rec.z - 2.6 : rec.z + 2.6;
+			chibiVisitTarget = new THREE.Vector3(rec.x, 0.05, frontZ);
+
 			renderInspector(rec.data);
 		}
 
@@ -1391,10 +1638,27 @@ function initWargaMap3D() {
 				}
 			},
 			reset: function() {
+				chibiFollowCam = false;
+				var fb = document.getElementById('btnChibiFollow');
+				if (fb) fb.classList.remove('active');
 				camGoalTarget.set(0, 0, 0);
 				goalYaw = 0.72;
 				goalPitch = 0.68;
 				goalDist = 36;
+			},
+			toggleWalk: function(btn) {
+				chibiWalkEnabled = !chibiWalkEnabled;
+				if (btn) {
+					btn.classList.toggle('active', chibiWalkEnabled);
+					btn.textContent = chibiWalkEnabled ? 'Patroli: ON' : 'Patroli: OFF';
+				}
+			},
+			toggleFollow: function(btn) {
+				chibiFollowCam = !chibiFollowCam;
+				if (btn) btn.classList.toggle('active', chibiFollowCam);
+				if (chibiFollowCam) {
+					goalDist = Math.min(goalDist, 18);
+				}
 			},
 			selectByKey: function(key) {
 				for (var i = 0; i < houseRecords.length; i++) {
@@ -1411,12 +1675,16 @@ function initWargaMap3D() {
 			renderInspector(houseRecords[0].data);
 		}
 
+		var lastTime = performance.now();
 		function animate(now) {
 			requestAnimationFrame(animate);
+			var dt = Math.min(0.05, (now - lastTime) * 0.001);
+			lastTime = now;
 			var t = now * 0.002;
 			houseRecords.forEach(function(rec, i) {
 				rec.orb.position.y = (rec.data.total_kk > 1 ? 4.0 : 3.55) + Math.sin(t + i * 0.5) * 0.14;
 			});
+			updateChibi(dt);
 			updateCamera();
 			renderer.render(scene, camera);
 		}
