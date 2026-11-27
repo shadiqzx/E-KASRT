@@ -315,19 +315,99 @@
 .map3d-legend {
 	position: absolute;
 	bottom: 14px;
-	left: 14px;
+	left: 50%;
+	transform: translateX(-50%);
 	background: rgba(15, 23, 42, 0.84);
 	backdrop-filter: blur(12px);
 	border: 1px solid rgba(148, 163, 184, 0.25);
 	border-radius: 14px;
-	padding: 9px 13px;
+	padding: 8px 14px;
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: center;
 	gap: 12px;
 	font-size: 11px;
 	font-weight: 700;
 	color: #cbd5e1;
 	z-index: 5;
+	white-space: nowrap;
+}
+/* Virtual Game Analog & Jump Button */
+.chibi-analog-pad {
+	position: absolute;
+	bottom: 22px;
+	left: 22px;
+	width: 112px;
+	height: 112px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.85) 100%);
+	border: 2px solid rgba(56, 189, 248, 0.45);
+	box-shadow: 0 10px 26px rgba(2, 6, 23, 0.55), inset 0 0 18px rgba(56, 189, 248, 0.16);
+	backdrop-filter: blur(10px);
+	z-index: 8;
+	touch-action: none;
+	user-select: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+.chibi-analog-ring {
+	position: absolute;
+	inset: 14px;
+	border-radius: 50%;
+	border: 1px dashed rgba(148, 163, 184, 0.35);
+	pointer-events: none;
+}
+.chibi-analog-knob {
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+	border: 2px solid #e0f2fe;
+	box-shadow: 0 6px 16px rgba(14, 165, 233, 0.55);
+	pointer-events: none;
+	transform: translate(0px, 0px);
+	transition: transform 0.08s ease-out;
+}
+.chibi-analog-pad.dragging .chibi-analog-knob {
+	transition: none;
+}
+.chibi-jump-btn {
+	position: absolute;
+	bottom: 28px;
+	right: 24px;
+	width: 78px;
+	height: 78px;
+	border-radius: 50%;
+	border: 2.5px solid #a7f3d0;
+	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+	color: #ffffff;
+	font-weight: 800;
+	font-size: 11px;
+	letter-spacing: 0.5px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 3px;
+	box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
+	cursor: pointer;
+	z-index: 8;
+	user-select: none;
+	touch-action: manipulation;
+	transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.chibi-jump-btn:active,
+.chibi-jump-btn.pressed {
+	transform: scale(0.91);
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.65);
+}
+@media (max-width: 700px) {
+	.map3d-legend { display: none; }
+	.chibi-analog-pad { width: 96px; height: 96px; bottom: 16px; left: 16px; }
+	.chibi-analog-knob { width: 40px; height: 40px; }
+	.chibi-jump-btn { width: 68px; height: 68px; bottom: 20px; right: 16px; font-size: 10px; }
 }
 .legend-dot {
 	width: 10px;
@@ -663,11 +743,23 @@ body.dark-exec .badge-nik { background: #1e293b; color: #e2e8f0; border-color: r
 
 				<canvas id="warga3dCanvas"></canvas>
 
+				<!-- Virtual Game Analog Joystick (Kiri Bawah) -->
+				<div class="chibi-analog-pad" id="chibiAnalogPad" title="Geser analog untuk jalan keliling komplek">
+					<div class="chibi-analog-ring"></div>
+					<div class="chibi-analog-knob" id="chibiAnalogKnob"></div>
+				</div>
+
+				<!-- Tombol Lompat (Kanan Bawah) -->
+				<button type="button" class="chibi-jump-btn" id="chibiJumpBtn" onclick="window.WargaMap3D && WargaMap3D.jump()" title="Lompat (Spasi)">
+					<i class="fas fa-arrow-up" style="font-size: 18px;"></i>
+					<span>LOMPAT</span>
+				</button>
+
 				<div class="map3d-legend">
 					<span><span class="legend-dot" style="background: #0ea5e9;"></span>1 KK</span>
 					<span><span class="legend-dot" style="background: #f59e0b;"></span>Multi-KK (2+ KK)</span>
 					<span><span class="legend-dot" style="background: #10b981;"></span>Rumah Terpilih</span>
-					<span style="opacity: 0.85;">Drag: Putar &bull; WASD/Panah: Gerakkan Chibi &bull; Klik Rumah: Detail KK</span>
+					<span style="opacity: 0.85;">Analog / WASD: Jalan &bull; Spasi: Lompat</span>
 				</div>
 			</div>
 
@@ -1406,10 +1498,91 @@ function initWargaMap3D() {
 		var chibiWalkPhase = 0;
 		var keysPressed = {};
 
+		// State Analog Joystick & Fisika Lompat
+		var analogX = 0, analogY = 0;
+		var chibiY = 0.05;
+		var chibiVelY = 0;
+		var chibiOnGround = true;
+
+		function triggerChibiJump() {
+			if (chibiOnGround) {
+				chibiVelY = 10.2;
+				chibiOnGround = false;
+				var jb = document.getElementById('chibiJumpBtn');
+				if (jb) {
+					jb.classList.add('pressed');
+					setTimeout(function() { jb.classList.remove('pressed'); }, 160);
+				}
+			}
+		}
+
+		// Virtual Analog Pad Pointer Events (Mouse & Touch)
+		var analogPad = document.getElementById('chibiAnalogPad');
+		var analogKnob = document.getElementById('chibiAnalogKnob');
+		var analogActive = false;
+		var analogPointerId = null;
+
+		function updateAnalogFromEvent(e) {
+			if (!analogPad || !analogKnob) return;
+			var rect = analogPad.getBoundingClientRect();
+			var cx = rect.left + rect.width / 2;
+			var cy = rect.top + rect.height / 2;
+			var maxR = rect.width * 0.36;
+			var dx = e.clientX - cx;
+			var dy = e.clientY - cy;
+			var dist = Math.hypot(dx, dy);
+			if (dist > maxR && dist > 0) {
+				dx = (dx / dist) * maxR;
+				dy = (dy / dist) * maxR;
+			}
+			analogKnob.style.transform = 'translate(' + dx.toFixed(1) + 'px, ' + dy.toFixed(1) + 'px)';
+			analogX = maxR > 0 ? (dx / maxR) : 0;
+			analogY = maxR > 0 ? (dy / maxR) : 0;
+			chibiVisitTarget = null;
+		}
+
+		function resetAnalog() {
+			analogActive = false;
+			analogPointerId = null;
+			analogX = 0;
+			analogY = 0;
+			if (analogPad) analogPad.classList.remove('dragging');
+			if (analogKnob) analogKnob.style.transform = 'translate(0px, 0px)';
+		}
+
+		if (analogPad) {
+			analogPad.addEventListener('pointerdown', function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				analogActive = true;
+				analogPointerId = e.pointerId;
+				analogPad.classList.add('dragging');
+				if (analogPad.setPointerCapture) {
+					try { analogPad.setPointerCapture(e.pointerId); } catch (err) {}
+				}
+				updateAnalogFromEvent(e);
+			});
+			analogPad.addEventListener('pointermove', function(e) {
+				if (!analogActive || (analogPointerId !== null && e.pointerId !== analogPointerId)) return;
+				e.stopPropagation();
+				updateAnalogFromEvent(e);
+			});
+			analogPad.addEventListener('pointerup', function(e) {
+				if (analogPointerId !== null && e.pointerId !== analogPointerId) return;
+				resetAnalog();
+			});
+			analogPad.addEventListener('pointercancel', resetAnalog);
+		}
+
 		window.addEventListener('keydown', function(e) {
 			if (currentWargaMode !== 'map3d') return;
 			var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
 			if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+			if (e.code === 'Space') {
+				e.preventDefault();
+				triggerChibiJump();
+				return;
+			}
 			if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D'].indexOf(e.key) !== -1) {
 				keysPressed[e.key.toLowerCase()] = true;
 				chibiVisitTarget = null;
@@ -1427,17 +1600,30 @@ function initWargaMap3D() {
 			if (keysPressed['a'] || keysPressed['arrowleft']) moveX -= 1;
 			if (keysPressed['d'] || keysPressed['arrowright']) moveX += 1;
 
-			var isMoving = false;
-			var speed = 6.2;
+			// Gabungkan input Analog Joystick relatif terhadap sudut kamera (yaw)
+			var usingAnalog = (Math.hypot(analogX, analogY) > 0.1);
+			if (usingAnalog) {
+				var cosY = Math.cos(yaw);
+				var sinY = Math.sin(yaw);
+				// Dorong analog ke atas (analogY < 0) = maju ke arah pandangan kamera (-sinY, -cosY)
+				var forward = -analogY;
+				var right = analogX;
+				moveX = -sinY * forward + cosY * right;
+				moveZ = -cosY * forward - sinY * right;
+			}
 
-			if (moveX !== 0 || moveZ !== 0) {
-				// Kontrol manual keyboard WASD / Panah
+			var isMoving = false;
+			var speed = 7.2;
+
+			if (Math.hypot(moveX, moveZ) > 0.05) {
 				var len = Math.hypot(moveX, moveZ);
-				moveX /= len; moveZ /= len;
+				var mag = usingAnalog ? Math.min(1, Math.hypot(analogX, analogY)) : 1;
+				moveX = (moveX / len) * mag;
+				moveZ = (moveZ / len) * mag;
 				chibi.root.position.x = Math.max(-36, Math.min(36, chibi.root.position.x + moveX * speed * dt));
 				chibi.root.position.z = Math.max(-36, Math.min(36, chibi.root.position.z + moveZ * speed * dt));
 				var targetRot = Math.atan2(moveX, moveZ);
-				chibi.root.rotation.y += Math.atan2(Math.sin(targetRot - chibi.root.rotation.y), Math.cos(targetRot - chibi.root.rotation.y)) * 0.2;
+				chibi.root.rotation.y += Math.atan2(Math.sin(targetRot - chibi.root.rotation.y), Math.cos(targetRot - chibi.root.rotation.y)) * 0.22;
 				isMoving = true;
 			} else if (chibiVisitTarget || chibiWalkEnabled) {
 				var targetVec = chibiVisitTarget || patrolPoints[patrolIdx];
@@ -1452,8 +1638,8 @@ function initWargaMap3D() {
 						patrolIdx = (patrolIdx + 1) % patrolPoints.length;
 					}
 				} else {
-					var vx = (dx / d) * speed * 0.72 * dt;
-					var vz = (dz / d) * speed * 0.72 * dt;
+					var vx = (dx / d) * speed * 0.65 * dt;
+					var vz = (dz / d) * speed * 0.65 * dt;
 					chibi.root.position.x += vx;
 					chibi.root.position.z += vz;
 					var rot = Math.atan2(dx, dz);
@@ -1462,7 +1648,26 @@ function initWargaMap3D() {
 				}
 			}
 
-			if (isMoving) {
+			// Fisika Lompat & Gravitasi
+			if (!chibiOnGround || chibiVelY !== 0) {
+				chibiVelY -= 26.0 * dt;
+				chibiY += chibiVelY * dt;
+				if (chibiY <= 0.05) {
+					chibiY = 0.05;
+					chibiVelY = 0;
+					chibiOnGround = true;
+				}
+			}
+			chibi.root.position.y = chibiY;
+
+			if (!chibiOnGround) {
+				// Pose lompat di udara
+				chibi.legL.rotation.x = 0.45;
+				chibi.legR.rotation.x = -0.35;
+				chibi.armL.rotation.x = -0.95;
+				chibi.armR.rotation.x = -0.95;
+				chibi.bodyPivot.position.y = 0;
+			} else if (isMoving) {
 				chibiWalkPhase += dt * 11;
 				var swing = Math.sin(chibiWalkPhase) * 0.65;
 				chibi.legL.rotation.x = swing;
@@ -1659,6 +1864,9 @@ function initWargaMap3D() {
 				if (chibiFollowCam) {
 					goalDist = Math.min(goalDist, 18);
 				}
+			},
+			jump: function() {
+				triggerChibiJump();
 			},
 			selectByKey: function(key) {
 				for (var i = 0; i < houseRecords.length; i++) {
